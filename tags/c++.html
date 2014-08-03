@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Posts tagged c++ - B.log</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <link rel="alternate" type="application/atom+xml" title="Musings about FP and CS (Atom)" href="../atom.xml" />
+
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+<body>
+    <header>
+      <hgroup>
+        <h1><a href="../">B.log</a></h1>
+        <h2>Random notes on Software Engineering, Computer Science and Mathematics</h2>
+      </hgroup>
+    </header>
+    <nav>
+        <menu>
+          <a href="../">Home</a>
+          <a href="../pages/about.html">About me</a>
+          <a href="../rss.xml">RSS feed</a>
+        </menu>
+    </nav>
+    <section>
+        <h1>Posts tagged c++</h1>
+<ul>
+    <article>
+	<header>
+		<h3><a href="../posts/2013-02-10-std-vector-growth.html">Resizing Policy of std::vector</a></h3>
+		<time>February 10, 2013</time>
+	</header>
+
+	<section>
+		Sometime ago when Facebook opensourced their <a title="Folly is an open-source C++ library developed and used at Facebook" href="https://github.com/facebook/folly">Folly library</a> I was reading their docs and found <a title="folly/FBvector.h documentation" href="https://github.com/facebook/folly/blob/master/folly/docs/FBVector.md">something interesting</a>. In section “Memory Handling” they state
+<blockquote>
+In fact it can be mathematically proven that a growth factor of 2 is rigorously the worst possible because it never allows the vector to reuse any of its previously-allocated memory
+</blockquote>
+<p>I haven’t got it first time. Recently I recalled that article and decided to deal with it. So after reading and googling for a while I finally understood the idea, so I’d like to say a few words about it.</p>
+
+	</section>
+</article>
+
+<hr />
+
+</ul>
+
+    </section>
+    <footer>
+        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+    </footer>
+</body>
+</html>

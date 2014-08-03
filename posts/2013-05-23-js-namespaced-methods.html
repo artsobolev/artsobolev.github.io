@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Namespaced Methods in JavaScript - B.log</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <link rel="alternate" type="application/atom+xml" title="Musings about FP and CS (Atom)" href="../atom.xml" />
+
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+<body>
+    <header>
+      <hgroup>
+        <h1><a href="../">B.log</a></h1>
+        <h2>Random notes on Software Engineering, Computer Science and Mathematics</h2>
+      </hgroup>
+    </header>
+    <nav>
+        <menu>
+          <a href="../">Home</a>
+          <a href="../pages/about.html">About me</a>
+          <a href="../rss.xml">RSS feed</a>
+        </menu>
+    </nav>
+    <section>
+        <article>
+<header>
+	<h3>Namespaced Methods in JavaScript</h3>
+	<time>May 23, 2013</time>
+</header>
+
+<section>
+<p>Once upon a time I was asked (well, actually <a href="http://habrahabr.ru/qa/7130/" title="Javascript: String.prototype.namespace.method и this / Q&amp;A / Хабрахабр">a question</a> wasn’t for me only, but for whole habrahabr’s community) is it possible to implement namespaced methods in JavaScript for built-in types like:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="dv">5</span>..<span class="ot">rubish</span>.<span class="fu">times</span>(<span class="kw">function</span>() { <span class="co">// this function will be called 5 times</span>
+  <span class="ot">console</span>.<span class="fu">log</span>(<span class="st">&quot;Hi there!&quot;</span>);
+});
+
+<span class="st">&quot;some string&quot;</span>.<span class="ot">hask</span>.<span class="fu">map</span>(<span class="kw">function</span>(c) { <span class="kw">return</span> <span class="ot">c</span>.<span class="ot">hask</span>.<span class="fu">code</span>(); });
+<span class="co">// equivalent to</span>
+<span class="st">&quot;some string&quot;</span>.<span class="fu">split</span>(<span class="st">''</span>).<span class="fu">map</span>(<span class="kw">function</span>(c) { <span class="kw">return</span> <span class="ot">c</span>.<span class="fu">charCodeAt</span>(); });
+
+<span class="st">&quot;another string&quot;</span>.<span class="ot">algo</span>.<span class="fu">lcp</span>(<span class="st">&quot;annotation&quot;</span>); 
+<span class="co">// returns longest common prefix of two strings</span></code></pre>
+<p>As you can see at the link, it’s possible using ECMAScript 5 features. And that’s how: <!--more--></p>
+<p>First, let’s point out the main problem with the straightforward approach: <del>it doesn’t work</del> when you write</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="ot">Class</span>.<span class="ot">prototype</span>.<span class="ot">ns</span>.<span class="fu">method</span> = <span class="kw">function</span>() {
+  <span class="kw">return</span> <span class="kw">this</span>.<span class="fu">methodA</span>() + <span class="kw">this</span>.<span class="fu">methodB</span>();
+}</code></pre>
+<p><code>this</code> points to the <code>Class.prototype.ns</code> instead of an instance of <code>Class</code>. The only way to change it is rebind <code>this</code> to the our instance like this:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> instance = <span class="kw">new</span> Class;
+<span class="ot">instance</span>.<span class="ot">ns</span>.<span class="ot">method</span>.<span class="fu">call</span>(instance);</code></pre>
+<p>Obviously, it’s not a solution since in that case it is a lot easier to write something like</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> instance = <span class="kw">new</span> Class;
+<span class="ot">MegaLibrary</span>.<span class="fu">method</span>(instance);</code></pre>
+<p>Thus we need to somehow return a correct function (with <code>this</code> binded to the <code>instance</code>) when user calls namespaced methods. This can be done using <a href="http://stackoverflow.com/q/812961/1190430" title="Javascript getters and setters for dummies? - Stack Overflow" target="_blank">getters</a>.</p>
+<p>When user accesses our namespace we give him a proxy-object with a custom getter for every method in the namespace. This getter returns a method with rebinded <code>this</code>. The question is: how do we get a reference to the <code>instance</code>? The answer is pretty simple: using getters again! Instead of declaring an ordinary property for the namespace we can create a property with a custom getter memoizing a reference to <code>this</code>. Voilà!</p>
+Finally, the code is:
+<script src="https://gist.github.com/Barmaley-exe/5599917.js"></script>
+
+<h2 id="but-wait-how-cross-browser-is-it">But wait… How cross browser is it?</h2>
+<p>Well, I’m pretty lazy to test it on all platforms (IE, Opera, FF, Chrome, Node.JS), so I’ll do like a mathmetician in a famous anecdote:</p>
+<blockquote>
+<p>Three employees (an engineer, a physicist and a mathematician) are staying in a hotel while attending a technical seminar. The engineer wakes up and smells smoke. He goes out into the hallway and sees a fire, so he fills a trashcan from his room with water and douses the fire. He goes back to bed.</p>
+<p>Later, the physicist wakes up and smells smoke. He opens his door and sees a fire in the hallway. He walks down the hall to a fire hose and after calculating the flame velocity, distance, water pressure, trajectory, etc. extinguishes the fire with the minimum amount of water and energy needed.</p>
+Later, the mathematician wakes up and smells smoke. She goes to the hall, sees the fire and then the fire hose. She thinks for a moment and then exclaims, ‘Ah, a solution exists!’ and then goes back to bed.
+</blockquote>
+
+As you can see, the key part of code is ECMAScript 5’s <code>Object.defineProperty</code>. According to the kangax’s <a href="http://kangax.github.io/es5-compat-table/#Object.defineProperty" title="ECMAScript 5 compatibility table" target="_blank">ECMAScript 5 compatibility table</a> it has pretty good support:
+<ul>
+	<li>
+IE 9+
+</li>
+	<li>
+Opera 12+
+</li>
+	<li>
+FF 4+
+</li>
+	<li>
+Chrome 7+ (and thus Node.JS too)
+</li>
+</ul>
+
+
+</section>
+
+<p>Tagged as: <a href="../tags/javascript.html">javascript</a>, <a href="../tags/ecmascript%205.html">ecmascript 5</a>.</p>
+</article>
+
+<section>
+</section>
+
+    </section>
+    <footer>
+        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+    </footer>
+</body>
+</html>

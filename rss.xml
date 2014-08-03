@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>RSS feed</title>
+        <link>http://barmaley.exe.name</link>
+        <description><![CDATA[B.log]]></description>
+        <atom:link href="http://barmaley.exe.name/rss.xml" rel="self"
+                   type="application/rss+xml" />
+        <lastBuildDate>Fri, 01 Aug 2014 00:00:00 UT</lastBuildDate>
+        <item>
+    <title>Exploiting Multiple Machines for Embarrassingly Parallel Applications</title>
+    <link>http://barmaley.exe.name/posts/2014-08-01-gnu-parallel.html</link>
+    <description><![CDATA[<p>During work on my machine learning project I was needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would just slow down overall running time because of increased amount of context switches. Yet running 4 (=number of cores in my CPU) of them at a time (actually, 3 since other applications need CPU, too) should speed it up.</p>
+<p>Fortunately, I have an old laptop with 2 cores as well as an access to somewhat more modern machine with 4 cores. That results in 10 cores spread across 3 machines (all of`em have some version of GNU Linux installed). The question was how to exploit such a treasury.</p>
+<!--more-->
+
+<p>And the answer is GNU Parallel with some additional bells and whistles. GNU Parallel allows one to execute some commands in parallel and even in a distributed way.</p>
+<p>The command was as following</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">parallel</span> -u --wd ... -S :,host1,host2 --trc <span class="dt">{}</span>.emb <span class="st">&quot;sh {}&quot;</span></code></pre>
+Here we have:
+<ul>
+	<li>
+<strong>wd</strong> stands for working directory. Three-dots means <code>parallel</code>’s temporary folder
+</li>
+	<li>
+<strong>S</strong> contains list of hosts with : being a localhost
+</li>
+	<li>
+<strong>trc</strong> stands for “Transfer, Return, Cleanup” and means that we’d like to transfer an executable file to target host, return specified file and do a cleanup
+</li>
+</ul>
+
+<p><code>parallel</code> accepts list command arguments (file names) in standard input and executes a command (<code>sh</code> in my case) for each of them.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ls</span> -1 jobs/* <span class="kw">|</span> <span class="kw">parallel</span> -u --wd ... -S :,host1,host2 --trc <span class="dt">{}</span>.emb <span class="st">&quot;sh {}&quot;</span></code></pre>
+<p>There’s a problem: we usually need more than one file to do usefull stuff. There are several solutions to that problem</p>
+<ul>
+	<li>
+<strong>Bring all files manually</strong><br/> It’s a solution, but somewhat tedious one: setting computing environment on a several machines is dull
+</li>
+	<li>
+<strong>tar it and do all the stuff in a command</strong><br/> Looks better, but some shell kung-fu is required
+</li>
+	<li>
+<strong>Use <a href="http://en.wikipedia.org/wiki/Shar">shar</a></strong><br/> Basically it’s a tar archive with some shell commands for (self-)extracting. I chose this way and glued in some my code.
+</li>
+</ul>
+
+]]></description>
+    <pubDate>Fri, 01 Aug 2014 00:00:00 UT</pubDate>
+    <guid>http://barmaley.exe.name/posts/2014-08-01-gnu-parallel.html</guid>
+</item>
+<item>
+    <title>Namespaced Methods in JavaScript</title>
+    <link>http://barmaley.exe.name/posts/2013-05-23-js-namespaced-methods.html</link>
+    <description><![CDATA[<p>Once upon a time I was asked (well, actually <a href="http://habrahabr.ru/qa/7130/" title="Javascript: String.prototype.namespace.method и this / Q&A / Хабрахабр">a question</a> wasn’t for me only, but for whole habrahabr’s community) is it possible to implement namespaced methods in JavaScript for built-in types like:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="dv">5</span>..<span class="ot">rubish</span>.<span class="fu">times</span>(<span class="kw">function</span>() { <span class="co">// this function will be called 5 times</span>
+  <span class="ot">console</span>.<span class="fu">log</span>(<span class="st">&quot;Hi there!&quot;</span>);
+});
+
+<span class="st">&quot;some string&quot;</span>.<span class="ot">hask</span>.<span class="fu">map</span>(<span class="kw">function</span>(c) { <span class="kw">return</span> <span class="ot">c</span>.<span class="ot">hask</span>.<span class="fu">code</span>(); });
+<span class="co">// equivalent to</span>
+<span class="st">&quot;some string&quot;</span>.<span class="fu">split</span>(<span class="st">&#39;&#39;</span>).<span class="fu">map</span>(<span class="kw">function</span>(c) { <span class="kw">return</span> <span class="ot">c</span>.<span class="fu">charCodeAt</span>(); });
+
+<span class="st">&quot;another string&quot;</span>.<span class="ot">algo</span>.<span class="fu">lcp</span>(<span class="st">&quot;annotation&quot;</span>); 
+<span class="co">// returns longest common prefix of two strings</span></code></pre>
+<p>As you can see at the link, it’s possible using ECMAScript 5 features. And that’s how: <!--more--></p>
+<p>First, let’s point out the main problem with the straightforward approach: <del>it doesn’t work</del> when you write</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="ot">Class</span>.<span class="ot">prototype</span>.<span class="ot">ns</span>.<span class="fu">method</span> = <span class="kw">function</span>() {
+  <span class="kw">return</span> <span class="kw">this</span>.<span class="fu">methodA</span>() + <span class="kw">this</span>.<span class="fu">methodB</span>();
+}</code></pre>
+<p><code>this</code> points to the <code>Class.prototype.ns</code> instead of an instance of <code>Class</code>. The only way to change it is rebind <code>this</code> to the our instance like this:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> instance = <span class="kw">new</span> Class;
+<span class="ot">instance</span>.<span class="ot">ns</span>.<span class="ot">method</span>.<span class="fu">call</span>(instance);</code></pre>
+<p>Obviously, it’s not a solution since in that case it is a lot easier to write something like</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> instance = <span class="kw">new</span> Class;
+<span class="ot">MegaLibrary</span>.<span class="fu">method</span>(instance);</code></pre>
+<p>Thus we need to somehow return a correct function (with <code>this</code> binded to the <code>instance</code>) when user calls namespaced methods. This can be done using <a href="http://stackoverflow.com/q/812961/1190430" title="Javascript getters and setters for dummies? - Stack Overflow" target="_blank">getters</a>.</p>
+<p>When user accesses our namespace we give him a proxy-object with a custom getter for every method in the namespace. This getter returns a method with rebinded <code>this</code>. The question is: how do we get a reference to the <code>instance</code>? The answer is pretty simple: using getters again! Instead of declaring an ordinary property for the namespace we can create a property with a custom getter memoizing a reference to <code>this</code>. Voilà!</p>
+Finally, the code is:
+<script src="https://gist.github.com/Barmaley-exe/5599917.js"></script>
+
+<h2 id="but-wait-how-cross-browser-is-it">But wait… How cross browser is it?</h2>
+<p>Well, I’m pretty lazy to test it on all platforms (IE, Opera, FF, Chrome, Node.JS), so I’ll do like a mathmetician in a famous anecdote:</p>
+<blockquote>
+<p>Three employees (an engineer, a physicist and a mathematician) are staying in a hotel while attending a technical seminar. The engineer wakes up and smells smoke. He goes out into the hallway and sees a fire, so he fills a trashcan from his room with water and douses the fire. He goes back to bed.</p>
+<p>Later, the physicist wakes up and smells smoke. He opens his door and sees a fire in the hallway. He walks down the hall to a fire hose and after calculating the flame velocity, distance, water pressure, trajectory, etc. extinguishes the fire with the minimum amount of water and energy needed.</p>
+Later, the mathematician wakes up and smells smoke. She goes to the hall, sees the fire and then the fire hose. She thinks for a moment and then exclaims, ‘Ah, a solution exists!’ and then goes back to bed.
+</blockquote>
+
+As you can see, the key part of code is ECMAScript 5’s <code>Object.defineProperty</code>. According to the kangax’s <a href="http://kangax.github.io/es5-compat-table/#Object.defineProperty" title="ECMAScript 5 compatibility table" target="_blank">ECMAScript 5 compatibility table</a> it has pretty good support:
+<ul>
+	<li>
+IE 9+
+</li>
+	<li>
+Opera 12+
+</li>
+	<li>
+FF 4+
+</li>
+	<li>
+Chrome 7+ (and thus Node.JS too)
+</li>
+</ul>
+
+]]></description>
+    <pubDate>Thu, 23 May 2013 00:00:00 UT</pubDate>
+    <guid>http://barmaley.exe.name/posts/2013-05-23-js-namespaced-methods.html</guid>
+</item>
+<item>
+    <title>Crazy Expression Parsing</title>
+    <link>http://barmaley.exe.name/posts/2013-03-30-crazy-expression-parsing.html</link>
+    <description><![CDATA[<p>Suppose we have an expression like <code>(5+5 * (x^x-5 | y &amp;&amp; 3))</code> and we’d like to get some computer-understandable representation of that expression, like:</p>
+<p><code>ADD Token[5] MUL Token[5] AND BIT_OR XOR Token[x] SUB Token[x] Token[5] Token[y] Token[3]</code></p>
+<p>In case if you don’t know how to do that or are looking for solutin right now, you should know that I’m not going to present right solution. This post is just a joke. You should use either <a href="http://en.wikipedia.org/wiki/Shunting-yard_algorithm" title="Shunting-yard algorithm — Wikipedia">Shunting-yard algorithm</a> or <a href="http://en.wikipedia.org/wiki/Recursive_descent_parser">Recursive descent parser</a>.</p>
+<p>So if you’re ready for madness… Let’s go! <!--more--></p>
+<p>Let’s take <a href="http://en.wikipedia.org/wiki/Don%27t_repeat_yourself">Don’t repeat yourself</a> principle as a justification. Moreover, let’s somewhat strengthen it to be “Don’t repeat”. Indeed, why do we need to repeat what compiler’s developers already did?</p>
+Here we go
+<script src="https://gist.github.com/Barmaley-exe/5273716.js"></script>
+
+<p>In case you’re wondering what the heck is going on: all constants are converted to instances of <code>Token</code> class, for which I overloaded all the operators. Overloading is done in a way to preserve structure of an expression. The only thing we have to do then is to extract that information. In case you’re not familiar with C++, I recommend you to read something about operator overloading.</p>
+<p>As you can see, g++ and python are required for that “parser”. Unfortunatelly, priority of a bitwise xor is too low to serve as a power operator.</p>]]></description>
+    <pubDate>Sat, 30 Mar 2013 00:00:00 UT</pubDate>
+    <guid>http://barmaley.exe.name/posts/2013-03-30-crazy-expression-parsing.html</guid>
+</item>
+<item>
+    <title>Memoization Using C++11</title>
+    <link>http://barmaley.exe.name/posts/2013-03-29-cpp-11-memoization.html</link>
+    <description><![CDATA[<p>Recently I’ve read an article <a href="http://john-ahlgren.blogspot.ru/2013/03/efficient-memoization-using-partial.html" title="John Ahlgren: Efficient Memoization using Partial Function Application">Efficient Memoization using Partial Function Application</a>. Author explains function memoization using partial application. When I was reading the article, I thought “Hmmm, can I come up with a more general solution?” And as suggested in comments, one can use variadic templates to achieve it. So here is my version.</p>
+<!--more-->
+<p>First let’s do it in a more object-oriented way: we define a template class <code>Memoizator</code> with 2 parameters: a return value type and a list of argument’s types. Also we incapsulate a lookup map and will use C++11’s <a href="http://en.cppreference.com/w/cpp/utility/tuple" title="std::tuple - cppreference.com">std::tuple</a> to represent an arguments set.</p>
+The code is as follows:
+<script src="https://gist.github.com/Barmaley-exe/5270779.js"></script>
+
+<p>Good, but what about computing n-th Fibonacci number using memoization? It’s not possible with a current version of <code>Memoizator</code> since it uses a separate map for each instance even if function is the same. It looks inefficient to store a separate lookup map for each instance of the same function. We’ll fix it by creating a static storage for maps accessed by a function address:</p>
+<script src="https://gist.github.com/Barmaley-exe/5271223.js"></script>
+
+<p>Now let’s compare the memoized version against the regular one. If we compute the 42th fibonacci number using simple recursive version (with exponential time complexity), we’d get</p>
+<pre><strong>$ time ./a.out</strong> 
+267914296
+
+real    0m5.314s
+user    0m5.220s
+sys     0m0.020s</pre>
+Now the memoized one (from the source above):
+<pre><strong>$ time ./a.out</strong> 
+267914296
+
+real    0m0.005s
+user    0m0.004s
+sys     0m0.004s</pre>
+
+<p>Moreover, our memoization reduced time complexity from exponential to linear.</p>
+<p><strong>UPD</strong>: you can take a look at another implementation here: <a href="http://cpptruths.blogspot.ru/2012/01/general-purpose-automatic-memoization.html" title="c++ truths: General-purpose Automatic Memoization for Recursive Functions in C++11">General-purpose Automatic Memoization for Recursive Functions in C++11</a></p>]]></description>
+    <pubDate>Fri, 29 Mar 2013 00:00:00 UT</pubDate>
+    <guid>http://barmaley.exe.name/posts/2013-03-29-cpp-11-memoization.html</guid>
+</item>
+<item>
+    <title>Resizing Policy of std::vector</title>
+    <link>http://barmaley.exe.name/posts/2013-02-10-std-vector-growth.html</link>
+    <description><![CDATA[Sometime ago when Facebook opensourced their <a title="Folly is an open-source C++ library developed and used at Facebook" href="https://github.com/facebook/folly">Folly library</a> I was reading their docs and found <a title="folly/FBvector.h documentation" href="https://github.com/facebook/folly/blob/master/folly/docs/FBVector.md">something interesting</a>. In section “Memory Handling” they state
+<blockquote>
+In fact it can be mathematically proven that a growth factor of 2 is rigorously the worst possible because it never allows the vector to reuse any of its previously-allocated memory
+</blockquote>
+<p>I haven’t got it first time. Recently I recalled that article and decided to deal with it. So after reading and googling for a while I finally understood the idea, so I’d like to say a few words about it.</p>
+<!--more-->
+
+<p>The problem is as follows: when a vector (or a similar structure with autoresize) gets filled, it should resize. It’s well known that it should grow exponentially in order to preserve constant amortized complexity of insertions, but what growth factor to choose? At first glance, 2 seems to be ok — it’s not so big and 2 is common for computer science :-). But it turns out that 2 is not so good. Let’s take a closer look by example:</p>
+<p><a href="/files/vector-resize-scheme.png"><img src="/files/vector-resize-scheme.png" alt="Vector resize scheme" width="495" height="350" class="size-full" /></a></p>
+<p>Suppose we’ve a vector of initial size <span class="math">\(C\)</span>. When it gets filled, we increase its size twice. We allocate memory for a vector of size <span class="math">\(2C\)</span> right after our original vector. So now we have vector of size <span class="math">\(2C\)</span> and <span class="math">\(C\)</span> bytes before it, where it was when it was small. Then expand it again and again and agian and so on. After <span class="math">\(n\)</span> expansions we’ll get a vector of size <span class="math">\(2^n C\)</span> preceded by <span class="math">\(C + 2C + 2^2 C + \dots 2^{n-1} C\)</span> bytes that were occupied by this vector before.</p>
+<p>So what’s the problem? The problem is that after every increasing your vector is too big to fit previously allocated memory. How much is it bigger? Well, as we know <span class="math">\(2^n - 1 = 1 + 2 + 4 + \dots + 2^{n-1}\)</span>, thus <span class="math">\(2^n C - C - 2C - 2^2 C - \dots - 2^{n-1}C = C\)</span>. Therefore you have permanent lack of <span class="math">\(C\)</span> bytes to fit your vector in previously allocated space.</p>
+<p>Okay, let’s now solve this problem. First, let’s formalize it.</p>
+<p>Every time we increase vector of size <span class="math">\(C\)</span> with growing factor <span class="math">\(k\)</span> we do these steps:</p>
+<ol>
+	<li>
+Allocate <span class="math">\(k C\)</span> bytes
+</li>
+	<li>
+Create a new vector here and copy current vector’s content to the new one
+</li>
+	<li>
+Remove the current vector, set the new one as the current
+</li>
+</ol>
+
+<p>So as you can see, formula for 2 is sort of upperbound: you can not use all of previously allocated <span class="math">\(n-1\)</span> chunks when allocating nth, since you need to copy values from (n-1)th (though you can copy them in some temporary buffer, but it requires extra memory) chunk. So when we allocate nth chunk, we need it to be less than total free space from <span class="math">\(n-2\)</span> allocations: <span class="math">\[ k^n C \le k^{n-2}C + k^{n-3}C + \dots + kC + C \]</span></p>
+<p>As you can see, we can get rid of C since it’s definetly positive. <span class="math">\[ k^n \le k^{n-2} + k^{n-3} + \dots + k + 1 \]</span></p>
+<p>Okay, time to solve some equations! We see something like a sum of a geometric progression, and we can use a formula for it. But I don’t retain it in my head, so I’ll use a little trick here. Let’s multiply both sides by <span class="math">\(k-1\)</span>. We assume that <span class="math">\(k &gt; 1\)</span> (it’s very strange to use values greater than 1 as <em>growth</em> factor) <span class="math">\[ (k-1) k^n \le (k-1) (k^{n-2} + k^{n-3} + \dots + k + 1) \]</span></p>
+<p>Now we can notice that in the right side we have an expansion of <span class="math">\(k^{n-1}-1\)</span> (well, maybe to remember this observation is harder than remembering a formula for sum of a geometric progression…)</p>
+<p><span class="math">\[ (k-1) k^n \le k^{n-1}-1 \]</span> <span class="math">\[ k^{n+1} - k^n \le k^{n-1}-1 \]</span> <span class="math">\[ k^{n+1} \le k^n + k^{n-1} - 1 \]</span></p>
+<p>Oh, this obstructing 1… It would be so nice if we could throw it away! Wait, but we can! If we add 1 to the right side, we will merely increase its value, so it will still suit for an upper bound (or an approximation since 1 is a constant and is very small compared to <span class="math">\(k^n\)</span>).</p>
+<p><span class="math">\[ k^{n+1} \le k^n + k^{n-1} - 1 &lt; k^n + k^{n-1} \]</span> <span class="math">\[ k^2 &lt; k + 1 \]</span> <span class="math">\[ k^2 - k - 1 &lt; 0 \]</span></p>
+<p>Solving this simple quadratic equation, we get <span class="math">\[ k &lt; \frac{1+\sqrt{5}}{2} \approx 1.61 \]</span></p>
+<p>So that’s why growth factor in many dynamic arrays is 1.5: it is pretty big to not cause reallocations too frequently and is small enough to not use memory too extensively.</p>]]></description>
+    <pubDate>Sun, 10 Feb 2013 00:00:00 UT</pubDate>
+    <guid>http://barmaley.exe.name/posts/2013-02-10-std-vector-growth.html</guid>
+</item>
+
+    </channel> 
+</rss>

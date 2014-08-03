@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Posts tagged gnu parallel - B.log</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <link rel="alternate" type="application/atom+xml" title="Musings about FP and CS (Atom)" href="../atom.xml" />
+
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+<body>
+    <header>
+      <hgroup>
+        <h1><a href="../">B.log</a></h1>
+        <h2>Random notes on Software Engineering, Computer Science and Mathematics</h2>
+      </hgroup>
+    </header>
+    <nav>
+        <menu>
+          <a href="../">Home</a>
+          <a href="../pages/about.html">About me</a>
+          <a href="../rss.xml">RSS feed</a>
+        </menu>
+    </nav>
+    <section>
+        <h1>Posts tagged gnu parallel</h1>
+<ul>
+    <article>
+	<header>
+		<h3><a href="../posts/2014-08-01-gnu-parallel.html">Exploiting Multiple Machines for Embarrassingly Parallel Applications</a></h3>
+		<time>August  1, 2014</time>
+	</header>
+
+	<section>
+		<p>During work on my machine learning project I was needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would just slow down overall running time because of increased amount of context switches. Yet running 4 (=number of cores in my CPU) of them at a time (actually, 3 since other applications need CPU, too) should speed it up.</p>
+<p>Fortunately, I have an old laptop with 2 cores as well as an access to somewhat more modern machine with 4 cores. That results in 10 cores spread across 3 machines (all of`em have some version of GNU Linux installed). The question was how to exploit such a treasury.</p>
+
+	</section>
+</article>
+
+<hr />
+
+</ul>
+
+    </section>
+    <footer>
+        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+    </footer>
+</body>
+</html>

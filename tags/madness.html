@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Posts tagged madness - B.log</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <link rel="alternate" type="application/atom+xml" title="Musings about FP and CS (Atom)" href="../atom.xml" />
+
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+<body>
+    <header>
+      <hgroup>
+        <h1><a href="../">B.log</a></h1>
+        <h2>Random notes on Software Engineering, Computer Science and Mathematics</h2>
+      </hgroup>
+    </header>
+    <nav>
+        <menu>
+          <a href="../">Home</a>
+          <a href="../pages/about.html">About me</a>
+          <a href="../rss.xml">RSS feed</a>
+        </menu>
+    </nav>
+    <section>
+        <h1>Posts tagged madness</h1>
+<ul>
+    <article>
+	<header>
+		<h3><a href="../posts/2013-03-30-crazy-expression-parsing.html">Crazy Expression Parsing</a></h3>
+		<time>March 30, 2013</time>
+	</header>
+
+	<section>
+		<p>Suppose we have an expression like <code>(5+5 * (x^x-5 | y &amp;&amp; 3))</code> and we’d like to get some computer-understandable representation of that expression, like:</p>
+<p><code>ADD Token[5] MUL Token[5] AND BIT_OR XOR Token[x] SUB Token[x] Token[5] Token[y] Token[3]</code></p>
+<p>In case if you don’t know how to do that or are looking for solutin right now, you should know that I’m not going to present right solution. This post is just a joke. You should use either <a href="http://en.wikipedia.org/wiki/Shunting-yard_algorithm" title="Shunting-yard algorithm — Wikipedia">Shunting-yard algorithm</a> or <a href="http://en.wikipedia.org/wiki/Recursive_descent_parser">Recursive descent parser</a>.</p>
+<p>So if you’re ready for madness… Let’s go! 
+	</section>
+</article>
+
+<hr />
+
+</ul>
+
+    </section>
+    <footer>
+        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+    </footer>
+</body>
+</html>

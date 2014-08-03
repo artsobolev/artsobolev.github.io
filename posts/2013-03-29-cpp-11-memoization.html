@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Memoization Using C++11 - B.log</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <link rel="alternate" type="application/atom+xml" title="Musings about FP and CS (Atom)" href="../atom.xml" />
+
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+<body>
+    <header>
+      <hgroup>
+        <h1><a href="../">B.log</a></h1>
+        <h2>Random notes on Software Engineering, Computer Science and Mathematics</h2>
+      </hgroup>
+    </header>
+    <nav>
+        <menu>
+          <a href="../">Home</a>
+          <a href="../pages/about.html">About me</a>
+          <a href="../rss.xml">RSS feed</a>
+        </menu>
+    </nav>
+    <section>
+        <article>
+<header>
+	<h3>Memoization Using C++11</h3>
+	<time>March 29, 2013</time>
+</header>
+
+<section>
+<p>Recently I’ve read an article <a href="http://john-ahlgren.blogspot.ru/2013/03/efficient-memoization-using-partial.html" title="John Ahlgren: Efficient Memoization using Partial Function Application">Efficient Memoization using Partial Function Application</a>. Author explains function memoization using partial application. When I was reading the article, I thought “Hmmm, can I come up with a more general solution?” And as suggested in comments, one can use variadic templates to achieve it. So here is my version.</p>
+<!--more-->
+<p>First let’s do it in a more object-oriented way: we define a template class <code>Memoizator</code> with 2 parameters: a return value type and a list of argument’s types. Also we incapsulate a lookup map and will use C++11’s <a href="http://en.cppreference.com/w/cpp/utility/tuple" title="std::tuple - cppreference.com">std::tuple</a> to represent an arguments set.</p>
+The code is as follows:
+<script src="https://gist.github.com/Barmaley-exe/5270779.js"></script>
+
+<p>Good, but what about computing n-th Fibonacci number using memoization? It’s not possible with a current version of <code>Memoizator</code> since it uses a separate map for each instance even if function is the same. It looks inefficient to store a separate lookup map for each instance of the same function. We’ll fix it by creating a static storage for maps accessed by a function address:</p>
+<script src="https://gist.github.com/Barmaley-exe/5271223.js"></script>
+
+<p>Now let’s compare the memoized version against the regular one. If we compute the 42th fibonacci number using simple recursive version (with exponential time complexity), we’d get</p>
+<pre><strong>$ time ./a.out</strong> 
+267914296
+
+real    0m5.314s
+user    0m5.220s
+sys     0m0.020s</pre>
+Now the memoized one (from the source above):
+<pre><strong>$ time ./a.out</strong> 
+267914296
+
+real    0m0.005s
+user    0m0.004s
+sys     0m0.004s</pre>
+
+<p>Moreover, our memoization reduced time complexity from exponential to linear.</p>
+<p><strong>UPD</strong>: you can take a look at another implementation here: <a href="http://cpptruths.blogspot.ru/2012/01/general-purpose-automatic-memoization.html" title="c++ truths: General-purpose Automatic Memoization for Recursive Functions in C++11">General-purpose Automatic Memoization for Recursive Functions in C++11</a></p>
+</section>
+
+<p>Tagged as: <a href="../tags/C%2B%2B.html">C++</a>, <a href="../tags/C%2B%2B11.html">C++11</a>, <a href="../tags/memoization.html">memoization</a>, <a href="../tags/optimization.html">optimization</a>.</p>
+</article>
+
+<section>
+</section>
+
+    </section>
+    <footer>
+        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+    </footer>
+</body>
+</html>

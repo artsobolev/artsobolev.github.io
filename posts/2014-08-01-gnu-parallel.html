@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Exploiting Multiple Machines for Embarrassingly Parallel Applications - B.log</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <link rel="alternate" type="application/atom+xml" title="Musings about FP and CS (Atom)" href="../atom.xml" />
+
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+<body>
+    <header>
+      <hgroup>
+        <h1><a href="../">B.log</a></h1>
+        <h2>Random notes on Software Engineering, Computer Science and Mathematics</h2>
+      </hgroup>
+    </header>
+    <nav>
+        <menu>
+          <a href="../">Home</a>
+          <a href="../pages/about.html">About me</a>
+          <a href="../rss.xml">RSS feed</a>
+        </menu>
+    </nav>
+    <section>
+        <article>
+<header>
+	<h3>Exploiting Multiple Machines for Embarrassingly Parallel Applications</h3>
+	<time>August  1, 2014</time>
+</header>
+
+<section>
+<p>During work on my machine learning project I was needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would just slow down overall running time because of increased amount of context switches. Yet running 4 (=number of cores in my CPU) of them at a time (actually, 3 since other applications need CPU, too) should speed it up.</p>
+<p>Fortunately, I have an old laptop with 2 cores as well as an access to somewhat more modern machine with 4 cores. That results in 10 cores spread across 3 machines (all of`em have some version of GNU Linux installed). The question was how to exploit such a treasury.</p>
+<!--more-->
+
+<p>And the answer is GNU Parallel with some additional bells and whistles. GNU Parallel allows one to execute some commands in parallel and even in a distributed way.</p>
+<p>The command was as following</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">parallel</span> -u --wd ... -S :,host1,host2 --trc <span class="dt">{}</span>.emb <span class="st">&quot;sh {}&quot;</span></code></pre>
+Here we have:
+<ul>
+	<li>
+<strong>wd</strong> stands for working directory. Three-dots means <code>parallel</code>’s temporary folder
+</li>
+	<li>
+<strong>S</strong> contains list of hosts with : being a localhost
+</li>
+	<li>
+<strong>trc</strong> stands for “Transfer, Return, Cleanup” and means that we’d like to transfer an executable file to target host, return specified file and do a cleanup
+</li>
+</ul>
+
+<p><code>parallel</code> accepts list command arguments (file names) in standard input and executes a command (<code>sh</code> in my case) for each of them.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ls</span> -1 jobs/* <span class="kw">|</span> <span class="kw">parallel</span> -u --wd ... -S :,host1,host2 --trc <span class="dt">{}</span>.emb <span class="st">&quot;sh {}&quot;</span></code></pre>
+<p>There’s a problem: we usually need more than one file to do usefull stuff. There are several solutions to that problem</p>
+<ul>
+	<li>
+<strong>Bring all files manually</strong><br /> It’s a solution, but somewhat tedious one: setting computing environment on a several machines is dull
+</li>
+	<li>
+<strong>tar it and do all the stuff in a command</strong><br /> Looks better, but some shell kung-fu is required
+</li>
+	<li>
+<strong>Use <a href="http://en.wikipedia.org/wiki/Shar">shar</a></strong><br /> Basically it’s a tar archive with some shell commands for (self-)extracting. I chose this way and glued in some my code.
+</li>
+</ul>
+
+
+</section>
+
+<p>Tagged as: <a href="../tags/gnu%20parallel.html">gnu parallel</a>, <a href="../tags/linux.html">linux</a>.</p>
+</article>
+
+<section>
+</section>
+
+    </section>
+    <footer>
+        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+    </footer>
+</body>
+</html>
