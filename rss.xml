@@ -80,7 +80,7 @@ Finally, the code is:
 <script src="https://gist.github.com/Barmaley-exe/5599917.js"></script>
 
 <h2 id="but-wait-how-cross-browser-is-it">But wait… How cross browser is it?</h2>
-<p>Well, I’m pretty lazy to test it on all platforms (IE, Opera, FF, Chrome, Node.JS), so I’ll do like a mathmetician in a famous anecdote:</p>
+<p>Well, I’m pretty lazy to test it on all platforms (IE, Opera, FF, Chrome, Node.JS), so I’ll do like a mathematician in a famous anecdote:</p>
 <blockquote>
 <p>Three employees (an engineer, a physicist and a mathematician) are staying in a hotel while attending a technical seminar. The engineer wakes up and smells smoke. He goes out into the hallway and sees a fire, so he fills a trashcan from his room with water and douses the fire. He goes back to bed.</p>
 <p>Later, the physicist wakes up and smells smoke. He opens his door and sees a fire in the hallway. He walks down the hall to a fire hose and after calculating the flame velocity, distance, water pressure, trajectory, etc. extinguishes the fire with the minimum amount of water and energy needed.</p>
