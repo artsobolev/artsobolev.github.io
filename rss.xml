@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
-        <title>RSS feed</title>
+        <title>B.log - RSS feed</title>
         <link>http://barmaley.exe.name</link>
-        <description><![CDATA[B.log]]></description>
+        <description><![CDATA[Random notes on Software Engineering, Computer Science and Mathematics]]></description>
         <atom:link href="http://barmaley.exe.name/rss.xml" rel="self"
                    type="application/rss+xml" />
         <lastBuildDate>Fri, 01 Aug 2014 00:00:00 UT</lastBuildDate>
