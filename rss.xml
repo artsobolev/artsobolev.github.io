@@ -50,6 +50,28 @@ Here we have:
     <guid>http://barmaley.exe.name/posts/2014-08-01-gnu-parallel.html</guid>
 </item>
 <item>
+    <title>On Sorting Complexity</title>
+    <link>http://barmaley.exe.name/posts/2014-05-01-on-sorting-complexity.html</link>
+    <description><![CDATA[<p>It’s well known that lower bound for sorting problem (in general case) is $ O(n log n) $. The proof I was taught is somewhat involved and is based on paths in “decision” trees. Recently I’ve discovered an information-theoretic approach (or reformulation) to that proof.</p>
+<!--more-->
+
+<p>First, let’s state the problem: given a set of some objects with an ordering produce elements of that set in that order. For now it’s completely irrelevant what are these objects, so we can assume them to be just numbers from 1 to n, or some permutation. Thus we’ll be interested in sorting permutations.</p>
+<p>We’re given an ordering via a comparison function. It tells us if one object preceds (or is smaller) another outputing True or False. Thus each invocation of comparator gives us 1 bit of information.</p>
+<p>Next question is how many bits we need to represent any permutation. It’s just a binary logarithm of number of all possible permutations of n elements: <span class="math">\(\log_2 n!\)</span>. Then we notice that</p>
+<p><span class="math">\[
+\log_2 n! = \sum_{k=1}^n \log_2 k \ge \sum_{k=n/2}^{n} \log_2 k
+\ge \frac{n}{2} \log_2 \frac{n}{2}
+\]</span></p>
+<p><span class="math">\[
+\log_2 n! = \sum_{k=1}^n \log_2 k \le n \log_2 n
+\]</span></p>
+<p>(Or just use <a href="http://en.wikipedia.org/wiki/Stirling%27s_approximation">Stirling’s approximation</a> formula). Hence <span class="math">\(\log_2 n! = \Theta(n \log n)\)</span></p>
+<p>So what, you may ask. The key point of proof is that sorting is essentially a search for a correct permutation of the input one. Since one needs <span class="math">\(\log_2 n!\)</span> bits to represent any permutation, we <strong>need to get that many bits</strong>. Now let’s get back to our comparison function. As we’ve figured out already it’s able to give us only one bit of information per invocation. That implies that we need to call it <span class="math">\(\log n! = \Theta(n \log n)\)</span> times. And that’s exactly the lower-bound for sorting complexity. Q.E.D.</p>
+<p>Non-<span class="math">\(n \log n\)</span> sorting algorithms like <a href="http://en.wikipedia.org/wiki/Radix_sort">RadixSort</a> are possible because they use much more bits of information, taking advantage of number’s structure.</p>]]></description>
+    <pubDate>Thu, 01 May 2014 00:00:00 UT</pubDate>
+    <guid>http://barmaley.exe.name/posts/2014-05-01-on-sorting-complexity.html</guid>
+</item>
+<item>
     <title>Namespaced Methods in JavaScript</title>
     <link>http://barmaley.exe.name/posts/2013-05-23-js-namespaced-methods.html</link>
     <description><![CDATA[<p>Once upon a time I was asked (well, actually <a href="http://habrahabr.ru/qa/7130/" title="Javascript: String.prototype.namespace.method и this / Q&A / Хабрахабр">a question</a> wasn’t for me only, but for whole habrahabr’s community) is it possible to implement namespaced methods in JavaScript for built-in types like:</p>
