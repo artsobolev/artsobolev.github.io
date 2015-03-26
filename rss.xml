@@ -6,8 +6,52 @@
         <description><![CDATA[Random notes on Software Engineering, Computer Science and Mathematics]]></description>
         <atom:link href="http://barmaley.exe.name/rss.xml" rel="self"
                    type="application/rss+xml" />
-        <lastBuildDate>Fri, 01 Aug 2014 00:00:00 UT</lastBuildDate>
+        <lastBuildDate>Thu, 26 Mar 2015 00:00:00 UT</lastBuildDate>
         <item>
+    <title>GSoC 2015</title>
+    <link>http://barmaley.exe.name/posts/2015-03-26-gsoc-intro.html</link>
+    <description><![CDATA[<p>This post starts a new category in my blog</p>]]></description>
+    <pubDate>Thu, 26 Mar 2015 00:00:00 UT</pubDate>
+    <guid>http://barmaley.exe.name/posts/2015-03-26-gsoc-intro.html</guid>
+</item>
+<item>
+    <title>Stochastic Gradient Descent Bible</title>
+    <link>http://barmaley.exe.name/posts/2014-12-01-sgb-bible.html</link>
+    <description><![CDATA[<p>SGD being a major optimization algorithm is must know for anyone doing Machine Learning. Since there are lots and lots of different optimization problems, I’d like to collect as many relevant facts as possible in one place. While there’s already a well-known Leon Bottou’s article on <a href="http://leon.bottou.org/papers/bottou-tricks-2012">Stochastic Gradient Tricks</a>, I feel there’s still a lot to add.</p>
+<!--more-->
+
+<h3>
+<a href="#learning-rate" class="anchor" name="learning-rate">Learning rate</a>
+</h3>
+
+<p>From a theoretical point of view, you can choose any learning rate that satisfies this inequality.</p>
+<h3>
+Make it fasssster
+</h3>
+<p>Standard Gradient Descent has</p>
+<p>AdaGrad, AdaDelta, Momentum</p>
+<h3>
+What can we do with all these cores?
+</h3>
+
+<p>Let’s face it, we can’t count on <a href="http://en.wikipedia.org/wiki/Moore's_law">Moore’s Law</a> anymore. The Multicore has come. I bet the device you’re reading this article on has more than one core in it’s CPU (even my smartphone has two). This forces us, programmers, to design and develop parallel algorithms, taking all subtleties of concurrency into consideration.</p>
+<p>Sometimes the data we are dealing with is so terrible huge that we have to other choice, but to distribute it over several machines. Then it’s even more crucial to use efficient <em>distributed</em> algorithms. Fortunatelly, there’re many of them.</p>
+<h3>
+Non-differentiable loss
+</h3>
+
+<p>What can we do in case of L1 regularization, for example? Well, the intuition says gradient is non-continuous in just one point, maybe we can ignore it? And it turns out, we can! There’s a notion of <a href="http://en.wikipedia.org/wiki/Subderivative#The_subgradient">subgradient</a>, a generalization of gradient to non-differentiable functions.</p>
+<p>For further reading on subgradient optimization, please refer to S. Boyd’s paper <a href="https://web.stanford.edu/class/ee392o/subgrad_method.pdf">Subgradient Method</a>.</p>
+<h3>
+Constraints
+</h3>
+
+<p>So far we were dealing with unconstraned optimization: the solution could be any point in <span class="math">\(\mathbb{R}^n\)</span> (of course, we usually don’t want to have extremely big values for parameters, so we penalize them with regularization. Yet, domain of target function stays unchanged).</p>
+<p>Sometimes you might want to restrict your domain. For example, you might want to keep some latent vectors’ norm unitary to avoid numerical issues.</p>]]></description>
+    <pubDate>Mon, 01 Dec 2014 00:00:00 UT</pubDate>
+    <guid>http://barmaley.exe.name/posts/2014-12-01-sgb-bible.html</guid>
+</item>
+<item>
     <title>Exploiting Multiple Machines for Embarrassingly Parallel Applications</title>
     <link>http://barmaley.exe.name/posts/2014-08-01-gnu-parallel.html</link>
     <description><![CDATA[<p>During work on my machine learning project I was needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would just slow down overall running time because of increased amount of context switches. Yet running 4 (=number of cores in my CPU) of them at a time (actually, 3 since other applications need CPU, too) should speed it up.</p>
@@ -48,6 +92,28 @@ Here we have:
 ]]></description>
     <pubDate>Fri, 01 Aug 2014 00:00:00 UT</pubDate>
     <guid>http://barmaley.exe.name/posts/2014-08-01-gnu-parallel.html</guid>
+</item>
+<item>
+    <title>On Sorting Complexity</title>
+    <link>http://barmaley.exe.name/posts/2014-05-01-on-sorting-complexity.html</link>
+    <description><![CDATA[<p>It’s well known that lower bound for sorting problem (in general case) is $ O(n log n) $. The proof I was taught is somewhat involved and is based on paths in “decision” trees. Recently I’ve discovered an information-theoretic approach (or reformulation) to that proof.</p>
+<!--more-->
+
+<p>First, let’s state the problem: given a set of some objects with an ordering produce elements of that set in that order. For now it’s completely irrelevant what are these objects, so we can assume them to be just numbers from 1 to n, or some permutation. Thus we’ll be interested in sorting permutations.</p>
+<p>We’re given an ordering via a comparison function. It tells us if one object preceds (or is smaller) another outputing True or False. Thus each invocation of comparator gives us 1 bit of information.</p>
+<p>Next question is how many bits we need to represent any permutation. It’s just a binary logarithm of number of all possible permutations of n elements: <span class="math">\(\log_2 n!\)</span>. Then we notice that</p>
+<p><span class="math">\[
+\log_2 n! = \sum_{k=1}^n \log_2 k \ge \sum_{k=n/2}^{n} \log_2 k
+\ge \frac{n}{2} \log_2 \frac{n}{2}
+\]</span></p>
+<p><span class="math">\[
+\log_2 n! = \sum_{k=1}^n \log_2 k \le n \log_2 n
+\]</span></p>
+<p>(Or just use <a href="http://en.wikipedia.org/wiki/Stirling%27s_approximation">Stirling’s approximation</a> formula). Hence <span class="math">\(\log_2 n! = \Theta(n \log n)\)</span></p>
+<p>So what, you may ask. The key point of proof is that sorting is essentially a search for a correct permutation of the input one. Since one needs <span class="math">\(\log_2 n!\)</span> bits to represent any permutation, we <strong>need to get that many bits</strong>. Now let’s get back to our comparison function. As we’ve figured out already it’s able to give us only one bit of information per invocation. That implies that we need to call it <span class="math">\(\log n! = \Theta(n \log n)\)</span> times. And that’s exactly the lower-bound for sorting complexity. Q.E.D.</p>
+<p>Non-<span class="math">\(n \log n\)</span> sorting algorithms like <a href="http://en.wikipedia.org/wiki/Radix_sort">RadixSort</a> are possible because they use much more bits of information, taking advantage of number’s structure.</p>]]></description>
+    <pubDate>Thu, 01 May 2014 00:00:00 UT</pubDate>
+    <guid>http://barmaley.exe.name/posts/2014-05-01-on-sorting-complexity.html</guid>
 </item>
 <item>
     <title>Namespaced Methods in JavaScript</title>

@@ -13,19 +13,44 @@
     <header>
       <hgroup>
         <h1><a href="./">B.log</a></h1>
-        <h2>Random notes on Software Engineering, Computer Science and Mathematics</h2>
+        <h2>Random notes on Computer Science, Mathematics and Software Engineering</h2>
       </hgroup>
     </header>
     <nav>
         <menu>
           <a href="./">Home</a>
           <a href="./pages/about.html">About me</a>
-          <a href="./rss.xml">RSS feed</a>
+          <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
         </menu>
     </nav>
     <section>
         <section id="posts">
     <article>
+	<header>
+		<h3><a href="./posts/2015-03-26-gsoc-intro.html">GSoC 2015</a></h3>
+		<time>March 26, 2015</time>
+	</header>
+
+	<section>
+		<p>This post starts a new category in my blog</p>
+	</section>
+</article>
+
+<hr />
+<article>
+	<header>
+		<h3><a href="./posts/2014-12-01-sgb-bible.html">Stochastic Gradient Descent Bible</a></h3>
+		<time>December  1, 2014</time>
+	</header>
+
+	<section>
+		<p>SGD being a major optimization algorithm is must know for anyone doing Machine Learning. Since there are lots and lots of different optimization problems, I’d like to collect as many relevant facts as possible in one place. While there’s already a well-known Leon Bottou’s article on <a href="http://leon.bottou.org/papers/bottou-tricks-2012">Stochastic Gradient Tricks</a>, I feel there’s still a lot to add.</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
 	<header>
 		<h3><a href="./posts/2014-08-01-gnu-parallel.html">Exploiting Multiple Machines for Embarrassingly Parallel Applications</a></h3>
 		<time>August  1, 2014</time>
@@ -34,6 +59,19 @@
 	<section>
 		<p>During work on my machine learning project I was needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would just slow down overall running time because of increased amount of context switches. Yet running 4 (=number of cores in my CPU) of them at a time (actually, 3 since other applications need CPU, too) should speed it up.</p>
 <p>Fortunately, I have an old laptop with 2 cores as well as an access to somewhat more modern machine with 4 cores. That results in 10 cores spread across 3 machines (all of`em have some version of GNU Linux installed). The question was how to exploit such a treasury.</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
+	<header>
+		<h3><a href="./posts/2014-05-01-on-sorting-complexity.html">On Sorting Complexity</a></h3>
+		<time>May  1, 2014</time>
+	</header>
+
+	<section>
+		<p>It’s well known that lower bound for sorting problem (in general case) is $ O(n log n) $. The proof I was taught is somewhat involved and is based on paths in “decision” trees. Recently I’ve discovered an information-theoretic approach (or reformulation) to that proof.</p>
 
 	</section>
 </article>
@@ -112,7 +150,7 @@ In fact it can be mathematically proven that a growth factor of 2 is rigorously 
     <p><a href="/posts.html">All posts&hellip;</a></p>
 
     <h2>Tags</h2>
-    <p><a href="/tags/C%2B%2B.html">C++ (1)</a>, <a href="/tags/C%2B%2B11.html">C++11 (1)</a>, <a href="/tags/c%2B%2B.html">c++ (1)</a>, <a href="/tags/ecmascript%205.html">ecmascript 5 (1)</a>, <a href="/tags/gnu%20parallel.html">gnu parallel (1)</a>, <a href="/tags/javascript.html">javascript (1)</a>, <a href="/tags/linux.html">linux (1)</a>, <a href="/tags/madness.html">madness (1)</a>, <a href="/tags/memoization.html">memoization (1)</a>, <a href="/tags/optimization.html">optimization (1)</a>, <a href="/tags/python.html">python (1)</a></p>
+    <p><a href="/tags/C%2B%2B.html">C++ (1)</a>, <a href="/tags/C%2B%2B11.html">C++11 (1)</a>, <a href="/tags/adadelta.html">adadelta (1)</a>, <a href="/tags/adagrad.html">adagrad (1)</a>, <a href="/tags/algortihms.html">algortihms (1)</a>, <a href="/tags/c%2B%2B.html">c++ (1)</a>, <a href="/tags/computer%20science.html">computer science (1)</a>, <a href="/tags/ecmascript%205.html">ecmascript 5 (1)</a>, <a href="/tags/gnu%20parallel.html">gnu parallel (1)</a>, <a href="/tags/gsoc15.html">gsoc15 (1)</a>, <a href="/tags/javascript.html">javascript (1)</a>, <a href="/tags/linux.html">linux (1)</a>, <a href="/tags/machine%20learning.html">machine learning (1)</a>, <a href="/tags/madness.html">madness (1)</a>, <a href="/tags/memoization.html">memoization (1)</a>, <a href="/tags/optimization.html">optimization (1)</a>, <a href="/tags/python.html">python (1)</a>, <a href="/tags/sgd.html">sgd (1)</a>, <a href="/tags/subgradient.html">subgradient (1)</a></p>
 	-->
 </section>
 
