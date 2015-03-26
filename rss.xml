@@ -10,46 +10,9 @@
         <item>
     <title>GSoC 2015</title>
     <link>http://barmaley.exe.name/posts/2015-03-26-gsoc-intro.html</link>
-    <description><![CDATA[<p>This post starts a new category in my blog</p>]]></description>
+    <description><![CDATA[<p>This post starts a new category in my blog.</p>]]></description>
     <pubDate>Thu, 26 Mar 2015 00:00:00 UT</pubDate>
     <guid>http://barmaley.exe.name/posts/2015-03-26-gsoc-intro.html</guid>
-</item>
-<item>
-    <title>Stochastic Gradient Descent Bible</title>
-    <link>http://barmaley.exe.name/posts/2014-12-01-sgb-bible.html</link>
-    <description><![CDATA[<p>SGD being a major optimization algorithm is must know for anyone doing Machine Learning. Since there are lots and lots of different optimization problems, I’d like to collect as many relevant facts as possible in one place. While there’s already a well-known Leon Bottou’s article on <a href="http://leon.bottou.org/papers/bottou-tricks-2012">Stochastic Gradient Tricks</a>, I feel there’s still a lot to add.</p>
-<!--more-->
-
-<h3>
-<a href="#learning-rate" class="anchor" name="learning-rate">Learning rate</a>
-</h3>
-
-<p>From a theoretical point of view, you can choose any learning rate that satisfies this inequality.</p>
-<h3>
-Make it fasssster
-</h3>
-<p>Standard Gradient Descent has</p>
-<p>AdaGrad, AdaDelta, Momentum</p>
-<h3>
-What can we do with all these cores?
-</h3>
-
-<p>Let’s face it, we can’t count on <a href="http://en.wikipedia.org/wiki/Moore's_law">Moore’s Law</a> anymore. The Multicore has come. I bet the device you’re reading this article on has more than one core in it’s CPU (even my smartphone has two). This forces us, programmers, to design and develop parallel algorithms, taking all subtleties of concurrency into consideration.</p>
-<p>Sometimes the data we are dealing with is so terrible huge that we have to other choice, but to distribute it over several machines. Then it’s even more crucial to use efficient <em>distributed</em> algorithms. Fortunatelly, there’re many of them.</p>
-<h3>
-Non-differentiable loss
-</h3>
-
-<p>What can we do in case of L1 regularization, for example? Well, the intuition says gradient is non-continuous in just one point, maybe we can ignore it? And it turns out, we can! There’s a notion of <a href="http://en.wikipedia.org/wiki/Subderivative#The_subgradient">subgradient</a>, a generalization of gradient to non-differentiable functions.</p>
-<p>For further reading on subgradient optimization, please refer to S. Boyd’s paper <a href="https://web.stanford.edu/class/ee392o/subgrad_method.pdf">Subgradient Method</a>.</p>
-<h3>
-Constraints
-</h3>
-
-<p>So far we were dealing with unconstraned optimization: the solution could be any point in <span class="math">\(\mathbb{R}^n\)</span> (of course, we usually don’t want to have extremely big values for parameters, so we penalize them with regularization. Yet, domain of target function stays unchanged).</p>
-<p>Sometimes you might want to restrict your domain. For example, you might want to keep some latent vectors’ norm unitary to avoid numerical issues.</p>]]></description>
-    <pubDate>Mon, 01 Dec 2014 00:00:00 UT</pubDate>
-    <guid>http://barmaley.exe.name/posts/2014-12-01-sgb-bible.html</guid>
 </item>
 <item>
     <title>Exploiting Multiple Machines for Embarrassingly Parallel Applications</title>
