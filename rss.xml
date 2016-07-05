@@ -6,8 +6,292 @@
         <description><![CDATA[Random notes on Software Engineering, Computer Science and Mathematics]]></description>
         <atom:link href="http://barmaley.exe.name/rss.xml" rel="self"
                    type="application/rss+xml" />
-        <lastBuildDate>Fri, 01 Aug 2014 00:00:00 UT</lastBuildDate>
+        <lastBuildDate>Tue, 05 Jul 2016 00:00:00 UT</lastBuildDate>
         <item>
+    <title>Neural Variational Inference: Blackbox Mode</title>
+    <link>http://barmaley.exe.name/posts/2016-07-05-neural-variational-inference-blackbox.html</link>
+    <description><![CDATA[<p>In the previous post we covered Stochastic VI: an efficient and scalable variational inference method for exponential family models. However, there’re many more distributions than those belonging to the exponential family. Inference in these cases requires significal amount of model analysis. In this post we consider <a href="https://arxiv.org/abs/1401.0118">Black Box Variational Inference</a> by Ranganath et al. This work just as the previous one comes from <a href="http://www.cs.columbia.edu/~blei/">David Blei</a> lab — one of the leading researchers in VI. And, just for the dessert, we’ll touch upon another paper, which will finally introduce some neural networks in VI.</p>
+<!--more-->
+
+<h3>
+Blackbox Variational Inference
+</h3>
+
+<p>As we have learned so far, the goal of VI is to maximize the ELBO <span class="math">\(\mathcal{L}(\Theta, \Lambda)\)</span>. When we maximize it by <span class="math">\(\Lambda\)</span>, we decrease the gap between the marginal likelihood of the model considered <span class="math">\(\log p(x \mid \Theta)\)</span>, and when we maximize it by <span class="math">\(\Theta\)</span> we acltually fit the model. So let’s concentrate on optimizing this objective:</p>
+<p><span class="math">\[
+\mathcal{L}(\Theta, \Lambda) = \mathbb{E}_{q(z \mid x, \Lambda)} \left[\log p(x, z \mid \Theta) - \log q(z \mid x, \Lambda) \right]
+\]</span></p>
+<p>Let’s find gradients of this objective:</p>
+<p><span class="math">\[
+\begin{align}
+\nabla_{\Lambda} \mathcal{L}(\Theta, \Lambda)
+&amp;= \nabla_{\Lambda} \int q(z \mid x, \Lambda) \left[\log p(x, z \mid \Theta) - \log q(z \mid x, \Lambda) \right] dz  \\
+&amp;= \int \nabla_{\Lambda} q(z \mid x, \Lambda) \left[\log p(x, z \mid \Theta) - \log q(z \mid x, \Lambda) \right] dz - \int q(z \mid x, \Lambda) \nabla_{\Lambda} \log q(z \mid x, \Lambda) dz  \\
+&amp;= \mathbb{E}_{q} \left[\frac{\nabla_{\Lambda} q(z \mid x, \Lambda)}{q(z \mid x, \Lambda)} \log \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)} \right] - \int q(z \mid x, \Lambda) \frac{\nabla_{\Lambda} q(z \mid x, \Lambda)}{q(z \mid x, \Lambda)} dz \\ 
+&amp;= \mathbb{E}_{q} \left[\nabla_{\Lambda} \log q(z \mid x, \Lambda) \log \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)} \right] - \int \nabla_{\Lambda} q(z \mid x, \Lambda) dz \\ 
+&amp;= \mathbb{E}_{q} \left[\nabla_{\Lambda} \log q(z \mid x, \Lambda) \log \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)} \right] - \nabla_{\Lambda} \overbrace{\int q(z \mid x, \Lambda) dz}^{=1} \\
+&amp;= \mathbb{E}_{q} \left[\nabla_{\Lambda} \log q(z \mid x, \Lambda) \log \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)} \right]
+\end{align}
+\]</span></p>
+<p>In statistics <span class="math">\(\nabla_\Lambda \log q(z \mid x, \Lambda)\)</span> is known as <a href="https://en.wikipedia.org/wiki/Score_(statistics)">score function</a>. In many cases of practical interest <span class="math">\(\log p(x, z, \mid \Theta)\)</span> is too complicated to compute this expectation in closed form. Recall that we already used stochastic optimization successfully, so we can settle with just an estimate of true gradient. We get one by approximating the expectation using Monte-Carlo estimates using <span class="math">\(L\)</span> samples <span class="math">\(z^{(l)} \sim q(z \mid x, \Lambda)\)</span>:</p>
+<p><span class="math">\[
+\nabla_{\Lambda} \mathcal{L}(\Theta, \Lambda)
+\approx \frac{1}{L} \sum_{l=1}^L \nabla_{\Lambda} \log q(z^{(l)} \mid x, \Lambda) \log \frac{p(x, z^{(l)} \mid \Theta)}{q(z^{(l)} \mid x, \Lambda)}
+\]</span></p>
+<p>For model parameters <span class="math">\(\Theta\)</span> gradients look even simpler, as we don’t need to differentiate w.r.t. expectation distribution’s parameters:</p>
+<p><span class="math">\[
+\begin{align}
+\nabla_{\Theta} \mathcal{L}(\Theta, \Lambda)
+&amp;= \mathbb{E}_{q} \nabla_{\Theta} \log p(x, z \mid \Theta)
+\approx \frac{1}{L} \sum_{l=1}^L \nabla_{\Theta} \log p(x, z^{(l)} \mid \Theta)
+\end{align}
+\]</span></p>
+<p>We can even “naturalize” these gradients by premultiplying by the inverse Fisher Information Matrix <span class="math">\(\mathcal{I}(\Lambda)^{-1}\)</span>. And that’s it! Much simpler than before, right? Of course, there’s no free lunch, so there must be a catch… And there is: performance of stochstic optimization methods crucially depends on the variance of gradient estimators. It makes perfect sense: the higher the variance — the less information about the step direction we get. And unfortunately, in practice the aforementioned estimator based on the score function has impractically high variance. Luckily, in Monte Carlo community there are many variance reductions techniques known, we now describe some of them.</p>
+<p>The first technique we’ll describe is <strong>Rao-Blackwellization</strong>. The idea is simple: if it’s possible to compute the expectation w.r.t. some of random variables, you should do it. If you think of it, it’s an obvious advice as you essentially reduce amount of randomness in your Monte Carlo estimates. But let’s put it more formally: we use chain rule to rewrite joint expectation as marginal expectation of conditional one:</p>
+<p><span class="math">\[
+\mathbb{E}_{X, Y} f(X, Y) = \mathbb{E}_X \left[ \mathbb{E}_{Y \mid X} f(X, Y) \right]
+\]</span></p>
+<p>Let’s see what happens with variance (in scalar case) when we estimate expectation of <span class="math">\(\mathbb{E}_{Y \mid X} f(X, Y)\)</span> instead of expectation of <span class="math">\(f(X, Y)\)</span>:</p>
+<p><span class="math">\[
+\begin{align}
+\text{Var}_X(\mathbb{E}_{Y \mid X} f(X, Y))
+&amp;= \mathbb{E} (\mathbb{E}_{Y \mid X} f(X, Y))^2 - (\mathbb{E}_{X, Y} f(X, Y))^2 \\
+&amp;= \text{Var}_{X,Y}(f(X, Y)) - \mathbb{E}_X \left(\mathbb{E}_{Y \mid X} f(X, Y)^2 - (\mathbb{E}_{Y \mid X} f(X, Y))^2  \right) \\
+&amp;= \text{Var}_{X,Y}(f(X, Y)) - \mathbb{E}_X \text{Var}_{Y\mid X} (f(X, Y))
+\end{align}
+\]</span></p>
+<p>This formula says that Rao-Blackwellizing an estimator reduces its variance by <span class="math">\(\mathbb{E}_X \text{Var}_{Y\mid X} (f(X, Y))\)</span>. Indeed, you can think of this term as of a measure of how much information <span class="math">\(Y\)</span> contains about <span class="math">\(X\)</span> that’s relevant to computing <span class="math">\(f(X, Y)\)</span>. Suppose <span class="math">\(Y = X\)</span>: then you have <span class="math">\(\mathbb{E}_X f(X, X)\)</span>, and taking expectation w.r.t. <span class="math">\(Y\)</span> does not reduce amount of randomness in the estimator. And this is what the formula tells us as <span class="math">\(\text{Var}_{Y \mid X} f(X, Y)\)</span> would be 0 in this case. Here’s another example: suppose <span class="math">\(f\)</span> does not use <span class="math">\(X\)</span> at all: then only randomness in <span class="math">\(Y\)</span> affects the estimate, and after Rao-Blackwellization we expect the variance to drop to 0. And the formula agrees with out expectations as <span class="math">\(\mathbb{E}_X \text{Var}_{Y \mid X} f(X, Y) = \text{Var}_Y f(X, Y)\)</span> for any <span class="math">\(X\)</span> since <span class="math">\(f(X, Y)\)</span> does not depend on <span class="math">\(X\)</span>.</p>
+<p>Next technique is <strong>Control Variates</strong>, which is slightly less intuituve. The idea is that we can add zero-mean function <span class="math">\(h(X)\)</span> that’ll preserve the expectation, but reduce the variance. Again, for a scalar case</p>
+<p><span class="math">\[
+\text{Var}(f(X) - \alpha h(X)) = \text{Var}(f(X)) - 2 \alpha \text{Cov}(f(X), h(X)) + \alpha^2 \text{Var}(f(X))
+\]</span></p>
+<p>Optimal <span class="math">\(\alpha^* = \frac{\text{Cov}(f(X), h(X))}{\text{Var}(f(X))}\)</span>. This formula reflects an obvious fact: if we want to reduce the variance, <span class="math">\(h(X)\)</span> must be correlated with <span class="math">\(f(X)\)</span>. Sign of correlation does not matter, as <span class="math">\(\alpha^*\)</span> will adjust. BTW, in reinforcement learning <span class="math">\(\alpha\)</span> is called <strong>baseline</strong>.</p>
+<p>As we already have learned, <span class="math">\(\mathbb{E}_{q(z \mid x, \Lambda)} \nabla_\Lambda \log q(z \mid x, \Lambda) = 0\)</span>, so the score function is a good candidate for <span class="math">\(h(x)\)</span>. Therefore our estimates become</p>
+<p><span class="math">\[
+\nabla_{\Lambda} \mathcal{L}(\Theta, \Lambda)
+\approx \frac{1}{L} \sum_{l=1}^L \nabla_{\Lambda} \log q(z^{(l)} \mid x, \Lambda) \circ \left(\log \frac{p(x, z^{(l)} \mid \Theta)}{q(z^{(l)} \mid x, \Lambda)} - \alpha^* \right)
+\]</span></p>
+<p>Where <span class="math">\(\circ\)</span> is pointwise multiplication and <span class="math">\(\alpha\)</span> is a vector of <span class="math">\(|\Lambda|\)</span> components with <span class="math">\(\alpha_i\)</span> being a baseline for variational parameter <span class="math">\(\Lambda_i\)</span>:</p>
+<p><span class="math">\[
+\alpha^*_i = \frac{\text{Cov}(\nabla_{\Lambda_i} \log q(z \mid x, \Lambda)\left( \log p(x, z \mid \Theta) - \log q(z \mid x, \Lambda) \right), \nabla_{\Lambda_i} \log q(z \mid x, \Lambda))}{\text{Var}(\nabla_{\Lambda_i} \log q(z \mid x, \Lambda)\left( \log p(x, z \mid \Theta) - \log q(z \mid x, \Lambda) \right))}
+\]</span></p>
+<h3>
+Neural Variational Inference
+</h3>
+
+<p>Hoooray, neural networks! In this section I’ll briefly describe a variance reduction techniue coined by A. Mnih and K. Gregor in <a href="https://arxiv.org/abs/1402.0030">Neural Variational Inference and Learning in Belief Networks</a>. The idea is surprisingly simple: why not learn the baseline <span class="math">\(\alpha\)</span> using a neural network?</p>
+<p><span class="math">\[
+\nabla_{\Lambda} \mathcal{L}(\Theta, \Lambda)
+\approx \frac{1}{L} \sum_{l=1}^L \nabla_{\Lambda} \log q(z^{(l)} \mid x, \Lambda) \circ \left(\log \frac{p(x, z^{(l)} \mid \Theta)}{q(z^{(l)} \mid x, \Lambda)} - \alpha^* - \alpha(x) \right)
+\]</span></p>
+<p>Where <span class="math">\(\alpha(x)\)</span> is a neural network trained to minimize</p>
+<p><span class="math">\[
+ \mathbb{E}_{q(z \mid x, \Lambda)} \left( \log \frac{p(x, z^{(l)} \mid \Theta)}{q(z^{(l)} \mid x, \Lambda)} - \alpha^* - \alpha(x) \right)^2
+\]</span></p>]]></description>
+    <pubDate>Tue, 05 Jul 2016 00:00:00 UT</pubDate>
+    <guid>http://barmaley.exe.name/posts/2016-07-05-neural-variational-inference-blackbox.html</guid>
+</item>
+<item>
+    <title>Neural Variational Inference: Scaling Up</title>
+    <link>http://barmaley.exe.name/posts/2016-07-04-neural-variational-inference-stochastic-variational-inference.html</link>
+    <description><![CDATA[<p>In the previous post I covered well-established classical theory developed in early 2000-s. Since then technology has made huge progress: now we have much more data, and a great need to process it and process it fast. In big data era we have huge datasets, and can not afford too many full passes over it, which might render classical VI methods impractical. Recently M. Hoffman et al. dissected classical Mean-Field VI to introduce stochasticity right into its heart, which resulted in <a href="https://arxiv.org/abs/1206.7051">Stochastic Variational Inference</a>.</p>
+<!--more-->
+
+<h3>
+Stochastic Variational Inference
+</h3>
+
+<p>We start with model assumptions: we have 2 types of latent variables, the global latent variable <span class="math">\(\beta\)</span> and a bunch of local variables <span class="math">\(z_n\)</span> for each observation <span class="math">\(x_n\)</span>. Recalling our GMM example, <span class="math">\(\beta\)</span> can be thought of as a mixture weights <span class="math">\(\pi\)</span>, and <span class="math">\(z_n\)</span> are membership indicators, as previously. These variables are assumed to come from some exponential family distribution:</p>
+<p><span class="math">\[
+p(x_n, z_n \mid \beta) = h(x_n, z_n) \exp \left( \beta^T t(x_n, z_n) - a_l(\beta) \right) \\
+\\
+p(\beta) = h(\beta) \exp(\alpha^T t(\beta) - a_g(\alpha))
+\]</span></p>
+<p>Where <span class="math">\(t(\cdot)\)</span> and <span class="math">\(h(\cdot)\)</span> are overloaded by their argument, so <span class="math">\(t(\beta)\)</span> and <span class="math">\(t(z_{nj})\)</span> correspond to two different functions. <span class="math">\(t(\cdot)\)</span> gives a <strong>natural parameter</strong> and also <strong>sufficient statistics</strong>. <span class="math">\(a_g\)</span> and <span class="math">\(a_l\)</span> are log-normalizing constants which for exponential family distributions have an interesting property, namely, the gradient of the log-normalizing constant is the expectation of sufficient statistics: <span class="math">\(\nabla_\alpha a_g(\alpha) = \mathbb{E} t(\beta)\)</span>.</p>
+<p>From these assumptions we can derive <em>complete conditionals</em> (conditional distribution given all other hidden variables) for <span class="math">\(\beta\)</span> and <span class="math">\(z_{nj}\)</span>:</p>
+<p><span class="math">\[
+\begin{align}
+p(\beta \mid x, z, \alpha)
+&amp;\propto \prod_{n=1}^N p(x_n, z_n \mid \beta) p(\beta \mid \alpha) \\
+&amp;= h(\beta) \prod_{n=1}^N h(x_n, z_n) \exp \left( \beta^T \sum_{n=1}^N t(x_n, z_n) - N a_l(\beta) + \alpha^T t(\beta) - a_g(\alpha) \right) \\
+&amp;\propto h(\beta) \exp \left( \eta_g(x, z, \alpha)^T t(\beta) \right)
+\end{align}
+\]</span></p>
+<p>Where <span class="math">\(t(\beta) = (\beta, -a_l(\beta))\)</span>, <span class="math">\(\eta_g(x, z, \alpha) = (\alpha_1 + \sum_{n=1}^N t(x_n, z_n), \alpha_2 + N)\)</span>. We see that the (unnormalized) posterior distribution for <span class="math">\(\beta\)</span> has the same functional form as the (unnormalized) prior <span class="math">\(p(\beta)\)</span>, therefore after normalization it’d be</p>
+<p><span class="math">\[
+p(\beta \mid x, z, \alpha)
+= h(\beta) \exp \left( \eta_g(x, z, \alpha)^T t(\beta) - a_g(\eta_g(x, z, \alpha)) \right)
+\]</span></p>
+<p>The same applies to local variables <span class="math">\(z_{nj}\)</span>:</p>
+<p><span class="math">\[
+p(z_{nj} \mid x_n, z_{n,-j}, \beta)
+\propto h(z_{nj}) \exp \left( \eta_l(x_n, z_{n,-j}, \beta)^T t(z_{nj}) \right)
+\]</span> Hence <span class="math">\[
+p(z_{nj} \mid x_n, z_{n,-j}, \beta)
+= h(z_{nj}) \exp \left( \eta_l(x_n, z_{n,-j}, \beta)^T t(z_{nj}) - a_m(\eta_l(x_n, z_{n,-j}, \beta)) \right)
+\]</span></p>
+<p>Even though we’ve managed to find the complete conditional for <span class="math">\(\beta\)</span>, it might be intractable to find the posterior for all latent variables <span class="math">\(p(\beta, z \mid x, \alpha)\)</span>. We therefore turn to the mean field approximation:</p>
+<p><span class="math">\[
+q(z, \beta \mid \Lambda) = q(\beta \mid \lambda) \prod_{n=1}^N \prod_{j=1}^J q(z_{nj} \mid \phi_{nj})
+\]</span></p>
+<p>We assume these marginal distributions come from the exponential family:</p>
+<p><span class="math">\[
+q(\beta \mid \lambda) = h(\beta) \exp(\lambda^T t(\beta) - a_g(\lambda)) \\
+q(z_{nj} \mid \phi_{nj}) = h(z_{nj}) \exp(\phi_{nj}^T t(z_{nj}) - a_m(\phi_{nj}))
+\]</span></p>
+<p>Let’s find the optimal variational parameters now by optimizing the ELBO <span class="math">\(\mathcal{L}(\Theta, \Lambda)\)</span> (<span class="math">\(\Theta\)</span> is model parameters, <span class="math">\(\alpha\)</span>, and <span class="math">\(\Lambda\)</span> contains variational parameters <span class="math">\(\phi\)</span> and <span class="math">\(\lambda\)</span>) by <span class="math">\(\lambda\)</span> and <span class="math">\(\phi_{nj}\)</span>:</p>
+<p><span class="math">\[
+\begin{align}
+\mathcal{L}(\lambda)
+&amp;= \mathbb{E}_{q} \left( \log p(x, z, \beta) - \log q(\beta) - \log q(z) \right)
+= \mathbb{E}_{q} \left( \log p(\beta \mid x, z) - \log q(\beta) \right) + \text{const} \\
+&amp;= \mathbb{E}_{q} \left( \eta_g(x, z, \alpha)^T t(\beta) - \lambda^T t(\beta) + a_g(\lambda) \right) + \text{const} \\
+&amp;= \left(\mathbb{E}_{q(z)} \eta_g(x, z, \alpha) - \lambda \right)^T \mathbb{E}_{q(\beta)} t(\beta) + a_g(\lambda) + \text{const} \\
+&amp;= \left(\mathbb{E}_{q(z)} \eta_g(x, z, \alpha) - \lambda \right)^T \nabla_\lambda a_g(\lambda) t(\beta) + a_g(\lambda) + \text{const}
+\end{align}
+\]</span></p>
+<p>Where we used aforementioned property of exponential family distributions: <span class="math">\(\nabla_\lambda a_g(\lambda) = \mathbb{E}_{q(\beta)} t(\beta)\)</span>. The gradient then is <span class="math">\[
+\nabla_\lambda \mathcal{L}(\lambda)
+= \nabla_\lambda^2 a_g(\lambda) \left(\mathbb{E}_{q(z)} \eta_g(x, z, \alpha) - \lambda \right)
+\]</span></p>
+<p>After setting it to zero we get an update for global latent variables: <span class="math">\(\lambda = \mathbb{E}_{q(z)} \eta_g(x, z, \alpha)\)</span>. Following the same reasoning we derive the optimal update for <span class="math">\(\phi_{nj}\)</span>:</p>
+<p><span class="math">\[
+\begin{align}
+\mathcal{L}(\phi_{nj})
+&amp;= \mathbb{E}_{q} \left( \log p(z_{nj} \mid x_n, z_{n,-j}, \beta) - \log q(z_{nj}) \right) + \text{const} \\
+&amp;= \mathbb{E}_{q} \left( \eta_l(x_n, z_{n,-j}, \beta)^T t(z_{nj}) - \phi_{nj}^T t(z_{nj}) + a_m(\phi_{nj})\right) + \text{const} \\
+&amp;= \left(\mathbb{E}_{q(\beta) q(z_{n,-j})} \eta_l(x_n, z_{n,-j}, \beta) - \phi_{nj} \right)^T \mathbb{E}_{q(z_{nj})} t(z_{nj}) + a_m(\phi_{nj}) + \text{const} \\
+\end{align}
+\]</span></p>
+<p>The gradient then is <span class="math">\(\nabla_{\phi_{nj}} \mathcal{L}(\phi) = \nabla_{\phi_{nj}}^2 a_m(\phi_{nj}) \left(\mathbb{E}_{q(\beta) q(z_{n,-j})} \eta_l(x_n, z_{n,-j}, \beta) - \phi_{nj} \right)\)</span>, and the update is <span class="math">\(\phi_{nj} = \mathbb{E}_{q(\beta) q(z_{n,-j})} \eta_l(x_n, z_{n,-j}, \beta)\)</span>.</p>
+<p>So far we found mean-field updates, as well as corresponding gradients of the ELBO for variational parameters <span class="math">\(\lambda\)</span> and <span class="math">\(\phi_{nj}\)</span>. Next step is to transform these gradients into <strong>natural gradients</strong>. Intuitively, classical gradient defines local linear approximation, where the notion of locality comes from the Euclidean space. However, parameters influence the ELBO only through distributions <span class="math">\(q\)</span>, so we might like to alter our idea of locality based on how much the distributions change. This is what natural gradient does: it defines local linear approximation where locality means small distance (symmetrized KL-divergence) between distributions. There’s great formal explaination in the paper, and if you want to read more on that matter, I refer you to a great post by Roger Grosse, <a href="http://www.metacademy.org/roadmaps/rgrosse/dgml">Differential geometry for machine learning</a>.</p>
+<p>The natural gradient can be obtained from the usual gradient using a simple linear transformation:</p>
+<p><span class="math">\[
+\nabla_\lambda^\text{N} f(\lambda) = \mathcal{I}(\lambda)^{-1} \nabla_{\lambda} f(\lambda)
+\]</span></p>
+<p>Where <span class="math">\(\mathcal{I}(\lambda) := \mathbb{E}_{q(\beta \mid \lambda)} \left[ \nabla_\lambda \log q(\beta \mid \lambda) (\nabla_\lambda \log q(\beta \mid \lambda))^T \right]\)</span> is Fisher Information Matrix. Here I considered parameter <span class="math">\(\lambda\)</span> of the distribution <span class="math">\(q(\beta \mid \lambda)\)</span>, you got the idea. For the exponential family distribution this Information Matrix takes an especially simple form:</p>
+<p><span class="math">\[
+\begin{align}
+\mathcal{I}(\lambda)
+&amp;= \mathbb{E}_q (t(\beta) - \nabla_\lambda a_g(\lambda)) (t(\beta) - \nabla_\lambda a_g(\lambda))^T
+= \mathbb{E}_q (t(\beta) - \mathbb{E}_q t(\beta)) (t(\beta) - \mathbb{E}_q t(\beta))^T \\
+&amp;= \text{Cov}_q (t(\beta))
+ = \nabla_\lambda^2 a_g(\lambda) 
+\end{align}
+\]</span></p>
+<p>Where we’ve used another <a href="https://en.wikipedia.org/wiki/Exponential_family#Differential_identities_for_cumulants">differential identity for exponential family</a>. All these calculations lead us to the natural gradients of ELBO for variational parameters:</p>
+<p><span class="math">\[
+\nabla_\lambda^\text{N} \mathcal{L}(\lambda) = \mathbb{E}_{q(z)} \eta_g(x, z, \alpha) - \lambda \\
+\nabla_{\phi_{nj}}^\text{N} \mathcal{L}(\lambda) = \mathbb{E}_{q(\beta) q(z_{n,-j})} \eta_l(x_n, z_{n,-j}, \beta) - \phi_{nj} 
+\]</span></p>
+<p>Surprisingly, computation-wise calculating natural gradients is even simpler that calculating classical gradients! There’s an interesting connection between the mean-field update and a natural gradient step. In particular, if we make a step along the natural gradient with step size equal 1, we’d get <span class="math">\(\lambda^{\text{new}} = \lambda^{\text{old}} + (\mathbb{E}_{q(z)} \eta_g(x, z, \alpha) - \lambda^{\text{old}}) = \mathbb{E}_{q(z)} \eta_g(x, z, \alpha)\)</span>. The same applies to parameters <span class="math">\(\phi\)</span>. This means that the mean field updates are exactly natural gradient steps, and vice versa.</p>
+<p>Recall, we have derived mean field updates by finding a minima of KL-divergence with the true posterior, that is in just one step (one update) we arrive at minimum. Obviously, we have the same in the natural gradient formulation, when just one step brings us to the optimum.</p>
+<p>Now, the last component is stochasticity itself. So far we have only played a little with mean-field update scheme, and discovered its connection to the natural gradient optimization. We note that we have 2 parameters: local <span class="math">\(\phi_{nj}\)</span> and global parameter <span class="math">\(\lambda\)</span>. The first one is easy to optimize over as it depends only on one, <span class="math">\(n\)</span>th sample <span class="math">\(x_n\)</span>. The second one, though, needs to incorporate information from all the samples, which is computationally prohibitive in large scale regime. Luckily, now once we know the equivalence between mean-field update and natural gradient step, we can borrow ideas from stochastic optimization to make this process more scalable.</p>
+<p>Let’s first reformulate the ELBO to include the sum over samples <span class="math">\(x_n\)</span>:</p>
+<p><span class="math">\[
+\begin{align}
+\mathcal{L}(\Theta, \Lambda)
+&amp;= \mathbb{E}_{q} \left[ \log p(\beta \mid \alpha) - \log q(\beta \mid \lambda) + \sum_{n=1}^N \left(\log p(x_n, z_n \mid \beta) - \log q(z_n \mid \phi_n) \right) \right] \\
+&amp; = \mathbb{E}_{q} \left[ \log p(\beta \mid \alpha) - \log q(\beta \mid \lambda) + N \mathbb{E}_{I} \left(\log p(x_I, z_I \mid \beta) - \log q(z_I \mid \phi_I) \right) \right]
+\end{align}
+\]</span></p>
+<p>Where <span class="math">\(I \sim \text{Unif}\{1, \dots, N\}\)</span> — uniformly distribution index of a sample. Now let’s estimate <span class="math">\(\mathcal{L}\)</span> using a sample <span class="math">\(S\)</span> (assume <span class="math">\(N\)</span> divides by sample size <span class="math">\(|S|\)</span>) of uniformly choosen indices, this’d result in an unbiased estimator (it’s gradient would also be unbiased, so we can maximize the true ELBO by maximizing the estimate). Author of the paper start with single-sample derivation and then extend it to minibatches, but I decided I’d go straight to the minibatch case:</p>
+<p><span class="math">\[
+\begin{align}
+\mathcal{L}_S(\Theta, \Lambda)
+&amp; := \mathbb{E}_{q} \left[ \log p(\beta \mid \alpha) - \log q(\beta \mid \lambda) + \frac{N}{|S|} \sum_{i \in S} \left(\log p(x_i, z_i \mid \beta) - \log q(z_i \mid \phi_i) \right) \right] \\
+&amp; = \mathbb{E}_{q} \left[ \log p(\beta \mid \alpha) - \log q(\beta \mid \lambda) + \sum_{n=1}^{N / |S|} \sum_{i \in S} \left(\log p(x_i, z_i \mid \beta) - \log q(z_i \mid \phi_i) \right) \right]
+\end{align}
+\]</span></p>
+<p>This estimate is exactly <span class="math">\(\mathcal{L}(\Theta, \Lambda)\)</span> calculated on sample consisting of <span class="math">\(\{x_i, z_i\}_{i \in S}\)</span> repeated <span class="math">\(N / |S|\)</span> times. Hence its natural gradient w.r.t. <span class="math">\(\lambda\)</span> is</p>
+<p><span class="math">\[
+\nabla_\lambda^\text{N} \mathcal{L}_S(\lambda) = \mathbb{E}_{q(z)} \eta_g(\{x_S\}_{n=1}^{N/|S|}, \{z_S\}_{n=1}^{N/|S|}, \alpha) - \lambda \\
+\]</span></p>
+<p>One important note: for stochastic optimization we can’t use constant step size. As Robbins-Monro conditions suggest, we need to use schedule <span class="math">\(\rho_t\)</span> such that <span class="math">\(\sum \rho_t = \infty\)</span> and <span class="math">\(\sum \rho_t^2 &lt; \infty\)</span>. Then the update <span class="math">\(\lambda^{\text{new}} = \lambda^{\text{old}} + \rho_t \nabla_\lambda^\text{N} \mathcal{L}_S(\lambda) = (1 - \rho_t) \lambda^{\text{old}} + \rho_t \mathbb{E}_{q(z)} \eta_g(\{x_S\}_{n=1}^{N/|S|}, \{z_S\}_{n=1}^{N/|S|}, \alpha)\)</span></p>
+<p>Finally we have the following optimization scheme:</p>
+<ul>
+	<li>
+Start with random intialization for <span class="math">\(\lambda^{(0)}\)</span>
+</li>
+	<li>
+For <span class="math">\(t\)</span> from 0 to MAX_ITER
+<ol>
+		<li>
+Sample <span class="math">\(S \sim \text{Unif}\{1, \dots, N\}^{|S|}\)</span>
+</li>
+		<li>
+For each sample <span class="math">\(i \in S\)</span> update the local variational parameter <span class="math">\(\phi_{i,j} = \mathbb{E}_{q(\beta) q(z_{i,-j})} \eta_l(x_i, z_{i,-j}, \beta)\)</span>
+</li>
+		<li>
+Replicate the sample <span class="math">\(N / |S|\)</span> times and compute the global update <span class="math">\(\hat \lambda = \mathbb{E}_{q(z)} \eta_g(\{x_S\}_{n=1}^{N/|S|}, \{z_S\}_{n=1}^{N/|S|}, \alpha)\)</span>
+</li>
+		<li>
+Update the global update <span class="math">\(\lambda^{(t+1)} = (1-\rho_t) \lambda^{(t)} + \rho_t \hat \lambda\)</span>
+</li>
+	</ol>
+	</li>
+</ul>
+
+]]></description>
+    <pubDate>Mon, 04 Jul 2016 00:00:00 UT</pubDate>
+    <guid>http://barmaley.exe.name/posts/2016-07-04-neural-variational-inference-stochastic-variational-inference.html</guid>
+</item>
+<item>
+    <title>Neural Variational Inference: Classical Theory</title>
+    <link>http://barmaley.exe.name/posts/2016-07-01-neural-variational-inference-classical-theory.html</link>
+    <description><![CDATA[<p>As a member of <a href="http://bayesgroup.ru/">Bayesian methods research group</a> I’m heavily interested in Bayesian approach to machine learning. One of the strengths of this approach is ability to work with hidden (unobserved) variables which are interpretable. This power however comes at a cost of generally intractable exact inference, which limits the scope of solvable problems.</p>
+<p>Another topic which gained lots of momentum in Machine Learning recently is Deep Learning, of course. With Deep Learning we can now build big and complex models which outperform most hand-engineered approaches given lots of data and computational power. The fact that Deep Learning needs a considerable amount of data also requires these methods to be scalable — a really nice property for any algorithm to have, especially in a big Data epoch.</p>
+<p>Given how appealing both topic are it’s not a surprise there’s been some work to marry these two recently. In this series of blogspost I’d like to summarise recent advances, particulary in variational inference. This is not meant to be an introductory discussion as prior familarity with classical topics (Latent variable models, <a href="https://en.wikipedia.org/wiki/Variational_Bayesian_methods">Variational Inference, Mean-field approximation</a>) is required, though I’ll introduce these ideas anyway just to remind it and setup the notation.</p>
+<!--more-->
+
+<h3>
+Latent Variables Models
+</h3>
+
+<p>Suppose you have a probabilistic model that’s easy to describe using some auxulary variables <span class="math">\(Z\)</span> that you don’t observe directly (or even would like to infer it given the data). One classical example for this setup is Gaussian Mixture Modeling: we have <span class="math">\(K\)</span> components in a mixture, and <span class="math">\(z_n\)</span> is a <a href="https://en.wikipedia.org/wiki/One-hot">one-hot</a> vector of dimensionality <span class="math">\(K\)</span> indicating which component an observation <span class="math">\(x_n\)</span> belongs to. Then, conditioned on <span class="math">\(z_n\)</span> the distribution of <span class="math">\(x_n\)</span> is a usual Gaussian distribution: <span class="math">\(p(x_{n} \mid z_{nk} = 1) = \mathcal{N}(x_n \mid \mu_k, \Sigma_k)\)</span> (here whenever I refer to a distribution, you should read it as its density. At least <a href="https://en.wikipedia.org/wiki/Generalized_function">generalized one</a>). Therefore the joint distribution of the model is</p>
+<p><span class="math">\[
+p(x, z \mid \Theta) = \prod_{n=1}^N \prod_{k=1}^K \mathcal{N}(x_n \mid \mu_k, \Sigma_k)^{z_{nk}} \pi_k^{z_{nk}}
+\]</span></p>
+<p>Where <span class="math">\(\pi\)</span> is a probability distribution over <span class="math">\(K\)</span> outcomes, and <span class="math">\(\Theta\)</span> is a set of all model’s parameters (<span class="math">\(\pi\)</span>, <span class="math">\(\mu\)</span>s and <span class="math">\(\Sigma\)</span>s).</p>
+<p>We’d like to do 2 things with the model: first, we obviously need to learn parameters <span class="math">\(\Theta\)</span>, and second, we’d like infer these latent variables <span class="math">\(z_n\)</span> to know which cluster the observation <span class="math">\(x_n\)</span> belongs to, that is, we need to calculate the distribution of <span class="math">\(z_n\)</span> conditioned on <span class="math">\(x_n\)</span>: <span class="math">\(p(z_n \mid x_n)\)</span>.</p>
+<p>We want to learn the parameters <span class="math">\(\Theta\)</span> as usual by maximizing the log-likelihood. Unfortunately, we don’t know true assignments <span class="math">\(z_n\)</span>, and marginalizing over it as in <span class="math">\(p(x_n) = \sum_{k=1}^K \pi_k p(x_n, z_{nk} = 1)\)</span> is not a good idea as the resulting optimization problem would lose its convexity. Instead we decompose the log-likelihood as follows:</p>
+<p><span class="math">\[
+\begin{align}
+\log p(x)
+&amp;= \mathbb{E}_{q(z\mid x)} \overbrace{\log p(x)}^{\text{const in $z$}}
+= \mathbb{E}_{q(z\mid x)} \log \frac{p(x, z) q(z\mid x)}{p(z \mid x) q(z\mid x)}  \\
+&amp;= \mathbb{E}_{q(z\mid x)} \log \frac{p(x, z)}{q(z\mid x)} + D_{KL}(q(z\mid x) \mid\mid p(z \mid x))
+\end{align}
+\]</span></p>
+<p>The second term is a Kullback-Leibler divergence, which is always non-negative, and equals zero iff distributions are equal almost everywhere <span class="math">\(q(z\mid x) = p(z \mid x)\)</span>. Therefore putting <span class="math">\(q(z \mid x) = p(z \mid x)\)</span> eliminates the second term, leaving us with <span class="math">\(\log p(x) = \mathbb{E}_{p(z \mid x)} \log \frac{p(x, z)}{p(z \mid x)}\)</span>. Therefore all we need to be able to do is to calculate the posterior <span class="math">\(p(z \mid x)\)</span>, and maximize the expectation. This is how EM algorithm is derived: at E-step we calculate the posterior <span class="math">\(p(z \mid x, \Theta^{\text{old}})\)</span>, and at M-step we maximize the expectation <span class="math">\(\mathbb{E}_{p(z \mid x, \Theta^{\text{old}})} \log \frac{p(x, z \mid \Theta)}{p(z \mid x, \Theta)}\)</span> with respect to <span class="math">\(\Theta\)</span> keeping <span class="math">\(\Theta^{\text{old}}\)</span> fixed.</p>
+<p>Now, all we are left to do is to find the posterior <span class="math">\(p(z \mid x)\)</span> which is given by the following deceivingly simple formula knows as a Bayes’ rule.</p>
+<p><span class="math">\[
+p(z \mid x) = \frac{p(x \mid z) p(z)}{\int p(x \mid z) p(z)dz}
+\]</span></p>
+<p>Of course, there’s no free lunch and computing the denominator is intractable in general case. One <strong>can</strong> compute the posterior exactly when the prior <span class="math">\(p(z)\)</span> and the likelihood <span class="math">\(p(x \mod z)\)</span> are conjugate, but many models of practical interest don’t have this property. This is where variational inference comes in.</p>
+<h3>
+Variational Inference and Mean-field
+</h3>
+<p>In a variational inference (VI) framework we approximate the true posterior <span class="math">\(p(z \mid x)\)</span> with some other simpler distribution <span class="math">\(q(z \mid x, \Lambda)\)</span> where <span class="math">\(\Lambda\)</span> is a set of (variational) parameters of the (variational) approximation (I may omit <span class="math">\(\Lambda\)</span> and <span class="math">\(\Theta\)</span> in a “given” clause when it’s convenient, remember, it always could be placed there). One possibility is to divide latent variables <span class="math">\(z\)</span> in groups and force them to be independent. In extreme case each variable gets its own group, assuming independence among all variables <span class="math">\(q(z \mid x) = \prod_{d=1}^D q(z_d \mid x)\)</span>. If we then set about to find the best approximation to the true posterior in this fully factorized class, we will no longer have the optimal <span class="math">\(q\)</span> being the true posterior itself, as the true posterior is presumably too complicated to be dealt with in analytic form (which we want from the approximation <span class="math">\(q\)</span> when we say “simpler distribution”). Therefore we find the optimal <span class="math">\(q(z_i)\)</span> by minimizing the KL-divergence with the true posterior:</p>
+<p><span class="math">\[
+\begin{align}
+D_{KL}(q(z \mid x) \mid\mid p(z \mid x))
+&amp;= \mathbb{E}_{q(z_i \mid x)} \left[ \mathbb{E}_{q(z_{-i} \mid x)} \log \frac{q(z_1 \mid x) \dots q(z_D \mid x)}{p(z \mid x)} \right] \\
+&amp;= \mathbb{E}_{q(z_i \mid x)} \left[ \log q(z_i \mid x) - \underbrace{\mathbb{E}_{q(z_{-i} \mid x)} \log p(z \mid x)}_{\log f(z_i \mid x)} \right] + \text{const} \\
+&amp;= \mathbb{E}_{q(z_i \mid x)} \left[ \log \frac{q(z_i \mid x)}{\tfrac{1}{Z} f(z_i \mid x)} \right] - \log Z + \text{const} \\
+&amp;= D_{KL}\left(q(z_i \mid x) \mid\mid \tfrac{1}{Z} f(z_i \mid x)\right) + \text{const}
+\end{align}
+\]</span></p>
+<p>For many models it’s possible to look into <span class="math">\(\mathbb{E}_{q(z_{-i} \mid x)} \log p(z \mid x)\)</span> and immediately recognize logarithm of unnormalized density of some known distribution.</p>
+<p>Another cornerstone of this framework is a notion of <strong>Evidence Lower Bound</strong> (ELBO): recall the decomposition of log-likelihood we derived above. In our current setting we can not compute the right hand side as we can not evaluate the true posterior <span class="math">\(p(z \mid x)\)</span>. However, note that the left hand side (that is, the log-likelihood) does not depend on the variational distribution <span class="math">\(q(z \mid x, \Lambda)\)</span>. Therefore, maximizing the first term of the right hand side w.r.t. variational parameters <span class="math">\(\Lambda\)</span> results in minimizing the second term, the KL-divergence with the true posterior. This implies we can ditch the second term, and maximize the first one w.r.t. both model parameters <span class="math">\(\Theta\)</span> and variational parameters <span class="math">\(\Lambda\)</span>:</p>
+<p><span class="math">\[
+\text{ELBO:} \quad \mathcal{L}(\Theta, \Lambda) := \mathbb{E}_{q(z \mid x, \Lambda)} \log \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)}
+\]</span></p>
+<p>Okay, so this covers the basics, but before we go to the neural networks-based methods we need to discuss some general approaches to VI and how to make it scalable. This is what the next blog post is all about.</p>]]></description>
+    <pubDate>Fri, 01 Jul 2016 00:00:00 UT</pubDate>
+    <guid>http://barmaley.exe.name/posts/2016-07-01-neural-variational-inference-classical-theory.html</guid>
+</item>
+<item>
     <title>Exploiting Multiple Machines for Embarrassingly Parallel Applications</title>
     <link>http://barmaley.exe.name/posts/2014-08-01-gnu-parallel.html</link>
     <description><![CDATA[<p>During work on my machine learning project I was needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would just slow down overall running time because of increased amount of context switches. Yet running 4 (=number of cores in my CPU) of them at a time (actually, 3 since other applications need CPU, too) should speed it up.</p>
@@ -56,8 +340,8 @@ Here we have:
 <!--more-->
 
 <p>First, let’s state the problem: given a set of some objects with an ordering produce elements of that set in that order. For now it’s completely irrelevant what are these objects, so we can assume them to be just numbers from 1 to n, or some permutation. Thus we’ll be interested in sorting permutations.</p>
-<p>We’re given an ordering via a comparison function. It tells us if one object preceds (or is smaller) another outputing True or False. Thus each invocation of comparator gives us 1 bit of information.</p>
-<p>Next question is how many bits we need to represent any permutation. It’s just a binary logarithm of number of all possible permutations of n elements: <span class="math">\(\log_2 n!\)</span>. Then we notice that</p>
+<p>We’re given an ordering via a comparison function. It tells us if one object preceds (or is smaller) another outputing True or False. Thus each invocation of the comparator gives us 1 bit of information.</p>
+<p>Next question is how many bits we need to represent any permutation. It’s just a binary logarithm of number of all possible permutations of <span class="math">\(n\)</span> elements: <span class="math">\(\log_2 n!\)</span>. Then we notice that</p>
 <p><span class="math">\[
 \log_2 n! = \sum_{k=1}^n \log_2 k \ge \sum_{k=n/2}^{n} \log_2 k
 \ge \frac{n}{2} \log_2 \frac{n}{2}
@@ -65,9 +349,9 @@ Here we have:
 <p><span class="math">\[
 \log_2 n! = \sum_{k=1}^n \log_2 k \le n \log_2 n
 \]</span></p>
-<p>(Or just use <a href="http://en.wikipedia.org/wiki/Stirling%27s_approximation">Stirling’s approximation</a> formula). Hence <span class="math">\(\log_2 n! = \Theta(n \log n)\)</span></p>
-<p>So what, you may ask. The key point of proof is that sorting is essentially a search for a correct permutation of the input one. Since one needs <span class="math">\(\log_2 n!\)</span> bits to represent any permutation, we <strong>need to get that many bits</strong>. Now let’s get back to our comparison function. As we’ve figured out already it’s able to give us only one bit of information per invocation. That implies that we need to call it <span class="math">\(\log n! = \Theta(n \log n)\)</span> times. And that’s exactly the lower-bound for sorting complexity. Q.E.D.</p>
-<p>Non-<span class="math">\(n \log n\)</span> sorting algorithms like <a href="http://en.wikipedia.org/wiki/Radix_sort">RadixSort</a> are possible because they use much more bits of information, taking advantage of number’s structure.</p>]]></description>
+<p>(Or just use the <a href="http://en.wikipedia.org/wiki/Stirling%27s_approximation">Stirling’s approximation</a> formula). Hence <span class="math">\(\log_2 n! = \Theta(n \log n)\)</span></p>
+<p>So what, you may ask. The key point of proof is that sorting is essentially a search for a correct permutation of the input one. Since one needs <span class="math">\(\log_2 n!\)</span> bits to represent any permutation, we <strong>need to get that many bits</strong> of information somehow. Now let’s get back to our comparison function. As we’ve figured out already it’s able to give us only one bit of information per invocation. That implies that we need to call it <span class="math">\(\log n! = \Theta(n \log n)\)</span> times. And that’s exactly the lower-bound for sorting complexity. Q.E.D.</p>
+<p>Non-<span class="math">\(n \log n\)</span> sorting algorithms like <a href="http://en.wikipedia.org/wiki/Radix_sort">RadixSort</a> are possible because they use much more bits of information, taking advantage of numbers’ structure.</p>]]></description>
     <pubDate>Thu, 01 May 2014 00:00:00 UT</pubDate>
     <guid>http://barmaley.exe.name/posts/2014-05-01-on-sorting-complexity.html</guid>
 </item>

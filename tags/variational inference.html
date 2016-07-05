@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Posts tagged variational inference - B.log</title>
+  <meta charset="utf-8" />
+  <link rel="shortcut icon" href="../favicon.ico" />
+
+  <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+<body>
+    <header>
+      <hgroup>
+        <h1><a href="../">B.log</a></h1>
+        <h2>Random notes on Computer Science, Mathematics and Software Engineering</h2>
+      </hgroup>
+    </header>
+    <nav>
+        <menu>
+          <a href="../">Home</a>
+          <a href="../pages/about.html">About me</a>
+          <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
+        </menu>
+    </nav>
+    <section>
+        <h1>Posts tagged variational inference</h1>
+<ul>
+    <article>
+	<header>
+		<h3><a href="../posts/2016-07-05-neural-variational-inference-blackbox.html">Neural Variational Inference: Blackbox Mode</a></h3>
+		<time>July  5, 2016</time>
+	</header>
+
+	<section>
+		<p>In the previous post we covered Stochastic VI: an efficient and scalable variational inference method for exponential family models. However, there’re many more distributions than those belonging to the exponential family. Inference in these cases requires significal amount of model analysis. In this post we consider <a href="https://arxiv.org/abs/1401.0118">Black Box Variational Inference</a> by Ranganath et al. This work just as the previous one comes from <a href="http://www.cs.columbia.edu/~blei/">David Blei</a> lab — one of the leading researchers in VI. And, just for the dessert, we’ll touch upon another paper, which will finally introduce some neural networks in VI.</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
+	<header>
+		<h3><a href="../posts/2016-07-04-neural-variational-inference-stochastic-variational-inference.html">Neural Variational Inference: Scaling Up</a></h3>
+		<time>July  4, 2016</time>
+	</header>
+
+	<section>
+		<p>In the previous post I covered well-established classical theory developed in early 2000-s. Since then technology has made huge progress: now we have much more data, and a great need to process it and process it fast. In big data era we have huge datasets, and can not afford too many full passes over it, which might render classical VI methods impractical. Recently M. Hoffman et al. dissected classical Mean-Field VI to introduce stochasticity right into its heart, which resulted in <a href="https://arxiv.org/abs/1206.7051">Stochastic Variational Inference</a>.</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
+	<header>
+		<h3><a href="../posts/2016-07-01-neural-variational-inference-classical-theory.html">Neural Variational Inference: Classical Theory</a></h3>
+		<time>July  1, 2016</time>
+	</header>
+
+	<section>
+		<p>As a member of <a href="http://bayesgroup.ru/">Bayesian methods research group</a> I’m heavily interested in Bayesian approach to machine learning. One of the strengths of this approach is ability to work with hidden (unobserved) variables which are interpretable. This power however comes at a cost of generally intractable exact inference, which limits the scope of solvable problems.</p>
+<p>Another topic which gained lots of momentum in Machine Learning recently is Deep Learning, of course. With Deep Learning we can now build big and complex models which outperform most hand-engineered approaches given lots of data and computational power. The fact that Deep Learning needs a considerable amount of data also requires these methods to be scalable — a really nice property for any algorithm to have, especially in a big Data epoch.</p>
+<p>Given how appealing both topic are it’s not a surprise there’s been some work to marry these two recently. In this series of blogspost I’d like to summarise recent advances, particulary in variational inference. This is not meant to be an introductory discussion as prior familarity with classical topics (Latent variable models, <a href="https://en.wikipedia.org/wiki/Variational_Bayesian_methods">Variational Inference, Mean-field approximation</a>) is required, though I’ll introduce these ideas anyway just to remind it and setup the notation.</p>
+
+	</section>
+</article>
+
+<hr />
+
+</ul>
+
+    </section>
+    <footer>
+        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+    </footer>
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-38530232-1']);
+_gaq.push(['_trackPageview']);
+(function() {
+ var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+ var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+</body>
+</html>
