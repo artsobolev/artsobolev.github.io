@@ -33,7 +33,7 @@ Blackbox Variational Inference
 &amp;= \mathbb{E}_{q} \left[\nabla_{\Lambda} \log q(z \mid x, \Lambda) \log \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)} \right]
 \end{align}
 \]</span></p>
-<p>In statistics <span class="math">\(\nabla_\Lambda \log q(z \mid x, \Lambda)\)</span> is known as <a href="https://en.wikipedia.org/wiki/Score_(statistics)">score function</a>. In many cases of practical interest <span class="math">\(\log p(x, z, \mid \Theta)\)</span> is too complicated to compute this expectation in closed form. Recall that we already used stochastic optimization successfully, so we can settle with just an estimate of true gradient. We get one by approximating the expectation using Monte-Carlo estimates using <span class="math">\(L\)</span> samples <span class="math">\(z^{(l)} \sim q(z \mid x, \Lambda)\)</span>:</p>
+<p>In statistics <span class="math">\(\nabla_\Lambda \log q(z \mid x, \Lambda)\)</span> is known as <a href="https://en.wikipedia.org/wiki/Score_(statistics)">score function</a>. For more on this “trick” see <a href="http://blog.shakirm.com/2015/11/machine-learning-trick-of-the-day-5-log-derivative-trick/">a blogpost by Shakir Mohamed</a>. In many cases of practical interest <span class="math">\(\log p(x, z, \mid \Theta)\)</span> is too complicated to compute this expectation in closed form. Recall that we already used stochastic optimization successfully, so we can settle with just an estimate of true gradient. We get one by approximating the expectation using Monte-Carlo estimates using <span class="math">\(L\)</span> samples <span class="math">\(z^{(l)} \sim q(z \mid x, \Lambda)\)</span>:</p>
 <p><span class="math">\[
 \nabla_{\Lambda} \mathcal{L}(\Theta, \Lambda)
 \approx \frac{1}{L} \sum_{l=1}^L \nabla_{\Lambda} \log q(z^{(l)} \mid x, \Lambda) \log \frac{p(x, z^{(l)} \mid \Theta)}{q(z^{(l)} \mid x, \Lambda)}
@@ -79,15 +79,7 @@ Blackbox Variational Inference
 Neural Variational Inference
 </h3>
 
-<p>Hoooray, neural networks! In this section I’ll briefly describe a variance reduction techniue coined by A. Mnih and K. Gregor in <a href="https://arxiv.org/abs/1402.0030">Neural Variational Inference and Learning in Belief Networks</a>. The idea is surprisingly simple: why not learn the baseline <span class="math">\(\alpha\)</span> using a neural network?</p>
-<p><span class="math">\[
-\nabla_{\Lambda} \mathcal{L}(\Theta, \Lambda)
-\approx \frac{1}{L} \sum_{l=1}^L \nabla_{\Lambda} \log q(z^{(l)} \mid x, \Lambda) \circ \left(\log \frac{p(x, z^{(l)} \mid \Theta)}{q(z^{(l)} \mid x, \Lambda)} - \alpha^* - \alpha(x) \right)
-\]</span></p>
-<p>Where <span class="math">\(\alpha(x)\)</span> is a neural network trained to minimize</p>
-<p><span class="math">\[
- \mathbb{E}_{q(z \mid x, \Lambda)} \left( \log \frac{p(x, z^{(l)} \mid \Theta)}{q(z^{(l)} \mid x, \Lambda)} - \alpha^* - \alpha(x) \right)^2
-\]</span></p>]]></description>
+<p>Hoooray, neural networks! In this section I’ll briefly describe a variance reduction techniue coined by A. Mnih and K. Gregor in <a href="https://arxiv.org/abs/1402.0030">Neural Variational Infer</p>]]></description>
     <pubDate>Tue, 05 Jul 2016 00:00:00 UT</pubDate>
     <guid>http://barmaley.exe.name/posts/2016-07-05-neural-variational-inference-blackbox.html</guid>
 </item>
