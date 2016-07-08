@@ -101,7 +101,7 @@ q(z_{nj} \mid \phi_{nj}) = h(z_{nj}) \exp(\phi_{nj}^T t(z_{nj}) - a_m(\phi_{nj})
 \end{align}
 \]</span></p>
 <p>The gradient then is <span class="math">\(\nabla_{\phi_{nj}} \mathcal{L}(\phi) = \nabla_{\phi_{nj}}^2 a_m(\phi_{nj}) \left(\mathbb{E}_{q(\beta) q(z_{n,-j})} \eta_l(x_n, z_{n,-j}, \beta) - \phi_{nj} \right)\)</span>, and the update is <span class="math">\(\phi_{nj} = \mathbb{E}_{q(\beta) q(z_{n,-j})} \eta_l(x_n, z_{n,-j}, \beta)\)</span>.</p>
-<p>So far we found mean-field updates, as well as corresponding gradients of the ELBO for variational parameters <span class="math">\(\lambda\)</span> and <span class="math">\(\phi_{nj}\)</span>. Next step is to transform these gradients into <strong>natural gradients</strong>. Intuitively, classical gradient defines local linear approximation, where the notion of locality comes from the Euclidean space. However, parameters influence the ELBO only through distributions <span class="math">\(q\)</span>, so we might like to alter our idea of locality based on how much the distributions change. This is what natural gradient does: it defines local linear approximation where locality means small distance (symmetrized KL-divergence) between distributions. There’s great formal explaination in the paper, and if you want to read more on that matter, I refer you to a great post by Roger Grosse, <a href="http://www.metacademy.org/roadmaps/rgrosse/dgml">Differential geometry for machine learning</a>.</p>
+<p>So far we found mean-field updates, as well as corresponding gradients of the ELBO for variational parameters <span class="math">\(\lambda\)</span> and <span class="math">\(\phi_{nj}\)</span>. Next step is to transform these gradients into <strong>natural gradients</strong>. Intuitively, classical gradient defines local linear approximation, where the notion of locality comes from the Euclidean space. However, parameters influence the ELBO only through distributions <span class="math">\(q\)</span>, so we might like to alter our idea of locality based on how much the distributions change. This is what natural gradient does: it defines local linear approximation where locality means small distance (symmetrized KL-divergence) between distributions. There’s great formal explanation in the paper, and if you want to read more on that matter, I refer you to a great post by Roger Grosse, <a href="http://www.metacademy.org/roadmaps/rgrosse/dgml">Differential geometry for machine learning</a>.</p>
 <p>The natural gradient can be obtained from the usual gradient using a simple linear transformation:</p>
 <p><span class="math">\[
 \nabla_\lambda^\text{N} f(\lambda) = \mathcal{I}(\lambda)^{-1} \nabla_{\lambda} f(\lambda)
@@ -132,7 +132,7 @@ q(z_{nj} \mid \phi_{nj}) = h(z_{nj}) \exp(\phi_{nj}^T t(z_{nj}) - a_m(\phi_{nj})
 &amp; = \mathbb{E}_{q} \left[ \log p(\beta \mid \alpha) - \log q(\beta \mid \lambda) + N \mathbb{E}_{I} \left(\log p(x_I, z_I \mid \beta) - \log q(z_I \mid \phi_I) \right) \right]
 \end{align}
 \]</span></p>
-<p>Where <span class="math">\(I \sim \text{Unif}\{1, \dots, N\}\)</span> — uniformly distribution index of a sample. Now let’s estimate <span class="math">\(\mathcal{L}\)</span> using a sample <span class="math">\(S\)</span> (assume <span class="math">\(N\)</span> divides by sample size <span class="math">\(|S|\)</span>) of uniformly choosen indices, this’d result in an unbiased estimator (it’s gradient would also be unbiased, so we can maximize the true ELBO by maximizing the estimate). Author of the paper start with single-sample derivation and then extend it to minibatches, but I decided I’d go straight to the minibatch case:</p>
+<p>Where <span class="math">\(I \sim \text{Unif}\{1, \dots, N\}\)</span> — uniformly distribution index of a sample. Now let’s estimate <span class="math">\(\mathcal{L}\)</span> using a sample <span class="math">\(S\)</span> (assume <span class="math">\(N\)</span> divides by sample size <span class="math">\(|S|\)</span>) of uniformly chosen indices, this’d result in an unbiased estimator (it’s gradient would also be unbiased, so we can maximize the true ELBO by maximizing the estimate). Author of the paper start with single-sample derivation and then extend it to minibatches, but I decided I’d go straight to the minibatch case:</p>
 <p><span class="math">\[
 \begin{align}
 \mathcal{L}_S(\Theta, \Lambda)
@@ -148,7 +148,7 @@ q(z_{nj} \mid \phi_{nj}) = h(z_{nj}) \exp(\phi_{nj}^T t(z_{nj}) - a_m(\phi_{nj})
 <p>Finally we have the following optimization scheme:</p>
 <ul>
 	<li>
-Start with random intialization for <span class="math">\(\lambda^{(0)}\)</span>
+Start with random initialization for <span class="math">\(\lambda^{(0)}\)</span>
 </li>
 	<li>
 For <span class="math">\(t\)</span> from 0 to MAX_ITER
