@@ -45,7 +45,7 @@ p(x_n, z_n \mid \beta) = h(x_n, z_n) \exp \left( \beta^T t(x_n, z_n) - a_l(\beta
 p(\beta) = h(\beta) \exp(\alpha^T t(\beta) - a_g(\alpha))
 \]</span></p>
 <p>Where <span class="math">\(t(\cdot)\)</span> and <span class="math">\(h(\cdot)\)</span> are overloaded by their argument, so <span class="math">\(t(\beta)\)</span> and <span class="math">\(t(z_{nj})\)</span> correspond to two different functions. <span class="math">\(t(\cdot)\)</span> gives a <strong>natural parameter</strong> and also <strong>sufficient statistics</strong>. <span class="math">\(a_g\)</span> and <span class="math">\(a_l\)</span> are log-normalizing constants which for exponential family distributions have an interesting property, namely, the gradient of the log-normalizing constant is the expectation of sufficient statistics: <span class="math">\(\nabla_\alpha a_g(\alpha) = \mathbb{E} t(\beta)\)</span>.</p>
-<p>From these assumptions we can derive <em>complete conditionals</em> (conditional distribution given all other hidden variables) for <span class="math">\(\beta\)</span> and <span class="math">\(z_{nj}\)</span>:</p>
+<p>From these assumptions we can derive <em>complete conditionals</em> (conditional distribution given all other hidden variables and observables) for <span class="math">\(\beta\)</span> and <span class="math">\(z_{nj}\)</span>:</p>
 <p><span class="math">\[
 \begin{align}
 p(\beta \mid x, z, \alpha)
