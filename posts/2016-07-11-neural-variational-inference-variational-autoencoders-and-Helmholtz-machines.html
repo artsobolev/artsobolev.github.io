@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Neural Variational Inference: Variational Autoencoders and Helmholtz machines - B.log</title>
+  <meta charset="utf-8" />
+  <link rel="shortcut icon" href="../favicon.ico" />
+
+  <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+<body>
+    <header>
+      <hgroup>
+        <h1><a href="../">B.log</a></h1>
+        <h2>Random notes on Computer Science, Mathematics and Software Engineering</h2>
+      </hgroup>
+    </header>
+    <nav>
+        <menu>
+          <a href="../">Home</a>
+          <a href="../pages/about.html">About me</a>
+          <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
+        </menu>
+    </nav>
+    <section>
+        <article>
+<header>
+	<h3>Neural Variational Inference: Variational Autoencoders and Helmholtz machines</h3>
+	<time>July 11, 2016</time>
+</header>
+
+<section>
+<p>So far we had a little of “neural” in our VI methods. Now it’s time to fix it, as we’re going to consider <a href="https://arxiv.org/abs/1312.6114">Variational Autoencoders</a> (VAE), a paper by D. Kingma and M. Welling, which made a lot of buzz in ML community. It has 2 main contributions: a new approach (AEVB) to large-scale inference in non-conjugate models with continuous latent variables, and a probabilistic model of autoencoders as an example of this approach. We then discuss connections to <a href="https://en.wikipedia.org/wiki/Helmholtz_machine">Helmholtz machines</a> — a predecessor of VAEs.</p>
+<!--more-->
+
+<h3>
+Auto-Encoding Variational Bayes
+</h3>
+<p>As noted in the introduction of the post, this approach, called Auto-Encoding Variational Bayes (AEVB) works only for some models with continuous latent variables. Recall from our discussion of <a href="../posts/2016-07-05-neural-variational-inference-blackbox.html">Blackbox VI</a> and <a href="../posts/2016-07-04-neural-variational-inference-stochastic-variational-inference.html">Stochastic VI</a>, we’re interested in maximizing the ELBO <span class="math">\(\mathcal{L}(\Theta, \Lambda)\)</span>:</p>
+<p><span class="math">\[
+\mathcal{L}(\Theta, \Lambda) = \mathbb{E}_{q(z\mid x, \Lambda)} \log \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)}
+\]</span></p>
+<p>It’s not a problem to compute an estimate of the gradient of the ELBO w.r.t. model parameters <span class="math">\(\Theta\)</span>, but estimating the gradient w.r.t. approximation parameters <span class="math">\(\Lambda\)</span> is tricky as these parameters influence the distribution the expectation is taken over, and as we know from the post on <a href="../posts/2016-07-05-neural-variational-inference-blackbox.html">Blackbox VI</a>, naive gradient estimator based on score function exhibits high variance.</p>
+<p>Turns out, for some distributions we can make change of variables, that is, for some distributions <span class="math">\(z \sim q(z \mid x, \Lambda)\)</span> can be represented as a (differentiable) transformation <span class="math">\(g(\varepsilon; \Lambda, x)\)</span> of some auxiliary random variable <span class="math">\(\varepsilon\)</span> whose distribution does not depend on <span class="math">\(\Lambda\)</span>. A well-known example of such reparametrization is Gaussian distribution: if <span class="math">\(z \sim \mathcal{N}(\mu, \Sigma)\)</span> then <span class="math">\(z\)</span> can be represented as <span class="math">\(z = \mu + \Sigma^{1/2} \varepsilon\)</span> for <span class="math">\(\varepsilon \sim \mathcal{N}(0, I)\)</span>. This transformation is called the <strong>reparametrization trick</strong>. After the reparametrization the ELBO becomes</p>
+<p><span class="math">\[
+\begin{align}
+\mathcal{L}(\Theta, \Lambda)
+&amp;= \mathbb{E}_{\varepsilon \sim \mathcal{N}(0, I)}  \log \frac{p(x, g(\varepsilon; \Lambda, x)\mid \Theta)}{q(g(\varepsilon; \Lambda, x) \mid \Lambda, x)} \\
+&amp;\approx \frac{1}{L} \sum_{l=1}^L  \log \frac{p(x, g(\varepsilon^{(l)}; \Lambda, x)\mid \Theta)}{q(g(\varepsilon^{(l)}; \Lambda, x) \mid \Lambda, x)} \quad \quad \text{where $\varepsilon^{(l)} \sim \mathcal{N}(0, I)$}
+\end{align}
+\]</span></p>
+<p>This objective is much better as we don’t need to differentiate w.r.t. expectation’s distribution, essentially putting variational parameters <span class="math">\(\Lambda\)</span> to the same regime as model parameters <span class="math">\(\Theta\)</span>. It’s sufficient now to just take gradients of the ELBO’s estimate, and run any optimization algorithm like <a href="https://arxiv.org/abs/1412.6980">Adam</a>.</p>
+<p>Oh, and if you wonder what Auto-Encoding in Auto-Encoding Variational Bayes means, there’s an interesting interpretation of the ELBO in terms of autoencoding:</p>
+<p><span class="math">\[
+\begin{align}
+\mathcal{L}(\Theta, \Lambda)
+&amp; = \mathbb{E}_{q(z\mid x, \Lambda)} \log \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)} 
+ = \mathbb{E}_{q(z\mid x, \Lambda)} \log \frac{p(x \mid z, \Theta) p(z \mid \Theta)}{q(z \mid x, \Lambda)} \\
+&amp; = \mathbb{E}_{q(z\mid x, \Lambda)} \log p(x \mid z, \Theta) - D_{KL}(q(z \mid \Lambda, x) \mid\mid p(z \mid \Theta)) \\
+\end{align}
+\]</span></p>
+<p>Here the first term can be treated as expected reconstruction (<span class="math">\(x\)</span> from the code <span class="math">\(z\)</span>) loss, while the second one is just a regularization term.</p>
+<h3>
+Variational Autoencoder
+</h3>
+<p>One particular application of AEVB framework comes from using neural networks as the model <span class="math">\(p(x \mid z, \Theta)\)</span> and the approximation <span class="math">\(q(z \mid x, \Lambda)\)</span>. The model has no requirements, and <span class="math">\(x\)</span> can be discrete or continuous (or mixed). <span class="math">\(z\)</span>, however, has to be continuous. Moreover, we need to be able to do the reparametrization trick. Therefore in many practical applications <span class="math">\(q(z \mid x, \Lambda)\)</span> is set to be Gaussian distribution <span class="math">\(q(z \mid \Lambda, x) = \mathcal{N}(z \mid \mu(x; \Lambda), \Sigma(x; \Lambda))\)</span> where <span class="math">\(\mu\)</span> and <span class="math">\(\Sigma\)</span> are outputs of a neural network taking <span class="math">\(x\)</span> as input, and <span class="math">\(\Lambda\)</span> denotes a set of neural network’s weights — the parameters you optimize the ELBO with respect to (and also <span class="math">\(\Theta\)</span>). In order to make reparametrization trick practical, you’d like to be able to compute <span class="math">\(\Sigma^{1/2}\)</span> quick. You don’t want to actually compute this quantity as it’d be too computationally expensive. Instead you might want to predict <span class="math">\(\Sigma^{1/2}\)</span> by a neural network in the first place, or consider only diagonal covariance matrices (as it’s done in the paper).</p>
+<p>In case of Gaussian approximation <span class="math">\(q(z \mid x, \Lambda)\)</span> and Gaussian prior <span class="math">\(p(z \mid \Theta)\)</span> we can compute KL-divergence <span class="math">\(D_{KL}(q(z \mid \Lambda, x) \mid\mid p(z \mid \Theta))\)</span> analytically, see the formula at <a href="http://stats.stackexchange.com/a/60699/62549">stats.stackexchange</a>.</p>
+<p>This model has generated a lot of buzz because it can be used as a generative model, essentially VAE is an autoencoder with natural sampling procedure: suppose you’ve trained the model, and now want to sample new samples similar to those you used in the training set. To do so you first sample <span class="math">\(z\)</span> from the prior <span class="math">\(p(z)\)</span>, and then generate <span class="math">\(x\)</span> using the model <span class="math">\(p(x \mid z, \Theta)\)</span>. Both operations are easy: the first one is a sampling from some standard distribution (like Gaussian, for example), and the second one is just one feed-forward pass followed by another sampling from another standard distribution (Bernoulli, for example, in case <span class="math">\(x\)</span> is a binary image).</p>
+<p>If you want to read more on Variational Auto-Encoders, I refer you to a great <a href="https://arxiv.org/abs/1606.05908">tutorial by Carl Doersch</a>.</p>
+<h3>
+Helmholtz machines
+</h3>
+<p>In the end I’d like to add some historical perspective. The idea of two networks, one “encoding” an observation <span class="math">\(x\)</span> to some latent representation (code) <span class="math">\(z\)</span>, and another “decoding” it back is definitely not new. In fact, the whole idea is a special case of the <a href="https://en.wikipedia.org/wiki/Helmholtz_machine">Helmholtz Machines</a> introduced by Geoffrey Hinton 20 years ago.</p>
+<p>Helmholtz machine can be thought of as a neural network of stochastic hidden layers. Namely, we now have <span class="math">\(M\)</span> stochastic hidden layers (latent variables) <span class="math">\(h_1, \dots, h_M\)</span> (with deterministic <span class="math">\(h_0 = x\)</span>) where the layer <span class="math">\(h_{k-1}\)</span> is stochastically produced by the layer <span class="math">\(h_{k}\)</span>, that is, it is samples from some distribution <span class="math">\(p(h_{k-1} \mid h_k)\)</span>, which as you might have guessed already is parametrized in the same way as in usual VAEs. Actually, VAEs is a special case of a Helmholtz machine with just one stochastic layer (but each stochastic layer contains a neural network of arbitrarily many deterministic layers inside of it).</p>
+<div style="text-align: center">
+<img src="../files/Helmholtz-machine.png" style="width: 400px" />
+</div>
+<p>This image shows an instance of a Helmholtz machine with 2 stochastic layers (blue cloudy nodes), and each stochastic layer having 2 deterministic hidden layers (white rectangles).</p>
+<p>The joint model distribution is</p>
+<p><span class="math">\[
+p(x, h_1, \dots, h_M \mid \Theta) = p(h_M \mid \Theta) \prod_{m=0}^{M-1} p(h_m \mid h_{m+1}, \Theta)
+\]</span></p>
+<p>And the approximate posterior is the same, but in inverse order:</p>
+<p><span class="math">\[
+q(h_1, \dots, h_M \mid x, \Lambda) = \prod_{m=1}^{M} p(h_{m} \mid h_{m-1}, \Theta)
+\]</span></p>
+<p>The <span class="math">\(p(x, h_1, \dots, h_{M-1} \mid h_M)\)</span> distribution is usually called a <strong>generative network</strong> (or model) as it allows one to generate samples from latent representation(s). The approximate posterior <span class="math">\(q(h_1, \dots, h_M \mid x, \Lambda)\)</span> in this framework is called a <strong>recognition network</strong> (or model). Presumably, the name reflects the purpose of the network to recognize the hidden structure of observations.</p>
+<p>So, if the VAE is a special case of Helmholtz machines, what’s new then? The standard algorithm for learning Helmholtz machines, the <a href="https://en.wikipedia.org/wiki/Wake-sleep_algorithm">Wake-Sleep algorithm</a>, turns out to be optimizing a different objective. Thus, one of significant contributions of Kingma and Welling is application of the reparametrization trick to make optimization of the ELBO w.r.t. <span class="math">\(\Lambda\)</span> tractable.</p>
+</section>
+
+<div class="tags-pane">Tagged as <a href="../tags/machine%20learning.html">machine learning</a>, <a href="../tags/deep%20learning.html">deep learning</a>, <a href="../tags/variational%20inference.html">variational inference</a></div>
+</article>
+
+<section>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'barmaley-exe'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    
+
+</section>
+
+    </section>
+    <footer>
+        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+    </footer>
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-38530232-1']);
+_gaq.push(['_trackPageview']);
+(function() {
+ var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+ var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+</body>
+</html>
