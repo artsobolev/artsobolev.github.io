@@ -43,8 +43,9 @@ Auto-Encoding Variational Bayes
 <h3>
 Variational Autoencoder
 </h3>
-<p>One particular application of AEVB framework comes from using neural networks as the model <span class="math">\(p(x \mid z, \Theta)\)</span> and the approximation <span class="math">\(q(z \mid x, \Lambda)\)</span>. The model has no requirements, and <span class="math">\(x\)</span> can be discrete or continuous (or mixed). <span class="math">\(z\)</span>, however, has to be continuous. Moreover, we need to be able to do the reparametrization trick. Therefore in many practical applications <span class="math">\(q(z \mid x, \Lambda)\)</span> is set to be Gaussian distribution <span class="math">\(q(z \mid \Lambda, x) = \mathcal{N}(z \mid \mu(x; \Lambda), \Sigma(x; \Lambda))\)</span> where <span class="math">\(\mu\)</span> and <span class="math">\(\Sigma\)</span> are outputs of a neural network taking <span class="math">\(x\)</span> as input, and <span class="math">\(\Lambda\)</span> denotes a set of neural network’s weights — the parameters you optimize the ELBO with respect to (and also <span class="math">\(\Theta\)</span>). In order to make reparametrization trick practical, you’d like to be able to compute <span class="math">\(\Sigma^{1/2}\)</span> quick. You don’t want to actually compute this quantity as it’d be too computationally expensive. Instead you might want to predict <span class="math">\(\Sigma^{1/2}\)</span> by a neural network in the first place, or consider only diagonal covariance matrices (as it’s done in the paper).</p>
-<p>In case of Gaussian approximation <span class="math">\(q(z \mid x, \Lambda)\)</span> and Gaussian prior <span class="math">\(p(z \mid \Theta)\)</span> we can compute KL-divergence <span class="math">\(D_{KL}(q(z \mid \Lambda, x) \mid\mid p(z \mid \Theta))\)</span> analytically, see the formula at <a href="http://stats.stackexchange.com/a/60699/62549">stats.stackexchange</a>.</p>
+<p>One particular application of AEVB framework comes from using neural networks as the model <span class="math">\(p(x \mid z, \Theta)\)</span> and the approximation <span class="math">\(q(z \mid x, \Lambda)\)</span>. The model has no requirements, and <span class="math">\(x\)</span> can be discrete or continuous (or mixed). <span class="math">\(z\)</span>, however, has to be continuous. Moreover, we need to be able to apply the reparametrization trick. Therefore in many practical applications <span class="math">\(q(z \mid x, \Lambda)\)</span> is set to be Gaussian distribution <span class="math">\(q(z \mid \Lambda, x) = \mathcal{N}(z \mid \mu(x; \Lambda), \Sigma(x; \Lambda))\)</span> where <span class="math">\(\mu\)</span> and <span class="math">\(\Sigma\)</span> are outputs of a neural network taking <span class="math">\(x\)</span> as input, and <span class="math">\(\Lambda\)</span> denotes a set of neural network’s weights — the parameters you optimize the ELBO with respect to (and also <span class="math">\(\Theta\)</span>). In order to make reparametrization trick practical, you’d like to be able to compute <span class="math">\(\Sigma^{1/2}\)</span> quick. You don’t want to actually compute this quantity as it’d be too computationally expensive. Instead you might want to predict <span class="math">\(\Sigma^{1/2}\)</span> by a neural network in the first place, or consider only diagonal covariance matrices (as it’s done in the paper).</p>
+<p>In case of Gaussian approximation <span class="math">\(q(z \mid x, \Lambda)\)</span> and Gaussian prior <span class="math">\(p(z \mid \Theta)\)</span> we can compute KL-divergence <span class="math">\(D_{KL}(q(z \mid \Lambda, x) \mid\mid p(z \mid \Theta))\)</span> analytically, see the formula at <a href="http://stats.stackexchange.com/a/60699/62549">stats.stackexchange</a>. This reduces variance of gradient estimator, though one can still train a VAE estimating KL-divergence using Monte Carlo, just like the other part of the ELBO.</p>
+<p>We optimize both the model and the approximation by gradient ascent. This joint optimization pushed both approximation towards the model, and the model towards approximation. This leads not only to efficient inference using the approximation, but also the model is encouraged to learn latent representations <span class="math">\(z\)</span> such that the true posterior <span class="math">\(p(z \mid x, \Theta)\)</span> is approximately factorial.</p>
 <p>This model has generated a lot of buzz because it can be used as a generative model, essentially VAE is an autoencoder with natural sampling procedure: suppose you’ve trained the model, and now want to sample new samples similar to those you used in the training set. To do so you first sample <span class="math">\(z\)</span> from the prior <span class="math">\(p(z)\)</span>, and then generate <span class="math">\(x\)</span> using the model <span class="math">\(p(x \mid z, \Theta)\)</span>. Both operations are easy: the first one is a sampling from some standard distribution (like Gaussian, for example), and the second one is just one feed-forward pass followed by another sampling from another standard distribution (Bernoulli, for example, in case <span class="math">\(x\)</span> is a binary image).</p>
 <p>If you want to read more on Variational Auto-Encoders, I refer you to a great <a href="https://arxiv.org/abs/1606.05908">tutorial by Carl Doersch</a>.</p>
 <h3>
@@ -95,7 +96,7 @@ Blackbox Variational Inference
 &amp;= \mathbb{E}_{q} \left[\nabla_{\Lambda} \log q(z \mid x, \Lambda) \log \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)} \right]
 \end{align}
 \]</span></p>
-<p>In statistics <span class="math">\(\nabla_\Lambda \log q(z \mid x, \Lambda)\)</span> is known as <a href="https://en.wikipedia.org/wiki/Score_(statistics)">score function</a>. For more on this “trick” see <a href="http://blog.shakirm.com/2015/11/machine-learning-trick-of-the-day-5-log-derivative-trick/">a blogpost by Shakir Mohamed</a>. In many cases of practical interest <span class="math">\(\log p(x, z, \mid \Theta)\)</span> is too complicated to compute this expectation in closed form. Recall that we already used stochastic optimization successfully, so we can settle with just an estimate of true gradient. We get one by approximating the expectation using Monte-Carlo estimates using <span class="math">\(L\)</span> samples <span class="math">\(z^{(l)} \sim q(z \mid x, \Lambda)\)</span>:</p>
+<p>In statistics <span class="math">\(\nabla_\Lambda \log q(z \mid x, \Lambda)\)</span> is known as <a href="https://en.wikipedia.org/wiki/Score_(statistics)">score function</a>. For more on this “trick” see <a href="http://blog.shakirm.com/2015/11/machine-learning-trick-of-the-day-5-log-derivative-trick/">a blogpost by Shakir Mohamed</a>. In many cases of practical interest <span class="math">\(\log p(x, z, \mid \Theta)\)</span> is too complicated to compute this expectation in closed form. Recall that we already used stochastic optimization successfully, so we can settle with just an estimate of true gradient. We get one by approximating the expectation using Monte-Carlo estimates using <span class="math">\(L\)</span> samples <span class="math">\(z^{(l)} \sim q(z \mid x, \Lambda)\)</span> (in practice we sometimes use just <span class="math">\(L=1\)</span> sample. We expect correct averaging to happen automagically due to use of minibatches):</p>
 <p><span class="math">\[
 \nabla_{\Lambda} \mathcal{L}(\Theta, \Lambda)
 \approx \frac{1}{L} \sum_{l=1}^L \nabla_{\Lambda} \log q(z^{(l)} \mid x, \Lambda) \log \frac{p(x, z^{(l)} \mid \Theta)}{q(z^{(l)} \mid x, \Lambda)}
@@ -138,10 +139,10 @@ Blackbox Variational Inference
 \alpha^*_i = \frac{\text{Cov}(\nabla_{\Lambda_i} \log q(z \mid x, \Lambda)\left( \log p(x, z \mid \Theta) - \log q(z \mid x, \Lambda) \right), \nabla_{\Lambda_i} \log q(z \mid x, \Lambda))}{\text{Var}(\nabla_{\Lambda_i} \log q(z \mid x, \Lambda)\left( \log p(x, z \mid \Theta) - \log q(z \mid x, \Lambda) \right))}
 \]</span></p>
 <h3>
-Neural Variational Inference
+Neural Variational Inference and Learning
 </h3>
 
-<p>Hoooray, neural networks! In this section I’ll briefly describe a variance reduction technique coined by A. Mnih and K. Gregor in <a href="https://arxiv.org/abs/1402.0030">Neural Variational Inference and Learning in Belief Networks</a>. The idea is surprisingly simple: why not learn the baseline <span class="math">\(\alpha\)</span> using a neural network?</p>
+<p>Hoooray, neural networks! In this section I’ll briefly describe a variance reduction technique coined by A. Mnih and K. Gregor in <a href="https://arxiv.org/abs/1402.0030">Neural Variational Inference and Learning in Belief Networks</a>. The idea is surprisingly simple: why not learn a baseline <span class="math">\(\alpha\)</span> using a neural network?</p>
 <p><span class="math">\[
 \nabla_{\Lambda} \mathcal{L}(\Theta, \Lambda)
 \approx \frac{1}{L} \sum_{l=1}^L \nabla_{\Lambda} \log q(z^{(l)} \mid x, \Lambda) \circ \left(\log \frac{p(x, z^{(l)} \mid \Theta)}{q(z^{(l)} \mid x, \Lambda)} - \alpha^* - \alpha(x) \right)
@@ -149,7 +150,30 @@ Neural Variational Inference
 <p>Where <span class="math">\(\alpha(x)\)</span> is a neural network trained to minimize</p>
 <p><span class="math">\[
  \mathbb{E}_{q(z \mid x, \Lambda)} \left( \log \frac{p(x, z^{(l)} \mid \Theta)}{q(z^{(l)} \mid x, \Lambda)} - \alpha^* - \alpha(x) \right)^2
-\]</span></p>]]></description>
+\]</span></p>
+<p>What’s the motivation of this objective? The gradient step of <span class="math">\(\nabla_\Lambda \mathcal{L}(\Theta, \Lambda)\)</span> can be seen as pushing <span class="math">\(q(z\mid x, \Lambda)\)</span> towards <span class="math">\(p(x, z \mid \Theta)\)</span>. Since <span class="math">\(q\)</span> has to be normalized like any other proper distribution, it’s actually pushed towards the true posterior <span class="math">\(p(z \mid x, \Theta)\)</span>. We can rewrite the gradient <span class="math">\(\nabla_\Lambda \mathcal{L}(\Theta, \Lambda)\)</span> as</p>
+<p><span class="math">\[
+\begin{align}
+\nabla_{\Lambda} \mathcal{L}(\Theta, \Lambda)
+&amp;= \mathbb{E}_{q} \left[\nabla_{\Lambda} \log q(z \mid x, \Lambda) \left(\log p(x, z \mid \Theta) - \log q(z \mid x, \Lambda) \right) \right] \\
+&amp;= \mathbb{E}_{q} \left[\nabla_{\Lambda} \log q(z \mid x, \Lambda) \left(\log p(z \mid x, \Theta) - \log q(z \mid x, \Lambda) + \log p(x \mid \Theta) \right) \right]
+\end{align}
+\]</span></p>
+<p>While this additional <span class="math">\(\log p(x \mid \Theta)\)</span> term does not contribute to the expectation, it affects the variance on the estimator. Therefore, <span class="math">\(\alpha(x)\)</span> is supposed to estimate the marginal log-likelihood <span class="math">\(\log p(x \mid \Theta)\)</span>.</p>
+<p>The paper also lists several other variance reduction techniques that can be used in combination with the neural network-based baseline:</p>
+<ul>
+	<li>
+<strong>Constant baseline</strong> — analogue of <em>Control Variates</em>, uses running average of <span class="math">\(\log p(x, z \mid \Theta) - \log q(z \mid x, \Lambda)\)</span> as a baseline
+</li>
+	<li>
+<strong>Variance normalization</strong> — normalizes the learning signal to unit variance, equivalent to adaptive learning rate
+</li>
+	<li>
+<strong>Local learning signals</strong> — falls out of the scope of this post as requires it model-specific analysis and alternations, and can’t be used in Blackbox regime
+</li>
+</ul>
+
+]]></description>
     <pubDate>Tue, 05 Jul 2016 00:00:00 UT</pubDate>
     <guid>http://barmaley.exe.name/posts/2016-07-05-neural-variational-inference-blackbox.html</guid>
 </item>
