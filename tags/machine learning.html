@@ -28,6 +28,20 @@
 <ul>
     <article>
 	<header>
+		<h3><a href="../posts/2016-07-14-neural-variational-importance-weighted-autoencoders.html">Neural Variational Inference: Importance Weighted Autoencoders</a></h3>
+		<time>July 14, 2016</time>
+	</header>
+
+	<section>
+		<p>Previously we covered <a href="../posts/2016-07-11-neural-variational-inference-variational-autoencoders-and-Helmholtz-machines.html">Variational Autoencoders</a> (VAE) — popular inference tool based on neural networks. In this post we’ll consider, a followup work from Torronto by Y. Burda, R. Grosse and R. Salakhutdinov, <a href="https://arxiv.org/abs/1509.00519">Importance Weighted Autoencoders</a> (IWAE). The crucial contribution of this work is introduction of a new lower-bound on the marginal log-likelihood <span class="math inline">\(\log p(x)\)</span> which generalizes ELBO, but also allows one to use less accurate approximate posteriors <span class="math inline">\(q(z \mid x, \Lambda)\)</span>.</p>
+<p>On a dessert we’ll discuss another paper, <a href="https://arxiv.org/abs/1602.06725">Variational inference for Monte Carlo objectives</a> by A. Mnih and D. Rezende which aims to broaden the applicability of this approach to models where reparametrization trick can not be used (e.g. for discrete variables).</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
+	<header>
 		<h3><a href="../posts/2016-07-11-neural-variational-inference-variational-autoencoders-and-Helmholtz-machines.html">Neural Variational Inference: Variational Autoencoders and Helmholtz machines</a></h3>
 		<time>July 11, 2016</time>
 	</header>
@@ -74,7 +88,7 @@
 	<section>
 		<p>As a member of <a href="http://bayesgroup.ru/">Bayesian methods research group</a> I’m heavily interested in Bayesian approach to machine learning. One of the strengths of this approach is ability to work with hidden (unobserved) variables which are interpretable. This power however comes at a cost of generally intractable exact inference, which limits the scope of solvable problems.</p>
 <p>Another topic which gained lots of momentum in Machine Learning recently is Deep Learning, of course. With Deep Learning we can now build big and complex models that outperform most hand-engineered approaches given lots of data and computational power. The fact that Deep Learning needs a considerable amount of data also requires these methods to be scalable — a really nice property for any algorithm to have, especially in a Big Data epoch.</p>
-<p>Given how appealing both topic are it’s not a surprise there’s been some work to marry these two recently. In this series of blogsposts I’d like to summarize recent advances, particularly in variational inference. This is not meant to be an introductory discussion as prior familiarity with classical topics (Latent variable models, <a href="https://en.wikipedia.org/wiki/Variational_Bayesian_methods">Variational Inference, Mean-field approximation</a>) is required, though I’ll introduce these ideas anyway just to remind it and setup the notation.</p>
+<p>Given how appealing both topics are it’s not a surprise there’s been some work to marry these two recently. In this series of blogsposts I’d like to summarize recent advances, particularly in variational inference. This is not meant to be an introductory discussion as prior familiarity with classical topics (Latent variable models, <a href="https://en.wikipedia.org/wiki/Variational_Bayesian_methods">Variational Inference, Mean-field approximation</a>) is required, though I’ll introduce these ideas anyway just to remind it and setup the notation.</p>
 
 	</section>
 </article>

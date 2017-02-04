@@ -27,6 +27,34 @@
         <section id="posts">
     <article>
 	<header>
+		<h3><a href="./posts/2017-01-29-matrix-and-vector-calculus-via-differentials.html">Matrix and Vector Calculus via Differentials</a></h3>
+		<time>January 29, 2017</time>
+	</header>
+
+	<section>
+		<p>Many tasks of machine learning can be posed as optimization problems. One comes up with a parametric model, defines a loss function, and then minimizes it in order to learn optimal parameters. One very powerful tool of optimization theory is the use of smooth (differentiable) functions: those that can be locally approximated with a linear functions. We all surely know how to differentiate a function, but often it’s more convenient to perform all the derivations in matrix form, since many computational packages like numpy or matlab are optimized for vectorized expressions.</p>
+<p>In this post I want to outline the general idea of how one can calculate derivatives in vector and matrix spaces (but the idea is general enough to be applied to other algebraic structures).</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
+	<header>
+		<h3><a href="./posts/2016-07-14-neural-variational-importance-weighted-autoencoders.html">Neural Variational Inference: Importance Weighted Autoencoders</a></h3>
+		<time>July 14, 2016</time>
+	</header>
+
+	<section>
+		<p>Previously we covered <a href="./posts/2016-07-11-neural-variational-inference-variational-autoencoders-and-Helmholtz-machines.html">Variational Autoencoders</a> (VAE) — popular inference tool based on neural networks. In this post we’ll consider, a followup work from Torronto by Y. Burda, R. Grosse and R. Salakhutdinov, <a href="https://arxiv.org/abs/1509.00519">Importance Weighted Autoencoders</a> (IWAE). The crucial contribution of this work is introduction of a new lower-bound on the marginal log-likelihood <span class="math inline">\(\log p(x)\)</span> which generalizes ELBO, but also allows one to use less accurate approximate posteriors <span class="math inline">\(q(z \mid x, \Lambda)\)</span>.</p>
+<p>On a dessert we’ll discuss another paper, <a href="https://arxiv.org/abs/1602.06725">Variational inference for Monte Carlo objectives</a> by A. Mnih and D. Rezende which aims to broaden the applicability of this approach to models where reparametrization trick can not be used (e.g. for discrete variables).</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
+	<header>
 		<h3><a href="./posts/2016-07-11-neural-variational-inference-variational-autoencoders-and-Helmholtz-machines.html">Neural Variational Inference: Variational Autoencoders and Helmholtz machines</a></h3>
 		<time>July 11, 2016</time>
 	</header>
@@ -73,7 +101,7 @@
 	<section>
 		<p>As a member of <a href="http://bayesgroup.ru/">Bayesian methods research group</a> I’m heavily interested in Bayesian approach to machine learning. One of the strengths of this approach is ability to work with hidden (unobserved) variables which are interpretable. This power however comes at a cost of generally intractable exact inference, which limits the scope of solvable problems.</p>
 <p>Another topic which gained lots of momentum in Machine Learning recently is Deep Learning, of course. With Deep Learning we can now build big and complex models that outperform most hand-engineered approaches given lots of data and computational power. The fact that Deep Learning needs a considerable amount of data also requires these methods to be scalable — a really nice property for any algorithm to have, especially in a Big Data epoch.</p>
-<p>Given how appealing both topic are it’s not a surprise there’s been some work to marry these two recently. In this series of blogsposts I’d like to summarize recent advances, particularly in variational inference. This is not meant to be an introductory discussion as prior familiarity with classical topics (Latent variable models, <a href="https://en.wikipedia.org/wiki/Variational_Bayesian_methods">Variational Inference, Mean-field approximation</a>) is required, though I’ll introduce these ideas anyway just to remind it and setup the notation.</p>
+<p>Given how appealing both topics are it’s not a surprise there’s been some work to marry these two recently. In this series of blogsposts I’d like to summarize recent advances, particularly in variational inference. This is not meant to be an introductory discussion as prior familiarity with classical topics (Latent variable models, <a href="https://en.wikipedia.org/wiki/Variational_Bayesian_methods">Variational Inference, Mean-field approximation</a>) is required, though I’ll introduce these ideas anyway just to remind it and setup the notation.</p>
 
 	</section>
 </article>
@@ -100,7 +128,7 @@
 	</header>
 
 	<section>
-		<p>It’s well known that lower bound for sorting problem (in general case) is <span class="math">\(\Omega(n \log n)\)</span>. The proof I was taught is somewhat involved and is based on paths in “decision” trees. Recently I’ve discovered an information-theoretic approach (or reformulation) to that proof.</p>
+		<p>It’s well known that lower bound for sorting problem (in general case) is <span class="math inline">\(\Omega(n \log n)\)</span>. The proof I was taught is somewhat involved and is based on paths in “decision” trees. Recently I’ve discovered an information-theoretic approach (or reformulation) to that proof.</p>
 
 	</section>
 </article>
@@ -113,17 +141,17 @@
 	</header>
 
 	<section>
-		<p>Once upon a time I was asked (well, actually <a href="http://habrahabr.ru/qa/7130/" title="Javascript: String.prototype.namespace.method и this / Q&amp;A / Хабрахабр">a question</a> wasn’t for me only, but for whole habrahabr’s community) is it possible to implement namespaced methods in JavaScript for built-in types like:</p>
-<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="dv">5</span>..<span class="ot">rubish</span>.<span class="fu">times</span>(<span class="kw">function</span>() { <span class="co">// this function will be called 5 times</span>
-  <span class="ot">console</span>.<span class="fu">log</span>(<span class="st">&quot;Hi there!&quot;</span>);
-});
+		<p>Once upon a time I was asked (well, actually <a href="http://habrahabr.ru/qa/7130/" title="Javascript: String.prototype.namespace.method и this / Q&A / Хабрахабр">a question</a> wasn’t for me only, but for whole habrahabr’s community) is it possible to implement namespaced methods in JavaScript for built-in types like:</p>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="dv">5</span>..<span class="va">rubish</span>.<span class="at">times</span>(<span class="kw">function</span>() <span class="op">{</span> <span class="co">// this function will be called 5 times</span>
+  <span class="va">console</span>.<span class="at">log</span>(<span class="st">&quot;Hi there!&quot;</span>)<span class="op">;</span>
+<span class="op">}</span>)<span class="op">;</span>
 
-<span class="st">&quot;some string&quot;</span>.<span class="ot">hask</span>.<span class="fu">map</span>(<span class="kw">function</span>(c) { <span class="kw">return</span> <span class="ot">c</span>.<span class="ot">hask</span>.<span class="fu">code</span>(); });
+<span class="st">&quot;some string&quot;</span>.<span class="va">hask</span>.<span class="at">map</span>(<span class="kw">function</span>(c) <span class="op">{</span> <span class="cf">return</span> <span class="va">c</span>.<span class="va">hask</span>.<span class="at">code</span>()<span class="op">;</span> <span class="op">}</span>)<span class="op">;</span>
 <span class="co">// equivalent to</span>
-<span class="st">&quot;some string&quot;</span>.<span class="fu">split</span>(<span class="st">''</span>).<span class="fu">map</span>(<span class="kw">function</span>(c) { <span class="kw">return</span> <span class="ot">c</span>.<span class="fu">charCodeAt</span>(); });
+<span class="st">&quot;some string&quot;</span>.<span class="at">split</span>(<span class="st">''</span>).<span class="at">map</span>(<span class="kw">function</span>(c) <span class="op">{</span> <span class="cf">return</span> <span class="va">c</span>.<span class="at">charCodeAt</span>()<span class="op">;</span> <span class="op">}</span>)<span class="op">;</span>
 
-<span class="st">&quot;another string&quot;</span>.<span class="ot">algo</span>.<span class="fu">lcp</span>(<span class="st">&quot;annotation&quot;</span>); 
-<span class="co">// returns longest common prefix of two strings</span></code></pre>
+<span class="st">&quot;another string&quot;</span>.<span class="va">algo</span>.<span class="at">lcp</span>(<span class="st">&quot;annotation&quot;</span>)<span class="op">;</span> 
+<span class="co">// returns longest common prefix of two strings</span></code></pre></div>
 <p>As you can see at the link, it’s possible using ECMAScript 5 features. And that’s how: 
 	</section>
 </article>
@@ -179,7 +207,7 @@ In fact it can be mathematically proven that a growth factor of 2 is rigorously 
     <p><a href="/posts.html">All posts&hellip;</a></p>
 
     <h2>Tags</h2>
-    <p><a href="/tags/C%2B%2B.html">C++ (2)</a>, <a href="/tags/C%2B%2B11.html">C++11 (1)</a>, <a href="/tags/algortihms.html">algortihms (1)</a>, <a href="/tags/computer%20science.html">computer science (1)</a>, <a href="/tags/deep%20learning.html">deep learning (4)</a>, <a href="/tags/ecmascript%205.html">ecmascript 5 (1)</a>, <a href="/tags/gnu%20parallel.html">gnu parallel (1)</a>, <a href="/tags/javascript.html">javascript (1)</a>, <a href="/tags/linux.html">linux (1)</a>, <a href="/tags/machine%20learning.html">machine learning (4)</a>, <a href="/tags/madness.html">madness (1)</a>, <a href="/tags/memoization.html">memoization (1)</a>, <a href="/tags/optimization.html">optimization (1)</a>, <a href="/tags/python.html">python (1)</a>, <a href="/tags/variational%20inference.html">variational inference (4)</a></p>
+    <p><a href="/tags/C%2B%2B.html">C++ (2)</a>, <a href="/tags/C%2B%2B11.html">C++11 (1)</a>, <a href="/tags/algortihms.html">algortihms (1)</a>, <a href="/tags/computer%20science.html">computer science (1)</a>, <a href="/tags/deep%20learning.html">deep learning (5)</a>, <a href="/tags/ecmascript%205.html">ecmascript 5 (1)</a>, <a href="/tags/gnu%20parallel.html">gnu parallel (1)</a>, <a href="/tags/javascript.html">javascript (1)</a>, <a href="/tags/linux.html">linux (1)</a>, <a href="/tags/machine%20learning.html">machine learning (5)</a>, <a href="/tags/madness.html">madness (1)</a>, <a href="/tags/math.html">math (1)</a>, <a href="/tags/memoization.html">memoization (1)</a>, <a href="/tags/optimization.html">optimization (1)</a>, <a href="/tags/python.html">python (1)</a>, <a href="/tags/variational%20inference.html">variational inference (5)</a></p>
 	-->
 </section>
 

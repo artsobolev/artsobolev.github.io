@@ -37,33 +37,25 @@ In fact it can be mathematically proven that a growth factor of 2 is rigorously 
 </blockquote>
 <p>I haven’t got it first time. Recently I recalled that article and decided to deal with it. So after reading and googling for a while I finally understood the idea, so I’d like to say a few words about it.</p>
 <!--more-->
-
 <p>The problem is as follows: when a vector (or a similar structure with autoresize) gets filled, it should resize. It’s well known that it should grow exponentially in order to preserve constant amortized complexity of insertions, but what growth factor to choose? At first glance, 2 seems to be ok — it’s not so big and 2 is common for computer science :-). But it turns out that 2 is not so good. Let’s take a closer look by example:</p>
 <p><a href="../files/vector-resize-scheme.png"><img src="../files/vector-resize-scheme.png" alt="Vector resize scheme" width="495" height="350" class="size-full" /></a></p>
-<p>Suppose we’ve a vector of initial size <span class="math">\(C\)</span>. When it gets filled, we increase its size twice. We allocate memory for a vector of size <span class="math">\(2C\)</span> right after our original vector. So now we have vector of size <span class="math">\(2C\)</span> and <span class="math">\(C\)</span> bytes before it, where it was when it was small. Then expand it again and again and agian and so on. After <span class="math">\(n\)</span> expansions we’ll get a vector of size <span class="math">\(2^n C\)</span> preceded by <span class="math">\(C + 2C + 2^2 C + \dots 2^{n-1} C\)</span> bytes that were occupied by this vector before.</p>
-<p>So what’s the problem? The problem is that after every increasing your vector is too big to fit previously allocated memory. How much is it bigger? Well, as we know <span class="math">\(2^n - 1 = 1 + 2 + 4 + \dots + 2^{n-1}\)</span>, thus <span class="math">\(2^n C - C - 2C - 2^2 C - \dots - 2^{n-1}C = C\)</span>. Therefore you have permanent lack of <span class="math">\(C\)</span> bytes to fit your vector in previously allocated space.</p>
+<p>Suppose we’ve a vector of initial size <span class="math inline">\(C\)</span>. When it gets filled, we increase its size twice. We allocate memory for a vector of size <span class="math inline">\(2C\)</span> right after our original vector. So now we have vector of size <span class="math inline">\(2C\)</span> and <span class="math inline">\(C\)</span> bytes before it, where it was when it was small. Then expand it again and again and agian and so on. After <span class="math inline">\(n\)</span> expansions we’ll get a vector of size <span class="math inline">\(2^n C\)</span> preceded by <span class="math inline">\(C + 2C + 2^2 C + \dots 2^{n-1} C\)</span> bytes that were occupied by this vector before.</p>
+<p>So what’s the problem? The problem is that after every increasing your vector is too big to fit previously allocated memory. How much is it bigger? Well, as we know <span class="math inline">\(2^n - 1 = 1 + 2 + 4 + \dots + 2^{n-1}\)</span>, thus <span class="math inline">\(2^n C - C - 2C - 2^2 C - \dots - 2^{n-1}C = C\)</span>. Therefore you have permanent lack of <span class="math inline">\(C\)</span> bytes to fit your vector in previously allocated space.</p>
 <p>Okay, let’s now solve this problem. First, let’s formalize it.</p>
-<p>Every time we increase vector of size <span class="math">\(C\)</span> with growing factor <span class="math">\(k\)</span> we do these steps:</p>
+<p>Every time we increase vector of size <span class="math inline">\(C\)</span> with growing factor <span class="math inline">\(k\)</span> we do these steps:</p>
 <ol>
-	<li>
-Allocate <span class="math">\(k C\)</span> bytes
-</li>
-	<li>
-Create a new vector here and copy current vector’s content to the new one
-</li>
-	<li>
-Remove the current vector, set the new one as the current
-</li>
+<pre><code>&lt;li&gt;Allocate $k C$ bytes&lt;/li&gt;
+&lt;li&gt;Create a new vector here and copy current vector's content to the new one&lt;/li&gt;
+&lt;li&gt;Remove the current vector, set the new one as the current&lt;/li&gt;</code></pre>
 </ol>
-
-<p>So as you can see, formula for 2 is sort of upperbound: you can not use all of previously allocated <span class="math">\(n-1\)</span> chunks when allocating nth, since you need to copy values from (n-1)th (though you can copy them in some temporary buffer, but it requires extra memory) chunk. So when we allocate nth chunk, we need it to be less than total free space from <span class="math">\(n-2\)</span> allocations: <span class="math">\[ k^n C \le k^{n-2}C + k^{n-3}C + \dots + kC + C \]</span></p>
-<p>As you can see, we can get rid of C since it’s definetly positive. <span class="math">\[ k^n \le k^{n-2} + k^{n-3} + \dots + k + 1 \]</span></p>
-<p>Okay, time to solve some equations! We see something like a sum of a geometric progression, and we can use a formula for it. But I don’t retain it in my head, so I’ll use a little trick here. Let’s multiply both sides by <span class="math">\(k-1\)</span>. We assume that <span class="math">\(k &gt; 1\)</span> (it’s very strange to use values greater than 1 as <em>growth</em> factor) <span class="math">\[ (k-1) k^n \le (k-1) (k^{n-2} + k^{n-3} + \dots + k + 1) \]</span></p>
-<p>Now we can notice that in the right side we have an expansion of <span class="math">\(k^{n-1}-1\)</span> (well, maybe to remember this observation is harder than remembering a formula for sum of a geometric progression…)</p>
-<p><span class="math">\[ (k-1) k^n \le k^{n-1}-1 \]</span> <span class="math">\[ k^{n+1} - k^n \le k^{n-1}-1 \]</span> <span class="math">\[ k^{n+1} \le k^n + k^{n-1} - 1 \]</span></p>
-<p>Oh, this obstructing 1… It would be so nice if we could throw it away! Wait, but we can! If we add 1 to the right side, we will merely increase its value, so it will still suit for an upper bound (or an approximation since 1 is a constant and is very small compared to <span class="math">\(k^n\)</span>).</p>
-<p><span class="math">\[ k^{n+1} \le k^n + k^{n-1} - 1 &lt; k^n + k^{n-1} \]</span> <span class="math">\[ k^2 &lt; k + 1 \]</span> <span class="math">\[ k^2 - k - 1 &lt; 0 \]</span></p>
-<p>Solving this simple quadratic equation, we get <span class="math">\[ k &lt; \frac{1+\sqrt{5}}{2} \approx 1.61 \]</span></p>
+<p>So as you can see, formula for 2 is sort of upperbound: you can not use all of previously allocated <span class="math inline">\(n-1\)</span> chunks when allocating nth, since you need to copy values from (n-1)th (though you can copy them in some temporary buffer, but it requires extra memory) chunk. So when we allocate nth chunk, we need it to be less than total free space from <span class="math inline">\(n-2\)</span> allocations: <span class="math display">\[ k^n C \le k^{n-2}C + k^{n-3}C + \dots + kC + C \]</span></p>
+<p>As you can see, we can get rid of C since it’s definetly positive. <span class="math display">\[ k^n \le k^{n-2} + k^{n-3} + \dots + k + 1 \]</span></p>
+<p>Okay, time to solve some equations! We see something like a sum of a geometric progression, and we can use a formula for it. But I don’t retain it in my head, so I’ll use a little trick here. Let’s multiply both sides by <span class="math inline">\(k-1\)</span>. We assume that <span class="math inline">\(k &gt; 1\)</span> (it’s very strange to use values greater than 1 as <em>growth</em> factor) <span class="math display">\[ (k-1) k^n \le (k-1) (k^{n-2} + k^{n-3} + \dots + k + 1) \]</span></p>
+<p>Now we can notice that in the right side we have an expansion of <span class="math inline">\(k^{n-1}-1\)</span> (well, maybe to remember this observation is harder than remembering a formula for sum of a geometric progression…)</p>
+<p><span class="math display">\[ (k-1) k^n \le k^{n-1}-1 \]</span> <span class="math display">\[ k^{n+1} - k^n \le k^{n-1}-1 \]</span> <span class="math display">\[ k^{n+1} \le k^n + k^{n-1} - 1 \]</span></p>
+<p>Oh, this obstructing 1… It would be so nice if we could throw it away! Wait, but we can! If we add 1 to the right side, we will merely increase its value, so it will still suit for an upper bound (or an approximation since 1 is a constant and is very small compared to <span class="math inline">\(k^n\)</span>).</p>
+<p><span class="math display">\[ k^{n+1} \le k^n + k^{n-1} - 1 &lt; k^n + k^{n-1} \]</span> <span class="math display">\[ k^2 &lt; k + 1 \]</span> <span class="math display">\[ k^2 - k - 1 &lt; 0 \]</span></p>
+<p>Solving this simple quadratic equation, we get <span class="math display">\[ k &lt; \frac{1+\sqrt{5}}{2} \approx 1.61 \]</span></p>
 <p>So that’s why growth factor in many dynamic arrays is 1.5: it is pretty big to not cause reallocations too frequently and is small enough to not use memory too extensively.</p>
 </section>
 

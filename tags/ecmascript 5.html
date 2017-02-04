@@ -33,17 +33,17 @@
 	</header>
 
 	<section>
-		<p>Once upon a time I was asked (well, actually <a href="http://habrahabr.ru/qa/7130/" title="Javascript: String.prototype.namespace.method и this / Q&amp;A / Хабрахабр">a question</a> wasn’t for me only, but for whole habrahabr’s community) is it possible to implement namespaced methods in JavaScript for built-in types like:</p>
-<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="dv">5</span>..<span class="ot">rubish</span>.<span class="fu">times</span>(<span class="kw">function</span>() { <span class="co">// this function will be called 5 times</span>
-  <span class="ot">console</span>.<span class="fu">log</span>(<span class="st">&quot;Hi there!&quot;</span>);
-});
+		<p>Once upon a time I was asked (well, actually <a href="http://habrahabr.ru/qa/7130/" title="Javascript: String.prototype.namespace.method и this / Q&A / Хабрахабр">a question</a> wasn’t for me only, but for whole habrahabr’s community) is it possible to implement namespaced methods in JavaScript for built-in types like:</p>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="dv">5</span>..<span class="va">rubish</span>.<span class="at">times</span>(<span class="kw">function</span>() <span class="op">{</span> <span class="co">// this function will be called 5 times</span>
+  <span class="va">console</span>.<span class="at">log</span>(<span class="st">&quot;Hi there!&quot;</span>)<span class="op">;</span>
+<span class="op">}</span>)<span class="op">;</span>
 
-<span class="st">&quot;some string&quot;</span>.<span class="ot">hask</span>.<span class="fu">map</span>(<span class="kw">function</span>(c) { <span class="kw">return</span> <span class="ot">c</span>.<span class="ot">hask</span>.<span class="fu">code</span>(); });
+<span class="st">&quot;some string&quot;</span>.<span class="va">hask</span>.<span class="at">map</span>(<span class="kw">function</span>(c) <span class="op">{</span> <span class="cf">return</span> <span class="va">c</span>.<span class="va">hask</span>.<span class="at">code</span>()<span class="op">;</span> <span class="op">}</span>)<span class="op">;</span>
 <span class="co">// equivalent to</span>
-<span class="st">&quot;some string&quot;</span>.<span class="fu">split</span>(<span class="st">''</span>).<span class="fu">map</span>(<span class="kw">function</span>(c) { <span class="kw">return</span> <span class="ot">c</span>.<span class="fu">charCodeAt</span>(); });
+<span class="st">&quot;some string&quot;</span>.<span class="at">split</span>(<span class="st">''</span>).<span class="at">map</span>(<span class="kw">function</span>(c) <span class="op">{</span> <span class="cf">return</span> <span class="va">c</span>.<span class="at">charCodeAt</span>()<span class="op">;</span> <span class="op">}</span>)<span class="op">;</span>
 
-<span class="st">&quot;another string&quot;</span>.<span class="ot">algo</span>.<span class="fu">lcp</span>(<span class="st">&quot;annotation&quot;</span>); 
-<span class="co">// returns longest common prefix of two strings</span></code></pre>
+<span class="st">&quot;another string&quot;</span>.<span class="va">algo</span>.<span class="at">lcp</span>(<span class="st">&quot;annotation&quot;</span>)<span class="op">;</span> 
+<span class="co">// returns longest common prefix of two strings</span></code></pre></div>
 <p>As you can see at the link, it’s possible using ECMAScript 5 features. And that’s how: 
 	</section>
 </article>
