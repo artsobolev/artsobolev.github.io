@@ -125,10 +125,9 @@ d^2f(x) &amp;= d(df(x)) \\
 + \left(2 f(x) - \nabla f(x)^T x \right) (I + x x^T)^{-1} \\
 &amp;= (I + x x^T)^{-1} x \nabla f(x)^T - \nabla f(x)^T x (I + x x^T)^{-1} + 2 f(x) (I + x x^T)^{-1} \\
 &amp;= 2f(x) \left((2 - x^T (I + x x^T)^{-1} x) I - (I + x x^T)^{-1}\right) (I + x x^T)^{-1} \\
-&amp;= 2f(x) \left((1 - x^T (I + x x^T)^{-1} x) I + x (1 + x^T x)^{-1} x^T\right) (I + x x^T)^{-1} \\
 \end{align*}
 \]</span></p>
-<p>Probably one can simplify it even further.</p>
+<p>The funny thing is, <span class="math inline">\(f(x) = \text{det}(I + x x^T)\)</span> can be simplified using the <a href="https://en.wikipedia.org/wiki/Matrix_determinant_lemma">determinant lemma</a> as <span class="math inline">\(f(x) = 1 + x^T x\)</span>. Now this is a very simple function, whose gradient is just <span class="math inline">\(2x\)</span> and the Hessian is constant <span class="math inline">\(2I\)</span>. And actually, the expression above can be simplified into <span class="math inline">\(2I\)</span>. Sometimes it’s beneficial to simplify the function first (-:</p>
 <h3 id="conclusion">Conclusion</h3>
 <p>In this post I showed how one can derive gradients and hessians using formal algebraic manipulations with differentials. The same technique is, of course, applicable to infinite-dimensional spaces (calculus of variations) and vector-valued functions (where linear map is described using the Jacobi matrix). Actually,</p>
 <hr />
