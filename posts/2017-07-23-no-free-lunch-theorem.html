@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>On No Free Lunch Theorem and some other impossibility results - B.log</title>
+  <meta charset="utf-8" />
+  <link rel="shortcut icon" href="../favicon.ico" />
+
+  <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+<body>
+    <header>
+      <hgroup>
+        <h1><a href="../">B.log</a></h1>
+        <h2>Random notes on Computer Science, Mathematics and Software Engineering</h2>
+      </hgroup>
+    </header>
+    <nav>
+        <menu>
+          <a href="../">Home</a>
+          <a href="../pages/about.html">About me</a>
+          <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
+        </menu>
+    </nav>
+    <section>
+        <article>
+<header>
+	<h3>On No Free Lunch Theorem and some other impossibility results</h3>
+	<time>July 23, 2017</time>
+</header>
+
+<section>
+<p>The more I talk to people online, the more I hear about the famous No Free Lunch Theorem (NFL theorem). Unfortunately, quite often people don’t really understand what the theorem is about, and its implications are. In this post I’d like to share my view on the NFL theorem, and some other impossibility results.</p>
+<!--more-->
+<h3 id="no-free-lunch-theorem-revisited">No Free Lunch Theorem Revisited</h3>
+<p>First, let’s formally state the NFL theorem. I’ll take theorem statement from the (freely available!) book <a href="http://www.cs.huji.ac.il/~shais/UnderstandingMachineLearning/index.html"><em>Understanding Machine Learning: From Theory to Algorithms</em></a> by Shai Shalev-Shwartz and Shai Ben-David.</p>
+<p>In the nutshell, the theorem says that whatever learning algorithm you pick, there will always be a problem (=dataset + some metrics), that your particular algorithm is incapable of solving, even though in principle the problem could be solved (by some other algorithm, which would have its own kryptonite problem). More formally (I modified the statement to distill the notation):</p>
+<blockquote>
+Let <span class="math inline">\(A\)</span> be any learning algorithm for the task of binary classification with respect to the 0−1 loss over a domain <span class="math inline">\(\mathcal{X}\)</span> . Let <span class="math inline">\(m\)</span> be any number smaller than <span class="math inline">\(|\mathcal{X}|/2\)</span>, representing a training set size. Then, there exists a distribution <span class="math inline">\(D\)</span> over <span class="math inline">\(\mathcal{X} × \{0, 1\}\)</span> such that:
+<ol>
+<li>
+There exists a function <span class="math inline">\(f : \mathcal{X} \mapsto \{0, 1\}\)</span> with <span class="math inline">\(\mathbb{P}(f(x) \not= y \mid (x, y) \sim D) = 0\)</span>.
+</li>
+<li>
+With probability of at least 1/7 over the choice of <span class="math inline">\(S \sim D^m\)</span> we have that <span class="math inline">\(\mathbb{P}(A_S(x) \not= y \mid (x, y) \sim D) \ge 1/8\)</span>
+</li>
+</ol>
+</blockquote>
+<p>The idea of the proof is that if you have fixed training set and some nontrivial number of unseen examples, one can vary labels of these unseen examples arbitrarily. So, if your algorithm classifies some example correctly, there exists similar problem with the only difference being different ground truth label for this example. Essentially, for the same training set you can construct completely different test sets.</p>
+<h3 id="sounds-pretty-frustrating-isnt-it">Sounds pretty frustrating, isn’t it?</h3>
+<p>The result suggests impossibility of the universal learning machine that’d be able to take any training set, and make the best predictions possible for the unseen data. And this <em>is</em> impossible! Another reformulation of the same theorem says that every classification algorithm has accuracy 1/2 when averaged over all possible problems. However, practical implications of the theorem are not so far-reaching.</p>
+<p>The theorem essentially says that every problem has an evil doppelgänger, that’d break your precious model you trained so long. However, how likely are you to run into this doppelgänger? How likely is it to run into the problem where the test set differs from the train set so much? Or, how can our human brains work so well <sup class="footnote-link"><a href="#note-1" id="note-1-src">1</a></sup>? Let me expand the later thought.</p>
+<p>I believe our brains are not magical, they are just another kind of a (biological) learning machine, obeying same mathematical principles, powerful enough to solve various problems we face every day. Yes, we can’t solve all the problems in the world, but why would we care? In Machine Learning as a subfield of Artificial Intelligence we seek to solve problems of <em>practical importance</em>, and in the first place automate what people already can do. Thus, we have a proof that there exists an algorithm that works reasonably well. It’s right here, in your brain.</p>
+<p>So how come we’re able to navigate in such a complex world, communicate in such complicated languages, and discover laws of nature through science by thinking hard enough, if for every problem <em>we</em> successfully solve the mathematics has an evil copy of? The answer seems to be that these evil copies are very rare. And I believe there’s a reason for that.</p>
+<p>Let’s get back to the theorem. Recall, that is essentially based in the fact that for a fixed training set you can vary test set as you wish. How complicated (for some intuitive notion of complexity) does that make the distribution <span class="math inline">\(p(y|x)\)</span> that makes perfect predictions for a given <span class="math inline">\(x\)</span>? Well, if it had one regularity pattern in the training set, and then suddenly changed this pattern in the test set to something completely different, that’d make the target distribution <span class="math inline">\(p(y|x)\)</span> more complicated. So, even if every good problem (i.e. one we, humans, can solve) has an evil twin, twin’s complexity should be higher due to way more complex regularity pattern.</p>
+<p>Thus, I’m sure more complicated problems and objects are less likely in the Universe. Otherwise, we’d not be able to have such a complicated life with our particular instance of a learning machine, implemented in our brain. The NFL theorem states there are hard problems out there, but doesn’t say anything how common they are, implicitly assuming uniform distribution, which seems to disagree with our observations.</p>
+<h3 id="other-impossibility-results">Other impossibility results</h3>
+<p>Another similar result is the <a href="https://en.wikipedia.org/wiki/Halting_problem">halting problem</a>, which states that given any program, you’d not be able to determine if it stops with 100% accuracy. However, this does not mean that every program’s halting is undecidable. For example, for <a href="https://en.wikipedia.org/wiki/Linear_bounded_automaton">linear bounded automata</a> one actually can decide if a program for this automation halts (thought that might require some astronomical amount of memory). This result only states there’s no universal decider, and every particular class should be inspected separately.</p>
+<p>To recap, the idea of this post is that even though the theory seemingly limits our capabilities, we should not get discouraged by these results, as they are way more general than we need in practice. Quite often we can still solve real problems due to the fact that the general case includes some really weird functions, but reality does not.</p>
+<hr />
+Notes:
+<ol>
+<li id="note-1">
+Well, we don’t have other baselines, so it’s hard to tell if they indeed work well. But still, human brains are the best learning machines known to humanity. <a href="#note-1-src" title="Back to the text">↩</a>
+</li>
+</ol>
+</section>
+
+<div class="tags-pane">Tagged as <a href="../tags/semi-mathematical.html">semi-mathematical</a>, <a href="../tags/machine%20learning.html">machine learning</a>, <a href="../tags/artificial%20intelligence.html">artificial intelligence</a></div>
+</article>
+
+<section>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'barmaley-exe'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    
+
+</section>
+
+    </section>
+    <footer>
+        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+    </footer>
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-38530232-1']);
+_gaq.push(['_trackPageview']);
+(function() {
+ var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+ var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+</body>
+</html>
