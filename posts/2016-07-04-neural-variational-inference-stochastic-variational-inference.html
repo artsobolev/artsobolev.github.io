@@ -143,17 +143,28 @@ q(z_{nj} \mid \phi_{nj}) = h(z_{nj}) \exp(\phi_{nj}^T t(z_{nj}) - a_m(\phi_{nj})
 \nabla_\lambda^\text{N} \mathcal{L}_S(\lambda) = \mathbb{E}_{q(z)} \eta_g(\{x_S\}_{n=1}^{N/|S|}, \{z_S\}_{n=1}^{N/|S|}, \alpha) - \lambda \\
 \]</span></p>
 <p>One important note: for stochastic optimization we can’t use constant step size. As Robbins-Monro conditions suggest, we need to use schedule <span class="math inline">\(\rho_t\)</span> such that <span class="math inline">\(\sum \rho_t = \infty\)</span> and <span class="math inline">\(\sum \rho_t^2 &lt; \infty\)</span>. Then the update <span class="math inline">\(\lambda^{\text{new}} = \lambda^{\text{old}} + \rho_t \nabla_\lambda^\text{N} \mathcal{L}_S(\lambda) = (1 - \rho_t) \lambda^{\text{old}} + \rho_t \mathbb{E}_{q(z)} \eta_g(\{x_S\}_{n=1}^{N/|S|}, \{z_S\}_{n=1}^{N/|S|}, \alpha)\)</span></p>
-<p>Finally we have the following optimization scheme:</p>
+Finally we have the following optimization scheme:
 <ul>
-<pre><code>&lt;li&gt;Start with random initialization for $\lambda^{(0)}$&lt;/li&gt;
-&lt;li&gt;For $t$ from 0 to MAX_ITER
-&lt;ol&gt;
-	&lt;li&gt;Sample $S \sim \text{Unif}\{1, \dots, N\}^{|S|}$&lt;/li&gt;
-	&lt;li&gt;For each sample $i \in S$ update the local variational parameter $\phi_{i,j} = \mathbb{E}_{q(\beta) q(z_{i,-j})} \eta_l(x_i, z_{i,-j}, \beta)$&lt;/li&gt;
-	&lt;li&gt;Replicate the sample $N / |S|$ times and compute the global update $\hat \lambda = \mathbb{E}_{q(z)} \eta_g(\{x_S\}_{n=1}^{N/|S|}, \{z_S\}_{n=1}^{N/|S|}, \alpha)$&lt;/li&gt;
-	&lt;li&gt;Update the global update $\lambda^{(t+1)} = (1-\rho_t) \lambda^{(t)} + \rho_t \hat \lambda$&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/li&gt;</code></pre>
+<li>
+Start with random initialization for <span class="math inline">\(\lambda^{(0)}\)</span>
+</li>
+<li>
+For <span class="math inline">\(t\)</span> from 0 to MAX_ITER
+<ol>
+<li>
+Sample <span class="math inline">\(S \sim \text{Unif}\{1, \dots, N\}^{|S|}\)</span>
+</li>
+<li>
+For each sample <span class="math inline">\(i \in S\)</span> update the local variational parameter <span class="math inline">\(\phi_{i,j} = \mathbb{E}_{q(\beta) q(z_{i,-j})} \eta_l(x_i, z_{i,-j}, \beta)\)</span>
+</li>
+<li>
+Replicate the sample <span class="math inline">\(N / |S|\)</span> times and compute the global update <span class="math inline">\(\hat \lambda = \mathbb{E}_{q(z)} \eta_g(\{x_S\}_{n=1}^{N/|S|}, \{z_S\}_{n=1}^{N/|S|}, \alpha)\)</span>
+</li>
+<li>
+Update the global update <span class="math inline">\(\lambda^{(t+1)} = (1-\rho_t) \lambda^{(t)} + \rho_t \hat \lambda\)</span>
+</li>
+</ol>
+</li>
 </ul>
 </section>
 

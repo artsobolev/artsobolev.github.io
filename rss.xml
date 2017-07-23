@@ -7,8 +7,49 @@
         <description><![CDATA[Random notes on Software Engineering, Computer Science and Mathematics]]></description>
         <atom:link href="http://artem.sobolev.name/rss.xml" rel="self"
                    type="application/rss+xml" />
-        <lastBuildDate>Sun, 29 Jan 2017 00:00:00 UT</lastBuildDate>
+        <lastBuildDate>Sun, 23 Jul 2017 00:00:00 UT</lastBuildDate>
         <item>
+    <title>On No Free Lunch Theorem and some other impossibility results</title>
+    <link>http://artem.sobolev.name/posts/2017-07-23-no-free-lunch-theorem.html</link>
+    <description><![CDATA[<p>The more I talk to people online, the more I hear about the famous No Free Lunch Theorem (NFL theorem). Unfortunately, quite often people don’t really understand what the theorem is about, and its implications are. In this post I’d like to share my view on the NFL theorem, and some other impossibility results.</p>
+<!--more-->
+<h3 id="no-free-lunch-theorem-revisited">No Free Lunch Theorem Revisited</h3>
+<p>First, let’s formally state the NFL theorem. I’ll take theorem statement from the (freely available!) book <a href="http://www.cs.huji.ac.il/~shais/UnderstandingMachineLearning/index.html"><em>Understanding Machine Learning: From Theory to Algorithms</em></a> by Shai Shalev-Shwartz and Shai Ben-David.</p>
+<p>In the nutshell, the theorem says that whatever learning algorithm you pick, there will always be a problem (=dataset + some metrics), that your particular algorithm is incapable of solving, even though in principle the problem could be solved (by some other algorithm, which would have its own kryptonite problem). More formally (I modified the statement to distill the notation):</p>
+<blockquote>
+Let <span class="math inline">\(A\)</span> be any learning algorithm for the task of binary classification with respect to the 0−1 loss over a domain <span class="math inline">\(\mathcal{X}\)</span> . Let <span class="math inline">\(m\)</span> be any number smaller than <span class="math inline">\(|\mathcal{X}|/2\)</span>, representing a training set size. Then, there exists a distribution <span class="math inline">\(D\)</span> over <span class="math inline">\(\mathcal{X} × \{0, 1\}\)</span> such that:
+<ol>
+<li>
+There exists a function <span class="math inline">\(f : \mathcal{X} \mapsto \{0, 1\}\)</span> with <span class="math inline">\(\mathbb{P}(f(x) \not= y \mid (x, y) \sim D) = 0\)</span>.
+</li>
+<li>
+With probability of at least 1/7 over the choice of <span class="math inline">\(S \sim D^m\)</span> we have that <span class="math inline">\(\mathbb{P}(A_S(x) \not= y \mid (x, y) \sim D) \ge 1/8\)</span>
+</li>
+</ol>
+</blockquote>
+<p>The idea of the proof is that if you have fixed training set and some nontrivial number of unseen examples, one can vary labels of these unseen examples arbitrarily. So, if your algorithm classifies some example correctly, there exists similar problem with the only difference being different ground truth label for this example. Essentially, for the same training set you can construct completely different test sets.</p>
+<h3 id="sounds-pretty-frustrating-isnt-it">Sounds pretty frustrating, isn’t it?</h3>
+<p>The result suggests impossibility of the universal learning machine that’d be able to take any training set, and make the best predictions possible for the unseen data. And this <em>is</em> impossible! Another reformulation of the same theorem says that every classification algorithm has accuracy 1/2 when averaged over all possible problems. However, practical implications of the theorem are not so far-reaching.</p>
+<p>The theorem essentially says that every problem has an evil doppelgänger, that’d break your precious model you trained so long. However, how likely are you to run into this doppelgänger? How likely is it to run into the problem where the test set differs from the train set so much? Or, how can our human brains work so well <sup class="footnote-link"><a href="#note-1" id="note-1-src">1</a></sup>? Let me expand the later thought.</p>
+<p>I believe our brains are not magical, they are just another kind of a (biological) learning machine, obeying same mathematical principles, powerful enough to solve various problems we face every day. Yes, we can’t solve all the problems in the world, but why would we care? In Machine Learning as a subfield of Artificial Intelligence we seek to solve problems of <em>practical importance</em>, and in the first place automate what people already can do. Thus, we have a proof that there exists an algorithm that works reasonably well. It’s right here, in your brain.</p>
+<p>So how come we’re able to navigate in such a complex world, communicate in such complicated languages, and discover laws of nature through science by thinking hard enough, if for every problem <em>we</em> successfully solve the mathematics has an evil copy of? The answer seems to be that these evil copies are very rare. And I believe there’s a reason for that.</p>
+<p>Let’s get back to the theorem. Recall, that is essentially based in the fact that for a fixed training set you can vary test set as you wish. How complicated (for some intuitive notion of complexity) does that make the distribution <span class="math inline">\(p(y|x)\)</span> that makes perfect predictions for a given <span class="math inline">\(x\)</span>? Well, if it had one regularity pattern in the training set, and then suddenly changed this pattern in the test set to something completely different, that’d make the target distribution <span class="math inline">\(p(y|x)\)</span> more complicated. So, even if every good problem (i.e. one we, humans, can solve) has an evil twin, twin’s complexity should be higher due to way more complex regularity pattern.</p>
+<p>Thus, I’m sure more complicated problems and objects are less likely in the Universe. Otherwise, we’d not be able to have such a complicated life with our particular instance of a learning machine, implemented in our brain. The NFL theorem states there are hard problems out there, but doesn’t say anything how common they are, implicitly assuming uniform distribution, which seems to disagree with our observations.</p>
+<h3 id="other-impossibility-results">Other impossibility results</h3>
+<p>Another similar result is the <a href="https://en.wikipedia.org/wiki/Halting_problem">halting problem</a>, which states that given any program, you’d not be able to determine if it stops with 100% accuracy. However, this does not mean that every program’s halting is undecidable. For example, for <a href="https://en.wikipedia.org/wiki/Linear_bounded_automaton">linear bounded automata</a> one actually can decide if a program for this automation halts (thought that might require some astronomical amount of memory). This result only states there’s no universal decider, and every particular class should be inspected separately.</p>
+<p>To recap, the idea of this post is that even though the theory seemingly limits our capabilities, we should not get discouraged by these results, as they are way more general than we need in practice. Quite often we can still solve real problems due to the fact that the general case includes some really weird functions, but reality does not.</p>
+<hr />
+Notes:
+<ol>
+<li id="note-1">
+Well, we don’t have other baselines, so it’s hard to tell if they indeed work well. But still, human brains are the best learning machines known to humanity. <a href="#note-1-src" title="Back to the text">↩</a>
+</li>
+</ol>]]></description>
+    <pubDate>Sun, 23 Jul 2017 00:00:00 UT</pubDate>
+    <guid>http://artem.sobolev.name/posts/2017-07-23-no-free-lunch-theorem.html</guid>
+    <dc:creator>Artem</dc:creator>
+</item>
+<item>
     <title>Matrix and Vector Calculus via Differentials</title>
     <link>http://artem.sobolev.name/posts/2017-01-29-matrix-and-vector-calculus-via-differentials.html</link>
     <description><![CDATA[<p>Many tasks of machine learning can be posed as optimization problems. One comes up with a parametric model, defines a loss function, and then minimizes it in order to learn optimal parameters. One very powerful tool of optimization theory is the use of smooth (differentiable) functions: those that can be locally approximated with a linear functions. We all surely know how to differentiate a function, but often it’s more convenient to perform all the derivations in matrix form, since many computational packages like numpy or matlab are optimized for vectorized expressions.</p>
@@ -50,7 +91,7 @@ d(\text{det}(X)) = \text{det}(X) \text{Tr}(X^{-1} dX)
 \]</span></p>
 <p>It’s also very helpful to derive a rule to deal with function composition: suppose we have <span class="math inline">\(f(x)\)</span> and <span class="math inline">\(g(x)\)</span> with corresponding differentials <span class="math inline">\(df(x)\)</span> and <span class="math inline">\(dg(x)\)</span>. Then the differential of <span class="math inline">\(h(x) = f(g(x))\)</span> is</p>
 <p><span class="math display">\[
-dh(x) = f(g(x+dx)) - f(g(dx)) = f(g(x) + dg(x)) - f(g(x)) = df(y)|_{dy = dg(x), y = g(x)}
+dh(x) = f(g(x+dx)) - f(g(x)) = f(g(x) + dg(x)) - f(g(x)) = df(y)|_{dy = dg(x), y = g(x)}
 \]</span></p>
 <p>That is, we take <span class="math inline">\(df(y)\)</span>, and replace each <span class="math inline">\(dy\)</span> with <span class="math inline">\(dg(x)\)</span>, and each <span class="math inline">\(y\)</span> with <span class="math inline">\(g(x)\)</span>.</p>
 <p>These rules allow us to differentiate fairly complicated expressions like <span class="math inline">\(f(x) = \text{det}(X + B) \log(a^T X^{-1} a) - \text{Tr}(X)\)</span></p>
@@ -251,9 +292,11 @@ q(h_1, \dots, h_M \mid x, \Lambda) = \prod_{m=1}^{M} p(h_{m} \mid h_{m-1}, \Thet
 \]</span></p>
 <p>The <span class="math inline">\(p(x, h_1, \dots, h_{M-1} \mid h_M)\)</span> distribution is usually called a <strong>generative network</strong> (or model) as it allows one to generate samples from latent representation(s). The approximate posterior <span class="math inline">\(q(h_1, \dots, h_M \mid x, \Lambda)\)</span> in this framework is called a <strong>recognition network</strong> (or model). Presumably, the name reflects the purpose of the network to recognize the hidden structure of observations.</p>
 <p>So, if the VAE is a special case of Helmholtz machines, what’s new then? The standard algorithm for learning Helmholtz machines, the <a href="https://en.wikipedia.org/wiki/Wake-sleep_algorithm">Wake-Sleep algorithm</a>, turns out to be optimizing a different objective. Thus, one of significant contributions of Kingma and Welling is application of the reparametrization trick to make optimization of the ELBO w.r.t. <span class="math inline">\(\Lambda\)</span> tractable.</p>
-<hr/>
+<hr />
 <ol>
-<pre><code>&lt;li id=&quot;note-1&quot;&gt;&lt;a href=&quot;#back-note-1&quot;&gt;&amp;uarr;&lt;/a&gt; This is not true for other popular autoencoding architectures. Boltzman Machines are too hard to train properly, while tranditional autoencoders (contractive, denoising) are hard to sample from (special procedures involving MCMC are required).&lt;/li&gt;</code></pre>
+<li id="note-1">
+<a href="#back-note-1">↑</a> This is not true for other popular autoencoding architectures. Boltzman Machines are too hard to train properly, while tranditional autoencoders (contractive, denoising) are hard to sample from (special procedures involving MCMC are required).
+</li>
 </ol>]]></description>
     <pubDate>Mon, 11 Jul 2016 00:00:00 UT</pubDate>
     <guid>http://artem.sobolev.name/posts/2016-07-11-neural-variational-inference-variational-autoencoders-and-Helmholtz-machines.html</guid>
@@ -348,9 +391,15 @@ Neural Variational Inference and Learning
 <p>While this additional <span class="math inline">\(\log p(x \mid \Theta)\)</span> term does not contribute to the expectation, it affects the variance on the estimator. Therefore, <span class="math inline">\(\alpha(x)\)</span> is supposed to estimate the marginal log-likelihood <span class="math inline">\(\log p(x \mid \Theta)\)</span>.</p>
 <p>The paper also lists several other variance reduction techniques that can be used in combination with the neural network-based baseline:</p>
 <ul>
-<pre><code>&lt;li&gt;&lt;strong&gt;Constant baseline&lt;/strong&gt; — analogue of &lt;em&gt;Control Variates&lt;/em&gt;, uses running average of $\log p(x, z \mid \Theta) - \log q(z \mid x, \Lambda)$ as a baseline&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Variance normalization&lt;/strong&gt; — normalizes the learning signal to unit variance, equivalent to adaptive learning rate&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Local learning signals&lt;/strong&gt; — falls out of the scope of this post as requires it model-specific analysis and alternations, and can&#39;t be used in Blackbox regime&lt;/li&gt;</code></pre>
+<li>
+<strong>Constant baseline</strong> — analogue of <em>Control Variates</em>, uses running average of <span class="math inline">\(\log p(x, z \mid \Theta) - \log q(z \mid x, \Lambda)\)</span> as a baseline
+</li>
+<li>
+<strong>Variance normalization</strong> — normalizes the learning signal to unit variance, equivalent to adaptive learning rate
+</li>
+<li>
+<strong>Local learning signals</strong> — falls out of the scope of this post as requires it model-specific analysis and alternations, and can’t be used in Blackbox regime
+</li>
 </ul>]]></description>
     <pubDate>Tue, 05 Jul 2016 00:00:00 UT</pubDate>
     <guid>http://artem.sobolev.name/posts/2016-07-05-neural-variational-inference-blackbox.html</guid>
@@ -471,17 +520,28 @@ q(z_{nj} \mid \phi_{nj}) = h(z_{nj}) \exp(\phi_{nj}^T t(z_{nj}) - a_m(\phi_{nj})
 \nabla_\lambda^\text{N} \mathcal{L}_S(\lambda) = \mathbb{E}_{q(z)} \eta_g(\{x_S\}_{n=1}^{N/|S|}, \{z_S\}_{n=1}^{N/|S|}, \alpha) - \lambda \\
 \]</span></p>
 <p>One important note: for stochastic optimization we can’t use constant step size. As Robbins-Monro conditions suggest, we need to use schedule <span class="math inline">\(\rho_t\)</span> such that <span class="math inline">\(\sum \rho_t = \infty\)</span> and <span class="math inline">\(\sum \rho_t^2 &lt; \infty\)</span>. Then the update <span class="math inline">\(\lambda^{\text{new}} = \lambda^{\text{old}} + \rho_t \nabla_\lambda^\text{N} \mathcal{L}_S(\lambda) = (1 - \rho_t) \lambda^{\text{old}} + \rho_t \mathbb{E}_{q(z)} \eta_g(\{x_S\}_{n=1}^{N/|S|}, \{z_S\}_{n=1}^{N/|S|}, \alpha)\)</span></p>
-<p>Finally we have the following optimization scheme:</p>
+Finally we have the following optimization scheme:
 <ul>
-<pre><code>&lt;li&gt;Start with random initialization for $\lambda^{(0)}$&lt;/li&gt;
-&lt;li&gt;For $t$ from 0 to MAX_ITER
-&lt;ol&gt;
-	&lt;li&gt;Sample $S \sim \text{Unif}\{1, \dots, N\}^{|S|}$&lt;/li&gt;
-	&lt;li&gt;For each sample $i \in S$ update the local variational parameter $\phi_{i,j} = \mathbb{E}_{q(\beta) q(z_{i,-j})} \eta_l(x_i, z_{i,-j}, \beta)$&lt;/li&gt;
-	&lt;li&gt;Replicate the sample $N / |S|$ times and compute the global update $\hat \lambda = \mathbb{E}_{q(z)} \eta_g(\{x_S\}_{n=1}^{N/|S|}, \{z_S\}_{n=1}^{N/|S|}, \alpha)$&lt;/li&gt;
-	&lt;li&gt;Update the global update $\lambda^{(t+1)} = (1-\rho_t) \lambda^{(t)} + \rho_t \hat \lambda$&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/li&gt;</code></pre>
+<li>
+Start with random initialization for <span class="math inline">\(\lambda^{(0)}\)</span>
+</li>
+<li>
+For <span class="math inline">\(t\)</span> from 0 to MAX_ITER
+<ol>
+<li>
+Sample <span class="math inline">\(S \sim \text{Unif}\{1, \dots, N\}^{|S|}\)</span>
+</li>
+<li>
+For each sample <span class="math inline">\(i \in S\)</span> update the local variational parameter <span class="math inline">\(\phi_{i,j} = \mathbb{E}_{q(\beta) q(z_{i,-j})} \eta_l(x_i, z_{i,-j}, \beta)\)</span>
+</li>
+<li>
+Replicate the sample <span class="math inline">\(N / |S|\)</span> times and compute the global update <span class="math inline">\(\hat \lambda = \mathbb{E}_{q(z)} \eta_g(\{x_S\}_{n=1}^{N/|S|}, \{z_S\}_{n=1}^{N/|S|}, \alpha)\)</span>
+</li>
+<li>
+Update the global update <span class="math inline">\(\lambda^{(t+1)} = (1-\rho_t) \lambda^{(t)} + \rho_t \hat \lambda\)</span>
+</li>
+</ol>
+</li>
 </ul>]]></description>
     <pubDate>Mon, 04 Jul 2016 00:00:00 UT</pubDate>
     <guid>http://artem.sobolev.name/posts/2016-07-04-neural-variational-inference-stochastic-variational-inference.html</guid>
@@ -641,22 +701,6 @@ As you can see, the key part of code is ECMAScript 5’s <code>Object.defineProp
 </ul>]]></description>
     <pubDate>Thu, 23 May 2013 00:00:00 UT</pubDate>
     <guid>http://artem.sobolev.name/posts/2013-05-23-js-namespaced-methods.html</guid>
-    <dc:creator>Artem</dc:creator>
-</item>
-<item>
-    <title>Crazy Expression Parsing</title>
-    <link>http://artem.sobolev.name/posts/2013-03-30-crazy-expression-parsing.html</link>
-    <description><![CDATA[<p>Suppose we have an expression like <code>(5+5 * (x^x-5 | y &amp;&amp; 3))</code> and we’d like to get some computer-understandable representation of that expression, like:</p>
-<p><code>ADD Token[5] MUL Token[5] AND BIT_OR XOR Token[x] SUB Token[x] Token[5] Token[y] Token[3]</code></p>
-<p>In case if you don’t know how to do that or are looking for solutin right now, you should know that I’m not going to present right solution. This post is just a joke. You should use either <a href="http://en.wikipedia.org/wiki/Shunting-yard_algorithm" title="Shunting-yard algorithm — Wikipedia">Shunting-yard algorithm</a> or <a href="http://en.wikipedia.org/wiki/Recursive_descent_parser">Recursive descent parser</a>.</p>
-<p>So if you’re ready for madness… Let’s go! <!--more--></p>
-<p>Let’s take <a href="http://en.wikipedia.org/wiki/Don%27t_repeat_yourself">Don’t repeat yourself</a> principle as a justification. Moreover, let’s somewhat strengthen it to be “Don’t repeat”. Indeed, why do we need to repeat what compiler’s developers already did?</p>
-Here we go
-<script src="https://gist.github.com/artsobolev/5273716.js"></script>
-<p>In case you’re wondering what the heck is going on: all constants are converted to instances of <code>Token</code> class, for which I overloaded all the operators. Overloading is done in a way to preserve structure of an expression. The only thing we have to do then is to extract that information. In case you’re not familiar with C++, I recommend you to read something about operator overloading.</p>
-<p>As you can see, g++ and python are required for that “parser”. Unfortunatelly, priority of a bitwise xor is too low to serve as a power operator.</p>]]></description>
-    <pubDate>Sat, 30 Mar 2013 00:00:00 UT</pubDate>
-    <guid>http://artem.sobolev.name/posts/2013-03-30-crazy-expression-parsing.html</guid>
     <dc:creator>Artem</dc:creator>
 </item>
 

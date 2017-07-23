@@ -117,9 +117,15 @@ Neural Variational Inference and Learning
 <p>While this additional <span class="math inline">\(\log p(x \mid \Theta)\)</span> term does not contribute to the expectation, it affects the variance on the estimator. Therefore, <span class="math inline">\(\alpha(x)\)</span> is supposed to estimate the marginal log-likelihood <span class="math inline">\(\log p(x \mid \Theta)\)</span>.</p>
 <p>The paper also lists several other variance reduction techniques that can be used in combination with the neural network-based baseline:</p>
 <ul>
-<pre><code>&lt;li&gt;&lt;strong&gt;Constant baseline&lt;/strong&gt; — analogue of &lt;em&gt;Control Variates&lt;/em&gt;, uses running average of $\log p(x, z \mid \Theta) - \log q(z \mid x, \Lambda)$ as a baseline&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Variance normalization&lt;/strong&gt; — normalizes the learning signal to unit variance, equivalent to adaptive learning rate&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Local learning signals&lt;/strong&gt; — falls out of the scope of this post as requires it model-specific analysis and alternations, and can't be used in Blackbox regime&lt;/li&gt;</code></pre>
+<li>
+<strong>Constant baseline</strong> — analogue of <em>Control Variates</em>, uses running average of <span class="math inline">\(\log p(x, z \mid \Theta) - \log q(z \mid x, \Lambda)\)</span> as a baseline
+</li>
+<li>
+<strong>Variance normalization</strong> — normalizes the learning signal to unit variance, equivalent to adaptive learning rate
+</li>
+<li>
+<strong>Local learning signals</strong> — falls out of the scope of this post as requires it model-specific analysis and alternations, and can’t be used in Blackbox regime
+</li>
 </ul>
 </section>
 

@@ -70,7 +70,7 @@ d(\text{det}(X)) = \text{det}(X) \text{Tr}(X^{-1} dX)
 \]</span></p>
 <p>It’s also very helpful to derive a rule to deal with function composition: suppose we have <span class="math inline">\(f(x)\)</span> and <span class="math inline">\(g(x)\)</span> with corresponding differentials <span class="math inline">\(df(x)\)</span> and <span class="math inline">\(dg(x)\)</span>. Then the differential of <span class="math inline">\(h(x) = f(g(x))\)</span> is</p>
 <p><span class="math display">\[
-dh(x) = f(g(x+dx)) - f(g(dx)) = f(g(x) + dg(x)) - f(g(x)) = df(y)|_{dy = dg(x), y = g(x)}
+dh(x) = f(g(x+dx)) - f(g(x)) = f(g(x) + dg(x)) - f(g(x)) = df(y)|_{dy = dg(x), y = g(x)}
 \]</span></p>
 <p>That is, we take <span class="math inline">\(df(y)\)</span>, and replace each <span class="math inline">\(dy\)</span> with <span class="math inline">\(dg(x)\)</span>, and each <span class="math inline">\(y\)</span> with <span class="math inline">\(g(x)\)</span>.</p>
 <p>These rules allow us to differentiate fairly complicated expressions like <span class="math inline">\(f(x) = \text{det}(X + B) \log(a^T X^{-1} a) - \text{Tr}(X)\)</span></p>

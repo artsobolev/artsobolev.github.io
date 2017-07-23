@@ -83,7 +83,9 @@ q(h_1, \dots, h_M \mid x, \Lambda) = \prod_{m=1}^{M} p(h_{m} \mid h_{m-1}, \Thet
 <p>So, if the VAE is a special case of Helmholtz machines, what’s new then? The standard algorithm for learning Helmholtz machines, the <a href="https://en.wikipedia.org/wiki/Wake-sleep_algorithm">Wake-Sleep algorithm</a>, turns out to be optimizing a different objective. Thus, one of significant contributions of Kingma and Welling is application of the reparametrization trick to make optimization of the ELBO w.r.t. <span class="math inline">\(\Lambda\)</span> tractable.</p>
 <hr />
 <ol>
-<pre><code>&lt;li id=&quot;note-1&quot;&gt;&lt;a href=&quot;#back-note-1&quot;&gt;&amp;uarr;&lt;/a&gt; This is not true for other popular autoencoding architectures. Boltzman Machines are too hard to train properly, while tranditional autoencoders (contractive, denoising) are hard to sample from (special procedures involving MCMC are required).&lt;/li&gt;</code></pre>
+<li id="note-1">
+<a href="#back-note-1">↑</a> This is not true for other popular autoencoding architectures. Boltzman Machines are too hard to train properly, while tranditional autoencoders (contractive, denoising) are hard to sample from (special procedures involving MCMC are required).
+</li>
 </ol>
 </section>
 
