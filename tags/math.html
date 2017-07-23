@@ -40,6 +40,23 @@
 </article>
 
 <hr />
+<article>
+	<header>
+		<h3><a href="../posts/2013-02-10-std-vector-growth.html">Resizing Policy of std::vector</a></h3>
+		<time>February 10, 2013</time>
+	</header>
+
+	<section>
+		Sometime ago when Facebook opensourced their <a title="Folly is an open-source C++ library developed and used at Facebook" href="https://github.com/facebook/folly">Folly library</a> I was reading their docs and found <a title="folly/FBvector.h documentation" href="https://github.com/facebook/folly/blob/master/folly/docs/FBVector.md">something interesting</a>. In section “Memory Handling” they state
+<blockquote>
+In fact it can be mathematically proven that a growth factor of 2 is rigorously the worst possible because it never allows the vector to reuse any of its previously-allocated memory
+</blockquote>
+<p>I haven’t got it first time. Recently I recalled that article and decided to deal with it. So after reading and googling for a while I finally understood the idea, so I’d like to say a few words about it.</p>
+
+	</section>
+</article>
+
+<hr />
 
 </ul>
 

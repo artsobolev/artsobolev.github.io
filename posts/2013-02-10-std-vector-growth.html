@@ -44,9 +44,15 @@ In fact it can be mathematically proven that a growth factor of 2 is rigorously 
 <p>Okay, let’s now solve this problem. First, let’s formalize it.</p>
 <p>Every time we increase vector of size <span class="math inline">\(C\)</span> with growing factor <span class="math inline">\(k\)</span> we do these steps:</p>
 <ol>
-<pre><code>&lt;li&gt;Allocate $k C$ bytes&lt;/li&gt;
-&lt;li&gt;Create a new vector here and copy current vector's content to the new one&lt;/li&gt;
-&lt;li&gt;Remove the current vector, set the new one as the current&lt;/li&gt;</code></pre>
+<li>
+Allocate <span class="math inline">\(k C\)</span> bytes
+</li>
+<li>
+Create a new vector here and copy current vector’s content to the new one
+</li>
+<li>
+Remove the current vector, set the new one as the current
+</li>
 </ol>
 <p>So as you can see, formula for 2 is sort of upperbound: you can not use all of previously allocated <span class="math inline">\(n-1\)</span> chunks when allocating nth, since you need to copy values from (n-1)th (though you can copy them in some temporary buffer, but it requires extra memory) chunk. So when we allocate nth chunk, we need it to be less than total free space from <span class="math inline">\(n-2\)</span> allocations: <span class="math display">\[ k^n C \le k^{n-2}C + k^{n-3}C + \dots + kC + C \]</span></p>
 <p>As you can see, we can get rid of C since it’s definetly positive. <span class="math display">\[ k^n \le k^{n-2} + k^{n-3} + \dots + k + 1 \]</span></p>
@@ -59,7 +65,7 @@ In fact it can be mathematically proven that a growth factor of 2 is rigorously 
 <p>So that’s why growth factor in many dynamic arrays is 1.5: it is pretty big to not cause reallocations too frequently and is small enough to not use memory too extensively.</p>
 </section>
 
-<div class="tags-pane">Tagged as <a href="../tags/C%2B%2B.html">C++</a></div>
+<div class="tags-pane">Tagged as <a href="../tags/C%2B%2B.html">C++</a>, <a href="../tags/math.html">math</a></div>
 </article>
 
 <section>

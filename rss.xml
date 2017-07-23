@@ -612,23 +612,29 @@ D_{KL}(q(z \mid x) \mid\mid p(z \mid x))
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">parallel</span> -u --wd ... -S :,host1,host2 --trc <span class="dt">{}</span>.emb <span class="st">&quot;sh {}&quot;</span></code></pre></div>
 Here we have:
 <ul>
-<pre><code>&lt;li&gt;**wd** stands for working directory. Three-dots means &lt;code&gt;parallel&lt;/code&gt;&#39;s temporary folder&lt;/li&gt;
-&lt;li&gt;**S** contains list of hosts with : being a localhost&lt;/li&gt;
-&lt;li&gt;**trc** stands for &quot;Transfer, Return, Cleanup&quot; and means that we&#39;d like to transfer an executable file to target host, return specified file and do a cleanup&lt;/li&gt;</code></pre>
+<li>
+<strong>wd</strong> stands for working directory. Three-dots means <code>parallel</code>’s temporary folder
+</li>
+<li>
+<strong>S</strong> contains list of hosts with : being a localhost
+</li>
+<li>
+<strong>trc</strong> stands for “Transfer, Return, Cleanup” and means that we’d like to transfer an executable file to target host, return specified file and do a cleanup
+</li>
 </ul>
 <p><code>parallel</code> accepts list command arguments (file names) in standard input and executes a command (<code>sh</code> in my case) for each of them.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ls</span> -1 jobs/* <span class="kw">|</span> <span class="kw">parallel</span> -u --wd ... -S :,host1,host2 --trc <span class="dt">{}</span>.emb <span class="st">&quot;sh {}&quot;</span></code></pre></div>
 <p>There’s a problem: we usually need more than one file to do usefull stuff. There are several solutions to that problem</p>
 <ul>
-<pre><code>&lt;li&gt;**Bring all files manually**&lt;br/&gt;
-	It&#39;s a solution, but somewhat tedious one: setting computing environment on a several machines is dull
-&lt;/li&gt;
-&lt;li&gt;**tar it and do all the stuff in a command**&lt;br/&gt;
-	Looks better, but some shell kung-fu is required
-&lt;/li&gt;
-&lt;li&gt;**Use &lt;a href=&quot;http://en.wikipedia.org/wiki/Shar&quot;&gt;shar&lt;/a&gt;**&lt;br/&gt;
-	Basically it&#39;s a tar archive with some shell commands for (self-)extracting. I chose this way and glued in some my code.
-&lt;/li&gt;</code></pre>
+<li>
+<strong>Bring all files manually</strong><br/> It’s a solution, but somewhat tedious one: setting computing environment on a several machines is dull
+</li>
+<li>
+<strong>tar it and do all the stuff in a command</strong><br/> Looks better, but some shell kung-fu is required
+</li>
+<li>
+<strong>Use <a href="http://en.wikipedia.org/wiki/Shar">shar</a></strong><br/> Basically it’s a tar archive with some shell commands for (self-)extracting. I chose this way and glued in some my code.
+</li>
 </ul>]]></description>
     <pubDate>Fri, 01 Aug 2014 00:00:00 UT</pubDate>
     <guid>http://artem.sobolev.name/posts/2014-08-01-gnu-parallel.html</guid>
@@ -694,10 +700,18 @@ Later, the mathematician wakes up and smells smoke. She goes to the hall, sees t
 </blockquote>
 As you can see, the key part of code is ECMAScript 5’s <code>Object.defineProperty</code>. According to the kangax’s <a href="http://kangax.github.io/es5-compat-table/#Object.defineProperty" title="ECMAScript 5 compatibility table" target="_blank">ECMAScript 5 compatibility table</a> it has pretty good support:
 <ul>
-<pre><code>&lt;li&gt;IE 9+&lt;/li&gt;
-&lt;li&gt;Opera 12+&lt;/li&gt;
-&lt;li&gt;FF 4+&lt;/li&gt;
-&lt;li&gt;Chrome 7+ (and thus Node.JS too)&lt;/li&gt;</code></pre>
+<li>
+IE 9+
+</li>
+<li>
+Opera 12+
+</li>
+<li>
+FF 4+
+</li>
+<li>
+Chrome 7+ (and thus Node.JS too)
+</li>
 </ul>]]></description>
     <pubDate>Thu, 23 May 2013 00:00:00 UT</pubDate>
     <guid>http://artem.sobolev.name/posts/2013-05-23-js-namespaced-methods.html</guid>

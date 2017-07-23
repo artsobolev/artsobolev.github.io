@@ -34,8 +34,8 @@
 
 	<section>
 		<p>Suppose we have an expression like <code>(5+5 * (x^x-5 | y &amp;&amp; 3))</code> and we’d like to get some computer-understandable representation of that expression, like:</p>
-<p><code>ADD Token[5] MUL Token[5] AND BIT_OR XOR Token[x] SUB Token[x] Token[5] Token[y] Token[3]</code></p>
-<p>In case if you don’t know how to do that or are looking for solutin right now, you should know that I’m not going to present right solution. This post is just a joke. You should use either <a href="http://en.wikipedia.org/wiki/Shunting-yard_algorithm" title="Shunting-yard algorithm — Wikipedia">Shunting-yard algorithm</a> or <a href="http://en.wikipedia.org/wiki/Recursive_descent_parser">Recursive descent parser</a>.</p>
+<p><code>ADD Token[5] (MUL Token[5] (AND (BIT_OR (XOR Token[x] (SUB Token[x] Token[5])) Token[y]) Token[3])</code></p>
+<p>In case if you don’t know how to do that or are looking for the solutin right now, you should know that I’m not going to present a correct solution. This post is just a joke. You should use either a <a href="http://en.wikipedia.org/wiki/Shunting-yard_algorithm" title="Shunting-yard algorithm — Wikipedia">Shunting-yard algorithm</a> or a <a href="http://en.wikipedia.org/wiki/Recursive_descent_parser">recursive descent parser</a>.</p>
 <p>So if you’re ready for madness… Let’s go! 
 	</section>
 </article>
