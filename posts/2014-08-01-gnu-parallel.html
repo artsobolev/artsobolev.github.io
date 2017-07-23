@@ -7,7 +7,9 @@
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
   <meta name="twitter:title" content="Exploiting Multiple Machines for Embarrassingly Parallel Applications" />
-  <meta name="twitter:description" content="View the album on Flickr." />
+  <meta name="twitter:description" content="During work on my machine learning project I was needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would just slow down overall running time because of increased amount of context switches. Yet running 4 (=number of cores in my CPU) of them at a time (actually, 3 since other applications need CPU, too) should speed it up.
+Fortunately, I have an old laptop with 2 cores as well as an access to somewhat more modern machine with 4 cores. That results in 10 cores spread across 3 machines (all of`em have some version of GNU Linux installed). The question was how to exploit such a treasury.
+" />
 
   <link rel="shortcut icon" href="../favicon.ico" />
 

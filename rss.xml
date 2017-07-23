@@ -717,6 +717,91 @@ Chrome 7+ (and thus Node.JS too)
     <guid>http://artem.sobolev.name/posts/2013-05-23-js-namespaced-methods.html</guid>
     <dc:creator>Artem</dc:creator>
 </item>
+<item>
+    <title>Crazy Expression Parsing</title>
+    <link>http://artem.sobolev.name/posts/2013-03-30-crazy-expression-parsing.html</link>
+    <description><![CDATA[<p>Suppose we have an expression like <code>(5+5 * (x^x-5 | y &amp;&amp; 3))</code> and we’d like to get some computer-understandable representation of that expression, like:</p>
+<p><code>ADD Token[5] (MUL Token[5] (AND (BIT_OR (XOR Token[x] (SUB Token[x] Token[5])) Token[y]) Token[3])</code></p>
+<p>In case if you don’t know how to do that or are looking for the solutin right now, you should know that I’m not going to present a correct solution. This post is just a joke. You should use either a <a href="http://en.wikipedia.org/wiki/Shunting-yard_algorithm" title="Shunting-yard algorithm — Wikipedia">Shunting-yard algorithm</a> or a <a href="http://en.wikipedia.org/wiki/Recursive_descent_parser">recursive descent parser</a>.</p>
+<p>So if you’re ready for madness… Let’s go! <!--more--></p>
+<p>Let’s take <a href="http://en.wikipedia.org/wiki/Don%27t_repeat_yourself">Don’t repeat yourself</a> principle as a justification. Moreover, let’s take it to extreme “Don’t repeat”. Indeed, why do we need to repeat what compiler’s developers already did?</p>
+Here we go
+<script src="https://gist.github.com/artsobolev/5273716.js"></script>
+<p>In case you’re wondering what the heck is going on: all constants are converted to instances of <code>Token</code> class, for which I overloaded all the operators. Overloading is done in a way to preserve structure of an expression. The only thing we have to do then is to extract that information. In case you’re not familiar with C++, I recommend you to read something about operator overloading.</p>
+<p>As you can see, g++ and python are required for that “parser”. Unfortunatelly, priority of a bitwise xor is too low to serve as a power operator.</p>]]></description>
+    <pubDate>Sat, 30 Mar 2013 00:00:00 UT</pubDate>
+    <guid>http://artem.sobolev.name/posts/2013-03-30-crazy-expression-parsing.html</guid>
+    <dc:creator>Artem</dc:creator>
+</item>
+<item>
+    <title>Memoization Using C++11</title>
+    <link>http://artem.sobolev.name/posts/2013-03-29-cpp-11-memoization.html</link>
+    <description><![CDATA[<p>Recently I’ve read an article <a href="http://john-ahlgren.blogspot.ru/2013/03/efficient-memoization-using-partial.html" title="John Ahlgren: Efficient Memoization using Partial Function Application">Efficient Memoization using Partial Function Application</a>. Author explains function memoization using partial application. When I was reading the article, I thought “Hmmm, can I come up with a more general solution?” And as suggested in comments, one can use variadic templates to achieve it. So here is my version.</p>
+<!--more-->
+<p>First let’s do it in a more object-oriented way: we define a template class <code>Memoizator</code> with 2 parameters: a return value type and a list of argument’s types. Also we incapsulate a lookup map and will use C++11’s <a href="http://en.cppreference.com/w/cpp/utility/tuple" title="std::tuple - cppreference.com">std::tuple</a> to represent an arguments set.</p>
+The code is as follows:
+<script src="https://gist.github.com/artsobolev/5270779.js"></script>
+<p>Good, but what about computing n-th Fibonacci number using memoization? It’s not possible with a current version of <code>Memoizator</code> since it uses a separate map for each instance even if function is the same. It looks inefficient to store a separate lookup map for each instance of the same function. We’ll fix it by creating a static storage for maps accessed by a function address:</p>
+<script src="https://gist.github.com/artsobolev/5271223.js"></script>
+<p>Now let’s compare the memoized version against the regular one. If we compute the 42th fibonacci number using simple recursive version (with exponential time complexity), we’d get</p>
+<pre><strong>$ time ./a.out</strong> 
+267914296
+
+real    0m5.314s
+user    0m5.220s
+sys     0m0.020s</pre>
+Now the memoized one (from the source above):
+<pre><strong>$ time ./a.out</strong> 
+267914296
+
+real    0m0.005s
+user    0m0.004s
+sys     0m0.004s</pre>
+<p>Moreover, our memoization reduced time complexity from exponential to linear.</p>
+<p><strong>UPD</strong>: you can take a look at another implementation here: <a href="http://cpptruths.blogspot.ru/2012/01/general-purpose-automatic-memoization.html" title="c++ truths: General-purpose Automatic Memoization for Recursive Functions in C++11">General-purpose Automatic Memoization for Recursive Functions in C++11</a></p>]]></description>
+    <pubDate>Fri, 29 Mar 2013 00:00:00 UT</pubDate>
+    <guid>http://artem.sobolev.name/posts/2013-03-29-cpp-11-memoization.html</guid>
+    <dc:creator>Artem</dc:creator>
+</item>
+<item>
+    <title>Resizing Policy of std::vector</title>
+    <link>http://artem.sobolev.name/posts/2013-02-10-std-vector-growth.html</link>
+    <description><![CDATA[Sometime ago when Facebook opensourced their <a title="Folly is an open-source C++ library developed and used at Facebook" href="https://github.com/facebook/folly">Folly library</a> I was reading their docs and found <a title="folly/FBvector.h documentation" href="https://github.com/facebook/folly/blob/master/folly/docs/FBVector.md">something interesting</a>. In section “Memory Handling” they state
+<blockquote>
+In fact it can be mathematically proven that a growth factor of 2 is rigorously the worst possible because it never allows the vector to reuse any of its previously-allocated memory
+</blockquote>
+<p>I haven’t got it first time. Recently I recalled that article and decided to deal with it. So after reading and googling for a while I finally understood the idea, so I’d like to say a few words about it.</p>
+<!--more-->
+<p>The problem is as follows: when a vector (or a similar structure with autoresize) gets filled, it should resize. It’s well known that it should grow exponentially in order to preserve constant amortized complexity of insertions, but what growth factor to choose? At first glance, 2 seems to be ok — it’s not so big and 2 is common for computer science :-). But it turns out that 2 is not so good. Let’s take a closer look by example:</p>
+<p><a href="/files/vector-resize-scheme.png"><img src="/files/vector-resize-scheme.png" alt="Vector resize scheme" width="495" height="350" class="size-full" /></a></p>
+<p>Suppose we’ve a vector of initial size <span class="math inline">\(C\)</span>. When it gets filled, we increase its size twice. We allocate memory for a vector of size <span class="math inline">\(2C\)</span> right after our original vector. So now we have vector of size <span class="math inline">\(2C\)</span> and <span class="math inline">\(C\)</span> bytes before it, where it was when it was small. Then expand it again and again and agian and so on. After <span class="math inline">\(n\)</span> expansions we’ll get a vector of size <span class="math inline">\(2^n C\)</span> preceded by <span class="math inline">\(C + 2C + 2^2 C + \dots 2^{n-1} C\)</span> bytes that were occupied by this vector before.</p>
+<p>So what’s the problem? The problem is that after every increasing your vector is too big to fit previously allocated memory. How much is it bigger? Well, as we know <span class="math inline">\(2^n - 1 = 1 + 2 + 4 + \dots + 2^{n-1}\)</span>, thus <span class="math inline">\(2^n C - C - 2C - 2^2 C - \dots - 2^{n-1}C = C\)</span>. Therefore you have permanent lack of <span class="math inline">\(C\)</span> bytes to fit your vector in previously allocated space.</p>
+<p>Okay, let’s now solve this problem. First, let’s formalize it.</p>
+<p>Every time we increase vector of size <span class="math inline">\(C\)</span> with growing factor <span class="math inline">\(k\)</span> we do these steps:</p>
+<ol>
+<li>
+Allocate <span class="math inline">\(k C\)</span> bytes
+</li>
+<li>
+Create a new vector here and copy current vector’s content to the new one
+</li>
+<li>
+Remove the current vector, set the new one as the current
+</li>
+</ol>
+<p>So as you can see, formula for 2 is sort of upperbound: you can not use all of previously allocated <span class="math inline">\(n-1\)</span> chunks when allocating nth, since you need to copy values from (n-1)th (though you can copy them in some temporary buffer, but it requires extra memory) chunk. So when we allocate nth chunk, we need it to be less than total free space from <span class="math inline">\(n-2\)</span> allocations: <span class="math display">\[ k^n C \le k^{n-2}C + k^{n-3}C + \dots + kC + C \]</span></p>
+<p>As you can see, we can get rid of C since it’s definetly positive. <span class="math display">\[ k^n \le k^{n-2} + k^{n-3} + \dots + k + 1 \]</span></p>
+<p>Okay, time to solve some equations! We see something like a sum of a geometric progression, and we can use a formula for it. But I don’t retain it in my head, so I’ll use a little trick here. Let’s multiply both sides by <span class="math inline">\(k-1\)</span>. We assume that <span class="math inline">\(k &gt; 1\)</span> (it’s very strange to use values greater than 1 as <em>growth</em> factor) <span class="math display">\[ (k-1) k^n \le (k-1) (k^{n-2} + k^{n-3} + \dots + k + 1) \]</span></p>
+<p>Now we can notice that in the right side we have an expansion of <span class="math inline">\(k^{n-1}-1\)</span> (well, maybe to remember this observation is harder than remembering a formula for sum of a geometric progression…)</p>
+<p><span class="math display">\[ (k-1) k^n \le k^{n-1}-1 \]</span> <span class="math display">\[ k^{n+1} - k^n \le k^{n-1}-1 \]</span> <span class="math display">\[ k^{n+1} \le k^n + k^{n-1} - 1 \]</span></p>
+<p>Oh, this obstructing 1… It would be so nice if we could throw it away! Wait, but we can! If we add 1 to the right side, we will merely increase its value, so it will still suit for an upper bound (or an approximation since 1 is a constant and is very small compared to <span class="math inline">\(k^n\)</span>).</p>
+<p><span class="math display">\[ k^{n+1} \le k^n + k^{n-1} - 1 &lt; k^n + k^{n-1} \]</span> <span class="math display">\[ k^2 &lt; k + 1 \]</span> <span class="math display">\[ k^2 - k - 1 &lt; 0 \]</span></p>
+<p>Solving this simple quadratic equation, we get <span class="math display">\[ k &lt; \frac{1+\sqrt{5}}{2} \approx 1.61 \]</span></p>
+<p>So that’s why growth factor in many dynamic arrays is 1.5: it is pretty big to not cause reallocations too frequently and is small enough to not use memory too extensively.</p>]]></description>
+    <pubDate>Sun, 10 Feb 2013 00:00:00 UT</pubDate>
+    <guid>http://artem.sobolev.name/posts/2013-02-10-std-vector-growth.html</guid>
+    <dc:creator>Artem</dc:creator>
+</item>
 
     </channel>
 </rss>

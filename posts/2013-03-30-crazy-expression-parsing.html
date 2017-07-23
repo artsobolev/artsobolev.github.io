@@ -7,7 +7,10 @@
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
   <meta name="twitter:title" content="Crazy Expression Parsing" />
-  <meta name="twitter:description" content="View the album on Flickr." />
+  <meta name="twitter:description" content="Suppose we have an expression like (5+5 * (x^x-5 | y &amp;&amp; 3)) and we’d like to get some computer-understandable representation of that expression, like:
+ADD Token[5] (MUL Token[5] (AND (BIT_OR (XOR Token[x] (SUB Token[x] Token[5])) Token[y]) Token[3])
+In case if you don’t know how to do that or are looking for the solutin right now, you should know that I’m not going to present a correct solution. This post is just a joke. You should use either a Shunting-yard algorithm or a recursive descent parser.
+So if you’re ready for madness… Let’s go! " />
 
   <link rel="shortcut icon" href="../favicon.ico" />
 

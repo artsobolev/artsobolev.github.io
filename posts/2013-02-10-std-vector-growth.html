@@ -7,7 +7,12 @@
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
   <meta name="twitter:title" content="Resizing Policy of std::vector" />
-  <meta name="twitter:description" content="View the album on Flickr." />
+  <meta name="twitter:description" content="Sometime ago when Facebook opensourced their Folly library I was reading their docs and found something interesting. In section “Memory Handling” they state
+
+In fact it can be mathematically proven that a growth factor of 2 is rigorously the worst possible because it never allows the vector to reuse any of its previously-allocated memory
+
+I haven’t got it first time. Recently I recalled that article and decided to deal with it. So after reading and googling for a while I finally understood the idea, so I’d like to say a few words about it.
+" />
 
   <link rel="shortcut icon" href="../favicon.ico" />
 
