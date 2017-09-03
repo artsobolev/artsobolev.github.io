@@ -7,8 +7,32 @@
         <description><![CDATA[Random notes on Software Engineering, Computer Science and Mathematics]]></description>
         <atom:link href="http://artem.sobolev.name/rss.xml" rel="self"
                    type="application/rss+xml" />
-        <lastBuildDate>Sun, 23 Jul 2017 00:00:00 UT</lastBuildDate>
+        <lastBuildDate>Mon, 14 Aug 2017 00:00:00 UT</lastBuildDate>
         <item>
+    <title>ICML 2017 Summaries</title>
+    <link>http://artem.sobolev.name/posts/2017-08-14-icml-2017.html</link>
+    <description><![CDATA[<p>Just like with <a href="/posts/2016-12-31-nips-2016-summaries.html">NIPS last year</a>, here’s a list of ICML’17 summaries (updated as I stumble upon new ones)</p>
+<!--more-->
+<ul>
+<li><a href="https://olgalitech.wordpress.com/tag/icml2017/">Random ML&amp;Datascience musing</a> by <a href="https://twitter.com/OlgaLiakhovich">Olga Liakhovich</a>
+<ul>
+<li><a href="https://olgalitech.wordpress.com/2017/08/07/icml-and-my-notes-on-day-1/">ICML and my notes on day 1</a></li>
+<li><a href="https://olgalitech.wordpress.com/2017/08/07/brain-endurance-or-day-2-at-icml-2017/">Brain endurance or Day 2 at ICML 2017</a></li>
+<li><a href="https://olgalitech.wordpress.com/2017/08/11/day-3-at-icml-2017-musical-rnns/">Day 3 at ICML 2017 — musical RNNs</a></li>
+<li><a href="https://olgalitech.wordpress.com/2017/08/11/day-4-at-icml-2017-more-adversarial-nns/">Day 4 at ICML 2017 — more Adversarial NNs</a></li>
+<li><a href="https://olgalitech.wordpress.com/2017/08/11/day-5-6-at-icml-all-done/">Day 5 &amp; 6 at ICML. All done.</a></li>
+</ul></li>
+<li><a href="https://keunwoochoi.wordpress.com/2017/08/14/machine-learning-for-music-discovery-workshop-icml2017-sydney/">Machine learning for music discovery (workshop)</a> by <a href="https://twitter.com/keunwoochoi">Keunwoo Choi</a></li>
+<li><a href="https://gmarti.gitlab.io/ml/2017/08/11/ICML-2017-field-reports.html">Field reports from ICML 2017 in Sydney</a> by <a href="https://twitter.com/GautierMarti1">Gautier Marti’s Wander</a></li>
+<li><a href="http://www.machinedlearnings.com/2017/08/icml-2017-thoughts.html">ICML 2017 Thoughts</a> by <a href="https://twitter.com/PaulMineiro">Paul Mineiro</a></li>
+<li><a href="http://mattdickenson.com/2017/08/17/icml-2017-recap/">ICML 2017 Recap</a> by <a href="https://twitter.com/mcdickenson">Matt Dickenson</a></li>
+<li><a href="https://www.bulletproof.net.au/international-conference-machine-learning-2017-part-one/">International Conference for Machine Learning 2017 – Part One</a> + <a href="https://www.bulletproof.net.au/international-conference-machine-learning-2017-part-two/">International Conference for Machine Learning 2017 – Part Two</a></li>
+</ul>]]></description>
+    <pubDate>Mon, 14 Aug 2017 00:00:00 UT</pubDate>
+    <guid>http://artem.sobolev.name/posts/2017-08-14-icml-2017.html</guid>
+    <dc:creator>Artem</dc:creator>
+</item>
+<item>
     <title>On No Free Lunch Theorem and some other impossibility results</title>
     <link>http://artem.sobolev.name/posts/2017-07-23-no-free-lunch-theorem.html</link>
     <description><![CDATA[<p>The more I talk to people online, the more I hear about the famous No Free Lunch Theorem (NFL theorem). Unfortunately, quite often people don’t really understand what the theorem is about, and its implications are. In this post I’d like to share my view on the NFL theorem, and some other impossibility results.</p>
@@ -175,18 +199,15 @@ d^2f(x) &amp;= d(df(x)) \\
 <li><a href="https://medium.com/@libfun/nips-2016-experience-and-highlights-104e19e4ac95#.umy1vunwa">NIPS 2016 experience and highlights</a> by <a href="https://twitter.com/libfun_sk">Sergey Korolev</a></li>
 <li><a href="http://www.machinedlearnings.com/2016/12/nips-2016-reflections.html">NIPS 2016 Reflections</a> by Paul Mineiro</li>
 <li><a href="http://abunchofdata.com/some-general-takeaways-from-nips2016/">Some general takeaways from #NIPS2016</a> by Arturo Slim</li>
-<li><a href="https://twitter.com/rossfadely">Ross Fadely</a> and <a href="https://twitter.com/mwakanosya">Jeremy Karnowski</a>:</li>
+<li><a href="https://twitter.com/rossfadely">Ross Fadely</a> and <a href="https://twitter.com/mwakanosya">Jeremy Karnowski</a>:
+<ul>
 <li><a href="https://blog.insightdatascience.com/nips-2016-day-1-6ae1207cab82">NIPS 2016 — Day 1 Highlights</a></li>
 <li><a href="https://blog.insightdatascience.com/nips-2016-day-2-highlights-platform-wars-rl-and-rnns-9dca43bc1448#.r2aync4cu">NIPS 2016 — Day 2 Highlights: Platform wars, RL and RNNs</a></li>
 <li><a href="https://blog.insightdatascience.com/nips-2016-day-3-highlights-robots-that-know-cars-that-see-and-more-1ec958896791#.geqs66a4b">NIPS 2016 — Day 3 Highlights: Robots that know, Cars that see, and more!</a></li>
 <li><a href="https://blog.insightdatascience.com/nips-2016-final-highlights-days-4-6-likelihood-free-inference-dessert-analogies-and-much-more-ed7352d321ff#.uil9xf2mt">NIPS 2016 — Final Highlights Days 4–6: Likelihood-free inference, Dessert analogies, and much more.</a></li>
+</ul></li>
 <li><a href="https://aichamp.wordpress.com/2016/12/09/nips2016-top-10/">Key deep learning takeaways from NIPS2016 for applied data scientist</a> by Avkash Chauhan</li>
 <li><a href="https://paper.dropbox.com/doc/Brad-Neubergs-NIPS-2016-Notes-XUFRdpNYyBhau0gWcybRo">Brad Neuberg’s NIPS 2016 Notes</a> by Brad Neuberg</li>
-</ul>
-<p>You might also be interested in:</p>
-<ul>
-<li><a href="https://www.reddit.com/r/MachineLearning/comments/5hwqeb/project_all_code_implementations_for_nips_2016/">All Code Implementations for NIPS 2016 papers</a></li>
-<li>On RocketAI: [<a href="https://twitter.com/deanpomerleau/status/808011377059254273">1</a>] + [<a href="https://www.reddit.com/r/MachineLearning/comments/5hmdty/discussion_rocketai/db2mit3/">2</a>] + [<a href="https://medium.com/the-mission/rocket-ai-2016s-most-notorious-ai-launch-and-the-problem-with-ai-hype-d7908013f8c9">3</a>]</li>
 <li><a href="https://blog.ought.com/nips-2016-875bb8fadb8c#.yrr46pb2t">50 things I learned at NIPS 2016</a></li>
 <li>Lab 41 by <a href="https://twitter.com/karllab41">Karl Ni</a>:
 <ul>
@@ -230,6 +251,11 @@ d^2f(x) &amp;= d(df(x)) \\
 <li><a href="http://blog.evjang.com/2017/01/nips2016.html">Summary of NIPS 2016</a> by Eric Jang</li>
 <li><a href="http://www.nowozin.net/sebastian/blog/nips-2016-generative-adversarial-training-workshop-talk.html">NIPS 2016 Generative Adversarial Training workshop talk</a></li>
 <li><a href="http://hunch.net/?p=5937325">EWRL and NIPS 2016</a> by <a href="http://hunch.net/~jl/">John Langford</a></li>
+</ul>
+<p>You might also be interested in:</p>
+<ul>
+<li><a href="https://www.reddit.com/r/MachineLearning/comments/5hwqeb/project_all_code_implementations_for_nips_2016/">All Code Implementations for NIPS 2016 papers</a></li>
+<li>On RocketAI: [<a href="https://twitter.com/deanpomerleau/status/808011377059254273">1</a>] + [<a href="https://www.reddit.com/r/MachineLearning/comments/5hmdty/discussion_rocketai/db2mit3/">2</a>] + [<a href="https://medium.com/the-mission/rocket-ai-2016s-most-notorious-ai-launch-and-the-problem-with-ai-hype-d7908013f8c9">3</a>]</li>
 </ul>]]></description>
     <pubDate>Sat, 31 Dec 2016 00:00:00 UT</pubDate>
     <guid>http://artem.sobolev.name/posts/2016-12-31-nips-2016-summaries.html</guid>
