@@ -35,7 +35,7 @@
 <item>
     <title>On No Free Lunch Theorem and some other impossibility results</title>
     <link>http://artem.sobolev.name/posts/2017-07-23-no-free-lunch-theorem.html</link>
-    <description><![CDATA[<p>The more I talk to people online, the more I hear about the famous No Free Lunch Theorem (NFL theorem). Unfortunately, quite often people don’t really understand what the theorem is about, and its implications are. In this post I’d like to share my view on the NFL theorem, and some other impossibility results.</p>
+    <description><![CDATA[<p>The more I talk to people online, the more I hear about the famous No Free Lunch Theorem (NFL theorem). Unfortunately, quite often people don’t really understand what the theorem is about, and what its implications are. In this post I’d like to share my view on the NFL theorem, and some other impossibility results.</p>
 <!--more-->
 <h3 id="no-free-lunch-theorem-revisited">No Free Lunch Theorem Revisited</h3>
 <p>First, let’s formally state the NFL theorem. I’ll take theorem statement from the (freely available!) book <a href="http://www.cs.huji.ac.il/~shais/UnderstandingMachineLearning/index.html"><em>Understanding Machine Learning: From Theory to Algorithms</em></a> by Shai Shalev-Shwartz and Shai Ben-David.</p>

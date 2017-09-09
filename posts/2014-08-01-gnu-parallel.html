@@ -7,9 +7,11 @@
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
   <meta name="twitter:title" content="Exploiting Multiple Machines for Embarrassingly Parallel Applications" />
+
   <meta name="twitter:description" content="During work on my machine learning project I was needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would just slow down overall running time because of increased amount of context switches. Yet running 4 (=number of cores in my CPU) of them at a time (actually, 3 since other applications need CPU, too) should speed it up.
 Fortunately, I have an old laptop with 2 cores as well as an access to somewhat more modern machine with 4 cores. That results in 10 cores spread across 3 machines (all of`em have some version of GNU Linux installed). The question was how to exploit such a treasury.
 " />
+
 
   <link rel="shortcut icon" href="../favicon.ico" />
 
@@ -38,7 +40,7 @@ Fortunately, I have an old laptop with 2 cores as well as an access to somewhat 
 	<time>August  1, 2014</time>
 </header>
 
-<section>
+<section class="post-body">
 <p>During work on my machine learning project I was needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would just slow down overall running time because of increased amount of context switches. Yet running 4 (=number of cores in my CPU) of them at a time (actually, 3 since other applications need CPU, too) should speed it up.</p>
 <p>Fortunately, I have an old laptop with 2 cores as well as an access to somewhat more modern machine with 4 cores. That results in 10 cores spread across 3 machines (all of`em have some version of GNU Linux installed). The question was how to exploit such a treasury.</p>
 <!--more-->
@@ -76,8 +78,7 @@ Here we have:
 <div class="tags-pane">Tagged as <a href="../tags/gnu%20parallel.html">gnu parallel</a>, <a href="../tags/linux.html">linux</a></div>
 </article>
 
-<section>
-
+<section class="post-comments">
 <div id="disqus_thread"></div>
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
@@ -92,8 +93,6 @@ Here we have:
 </script>
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-    
-
 </section>
 
     </section>

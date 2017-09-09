@@ -7,9 +7,11 @@
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
   <meta name="twitter:title" content="Matrix and Vector Calculus via Differentials" />
+
   <meta name="twitter:description" content="Many tasks of machine learning can be posed as optimization problems. One comes up with a parametric model, defines a loss function, and then minimizes it in order to learn optimal parameters. One very powerful tool of optimization theory is the use of smooth (differentiable) functions: those that can be locally approximated with a linear functions. We all surely know how to differentiate a function, but often it’s more convenient to perform all the derivations in matrix form, since many computational packages like numpy or matlab are optimized for vectorized expressions.
 In this post I want to outline the general idea of how one can calculate derivatives in vector and matrix spaces (but the idea is general enough to be applied to other algebraic structures).
 " />
+
 
   <link rel="shortcut icon" href="../favicon.ico" />
 
@@ -38,7 +40,7 @@ In this post I want to outline the general idea of how one can calculate derivat
 	<time>January 29, 2017</time>
 </header>
 
-<section>
+<section class="post-body">
 <p>Many tasks of machine learning can be posed as optimization problems. One comes up with a parametric model, defines a loss function, and then minimizes it in order to learn optimal parameters. One very powerful tool of optimization theory is the use of smooth (differentiable) functions: those that can be locally approximated with a linear functions. We all surely know how to differentiate a function, but often it’s more convenient to perform all the derivations in matrix form, since many computational packages like numpy or matlab are optimized for vectorized expressions.</p>
 <p>In this post I want to outline the general idea of how one can calculate derivatives in vector and matrix spaces (but the idea is general enough to be applied to other algebraic structures).</p>
 <!--more-->
@@ -151,8 +153,7 @@ d^2f(x) &amp;= d(df(x)) \\
 <div class="tags-pane">Tagged as <a href="../tags/math.html">math</a></div>
 </article>
 
-<section>
-
+<section class="post-comments">
 <div id="disqus_thread"></div>
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
@@ -167,8 +168,6 @@ d^2f(x) &amp;= d(df(x)) \\
 </script>
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-    
-
 </section>
 
     </section>

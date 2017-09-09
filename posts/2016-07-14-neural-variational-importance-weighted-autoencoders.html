@@ -7,9 +7,11 @@
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
   <meta name="twitter:title" content="Neural Variational Inference: Importance Weighted Autoencoders" />
+
   <meta name="twitter:description" content="Previously we covered Variational Autoencoders (VAE) — popular inference tool based on neural networks. In this post we’ll consider, a followup work from Torronto by Y. Burda, R. Grosse and R. Salakhutdinov, Importance Weighted Autoencoders (IWAE). The crucial contribution of this work is introduction of a new lower-bound on the marginal log-likelihood \(\log p(x)\) which generalizes ELBO, but also allows one to use less accurate approximate posteriors \(q(z \mid x, \Lambda)\).
 On a dessert we’ll discuss another paper, Variational inference for Monte Carlo objectives by A. Mnih and D. Rezende which aims to broaden the applicability of this approach to models where reparametrization trick can not be used (e.g. for discrete variables).
 " />
+
 
   <link rel="shortcut icon" href="../favicon.ico" />
 
@@ -38,7 +40,7 @@ On a dessert we’ll discuss another paper, Variational inference for Monte Carl
 	<time>July 14, 2016</time>
 </header>
 
-<section>
+<section class="post-body">
 <p>Previously we covered <a href="../posts/2016-07-11-neural-variational-inference-variational-autoencoders-and-Helmholtz-machines.html">Variational Autoencoders</a> (VAE) — popular inference tool based on neural networks. In this post we’ll consider, a followup work from Torronto by Y. Burda, R. Grosse and R. Salakhutdinov, <a href="https://arxiv.org/abs/1509.00519">Importance Weighted Autoencoders</a> (IWAE). The crucial contribution of this work is introduction of a new lower-bound on the marginal log-likelihood <span class="math inline">\(\log p(x)\)</span> which generalizes ELBO, but also allows one to use less accurate approximate posteriors <span class="math inline">\(q(z \mid x, \Lambda)\)</span>.</p>
 <p>On a dessert we’ll discuss another paper, <a href="https://arxiv.org/abs/1602.06725">Variational inference for Monte Carlo objectives</a> by A. Mnih and D. Rezende which aims to broaden the applicability of this approach to models where reparametrization trick can not be used (e.g. for discrete variables).</p>
 <!--more-->
@@ -114,8 +116,7 @@ Variational inference for Monte Carlo objectives
 <div class="tags-pane">Tagged as <a href="../tags/machine%20learning.html">machine learning</a>, <a href="../tags/deep%20learning.html">deep learning</a>, <a href="../tags/variational%20inference.html">variational inference</a></div>
 </article>
 
-<section>
-
+<section class="post-comments">
 <div id="disqus_thread"></div>
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
@@ -130,8 +131,6 @@ Variational inference for Monte Carlo objectives
 </script>
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-    
-
 </section>
 
     </section>

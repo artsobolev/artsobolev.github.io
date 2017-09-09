@@ -7,12 +7,14 @@
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
   <meta name="twitter:title" content="Resizing Policy of std::vector" />
+
   <meta name="twitter:description" content="Sometime ago when Facebook opensourced their Folly library I was reading their docs and found something interesting. In section “Memory Handling” they state
 
 In fact it can be mathematically proven that a growth factor of 2 is rigorously the worst possible because it never allows the vector to reuse any of its previously-allocated memory
 
 I haven’t got it first time. Recently I recalled that article and decided to deal with it. So after reading and googling for a while I finally understood the idea, so I’d like to say a few words about it.
 " />
+
 
   <link rel="shortcut icon" href="../favicon.ico" />
 
@@ -41,7 +43,7 @@ I haven’t got it first time. Recently I recalled that article and decided to d
 	<time>February 10, 2013</time>
 </header>
 
-<section>
+<section class="post-body">
 Sometime ago when Facebook opensourced their <a title="Folly is an open-source C++ library developed and used at Facebook" href="https://github.com/facebook/folly">Folly library</a> I was reading their docs and found <a title="folly/FBvector.h documentation" href="https://github.com/facebook/folly/blob/master/folly/docs/FBVector.md">something interesting</a>. In section “Memory Handling” they state
 <blockquote>
 In fact it can be mathematically proven that a growth factor of 2 is rigorously the worst possible because it never allows the vector to reuse any of its previously-allocated memory
@@ -79,8 +81,7 @@ Remove the current vector, set the new one as the current
 <div class="tags-pane">Tagged as <a href="../tags/C%2B%2B.html">C++</a>, <a href="../tags/math.html">math</a></div>
 </article>
 
-<section>
-
+<section class="post-comments">
 <div id="disqus_thread"></div>
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
@@ -95,8 +96,6 @@ Remove the current vector, set the new one as the current
 </script>
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-    
-
 </section>
 
     </section>

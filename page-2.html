@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>page-2 - B.log</title>
+  <meta charset="utf-8" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@art_sobolev" />
+  <meta name="twitter:title" content="page-2" />
+
+  <meta name="twitter:description" content />
+
+
+  <link rel="shortcut icon" href="./favicon.ico" />
+
+  <link rel="stylesheet" type="text/css" href="./css/default.css" />
+  <link rel="stylesheet" type="text/css" href="./css/syntax.css" />
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+<body>
+    <header>
+      <hgroup>
+        <h1><a href="./">B.log</a></h1>
+        <h2>Random notes on Computer Science, Mathematics and Software Engineering</h2>
+      </hgroup>
+    </header>
+    <nav>
+        <menu>
+          <a href="./">Home</a>
+          <a href="./pages/about.html">About me</a>
+          <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
+        </menu>
+    </nav>
+    <section>
+        <article>
+	<header>
+		<h3><a href="./posts/2014-05-01-on-sorting-complexity.html">On Sorting Complexity</a></h3>
+		<time>May  1, 2014</time>
+	</header>
+
+	<section>
+		<p>It’s well known that lower bound for sorting problem (in general case) is <span class="math inline">\(\Omega(n \log n)\)</span>. The proof I was taught is somewhat involved and is based on paths in “decision” trees. Recently I’ve discovered an information-theoretic approach (or reformulation) to that proof.</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
+	<header>
+		<h3><a href="./posts/2013-05-23-js-namespaced-methods.html">Namespaced Methods in JavaScript</a></h3>
+		<time>May 23, 2013</time>
+	</header>
+
+	<section>
+		<p>Once upon a time I was asked (well, actually <a href="http://habrahabr.ru/qa/7130/" title="Javascript: String.prototype.namespace.method и this / Q&A / Хабрахабр">a question</a> wasn’t for me only, but for whole habrahabr’s community) is it possible to implement namespaced methods in JavaScript for built-in types like:</p>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="dv">5</span>..<span class="va">rubish</span>.<span class="at">times</span>(<span class="kw">function</span>() <span class="op">{</span> <span class="co">// this function will be called 5 times</span>
+  <span class="va">console</span>.<span class="at">log</span>(<span class="st">&quot;Hi there!&quot;</span>)<span class="op">;</span>
+<span class="op">}</span>)<span class="op">;</span>
+
+<span class="st">&quot;some string&quot;</span>.<span class="va">hask</span>.<span class="at">map</span>(<span class="kw">function</span>(c) <span class="op">{</span> <span class="cf">return</span> <span class="va">c</span>.<span class="va">hask</span>.<span class="at">code</span>()<span class="op">;</span> <span class="op">}</span>)<span class="op">;</span>
+<span class="co">// equivalent to</span>
+<span class="st">&quot;some string&quot;</span>.<span class="at">split</span>(<span class="st">''</span>).<span class="at">map</span>(<span class="kw">function</span>(c) <span class="op">{</span> <span class="cf">return</span> <span class="va">c</span>.<span class="at">charCodeAt</span>()<span class="op">;</span> <span class="op">}</span>)<span class="op">;</span>
+
+<span class="st">&quot;another string&quot;</span>.<span class="va">algo</span>.<span class="at">lcp</span>(<span class="st">&quot;annotation&quot;</span>)<span class="op">;</span> 
+<span class="co">// returns longest common prefix of two strings</span></code></pre></div>
+<p>As you can see at the link, it’s possible using ECMAScript 5 features. And that’s how: 
+	</section>
+</article>
+
+<hr />
+<article>
+	<header>
+		<h3><a href="./posts/2013-03-30-crazy-expression-parsing.html">Crazy Expression Parsing</a></h3>
+		<time>March 30, 2013</time>
+	</header>
+
+	<section>
+		<p>Suppose we have an expression like <code>(5+5 * (x^x-5 | y &amp;&amp; 3))</code> and we’d like to get some computer-understandable representation of that expression, like:</p>
+<p><code>ADD Token[5] (MUL Token[5] (AND (BIT_OR (XOR Token[x] (SUB Token[x] Token[5])) Token[y]) Token[3])</code></p>
+<p>In case if you don’t know how to do that or are looking for the solutin right now, you should know that I’m not going to present a correct solution. This post is just a joke. You should use either a <a href="http://en.wikipedia.org/wiki/Shunting-yard_algorithm" title="Shunting-yard algorithm — Wikipedia">Shunting-yard algorithm</a> or a <a href="http://en.wikipedia.org/wiki/Recursive_descent_parser">recursive descent parser</a>.</p>
+<p>So if you’re ready for madness… Let’s go! 
+	</section>
+</article>
+
+<hr />
+<article>
+	<header>
+		<h3><a href="./posts/2013-03-29-cpp-11-memoization.html">Memoization Using C++11</a></h3>
+		<time>March 29, 2013</time>
+	</header>
+
+	<section>
+		<p>Recently I’ve read an article <a href="http://john-ahlgren.blogspot.ru/2013/03/efficient-memoization-using-partial.html" title="John Ahlgren: Efficient Memoization using Partial Function Application">Efficient Memoization using Partial Function Application</a>. Author explains function memoization using partial application. When I was reading the article, I thought “Hmmm, can I come up with a more general solution?” And as suggested in comments, one can use variadic templates to achieve it. So here is my version.</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
+	<header>
+		<h3><a href="./posts/2013-02-10-std-vector-growth.html">Resizing Policy of std::vector</a></h3>
+		<time>February 10, 2013</time>
+	</header>
+
+	<section>
+		Sometime ago when Facebook opensourced their <a title="Folly is an open-source C++ library developed and used at Facebook" href="https://github.com/facebook/folly">Folly library</a> I was reading their docs and found <a title="folly/FBvector.h documentation" href="https://github.com/facebook/folly/blob/master/folly/docs/FBVector.md">something interesting</a>. In section “Memory Handling” they state
+<blockquote>
+In fact it can be mathematically proven that a growth factor of 2 is rigorously the worst possible because it never allows the vector to reuse any of its previously-allocated memory
+</blockquote>
+<p>I haven’t got it first time. Recently I recalled that article and decided to deal with it. So after reading and googling for a while I finally understood the idea, so I’d like to say a few words about it.</p>
+
+	</section>
+</article>
+
+<hr />
+
+
+<div class="paginator">
+<div class="paginator-newer">
+
+<a href="./index.html">&larr; Newer Entries</a>
+&nbsp;
+</div>
+<div class="paginator-older">
+&nbsp;
+</div>
+</div>
+
+    </section>
+    <footer>
+        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+    </footer>
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-38530232-1']);
+_gaq.push(['_trackPageview']);
+(function() {
+ var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+ var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+</body>
+</html>
