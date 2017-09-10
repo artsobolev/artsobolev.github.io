@@ -891,7 +891,7 @@ D_{KL}(q(z \mid x) \mid\mid p(z \mid x))
 <!--more-->
 <p>And the answer is GNU Parallel with some additional bells and whistles. GNU Parallel allows one to execute some commands in parallel and even in a distributed way.</p>
 <p>The command was as following</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">parallel</span> -u --wd ... -S :,host1,host2 --trc <span class="dt">{}</span>.emb <span class="st">&quot;sh {}&quot;</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">parallel</span> -u --wd ... -S :,host1,host2 --trc <span class="dt">{}</span>.emb <span class="st">&quot;sh {}&quot;</span></code></pre></div>
 Here we have:
 <ul>
 <li>
@@ -905,7 +905,7 @@ Here we have:
 </li>
 </ul>
 <p><code>parallel</code> accepts list command arguments (file names) in standard input and executes a command (<code>sh</code> in my case) for each of them.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">ls</span> -1 jobs/* <span class="kw">|</span> <span class="kw">parallel</span> -u --wd ... -S :,host1,host2 --trc <span class="dt">{}</span>.emb <span class="st">&quot;sh {}&quot;</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">ls</span> -1 jobs/* <span class="kw">|</span> <span class="ex">parallel</span> -u --wd ... -S :,host1,host2 --trc <span class="dt">{}</span>.emb <span class="st">&quot;sh {}&quot;</span></code></pre></div>
 <p>There’s a problem: we usually need more than one file to do usefull stuff. There are several solutions to that problem</p>
 <ul>
 <li>
