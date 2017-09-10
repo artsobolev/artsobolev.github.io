@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Posts tagged stochastic computation graphs series - B.log</title>
+  <meta charset="utf-8" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@art_sobolev" />
+  <meta name="twitter:title" content="Posts tagged stochastic computation graphs series" />
+
+  <meta name="twitter:description" content />
+
+
+  <link rel="shortcut icon" href="../favicon.ico" />
+
+  <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+<body>
+    <header>
+      <hgroup>
+        <h1><a href="../">B.log</a></h1>
+        <h2>Random notes on Computer Science, Mathematics and Software Engineering</h2>
+      </hgroup>
+    </header>
+    <nav>
+        <menu>
+          <a href="../">Home</a>
+          <a href="../pages/about.html">About me</a>
+          <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
+        </menu>
+    </nav>
+    <section>
+        <article>
+	<header>
+		<h3><a href="../posts/2017-09-10-stochastic-computation-graphs.html">Stochastic Computation Graphs: Continuous Case</a></h3>
+		<time>September 10, 2017</time>
+	</header>
+
+	<section>
+		<p>Last year I covered <a href="../tags/modern%20variational%20inference%20series.html">some modern Variational Inference theory</a>. These methods are often used in conjunction with Deep Neural Networks to form deep generative models (VAE, for example) or to enrich deterministic models with stochastic control, which leads to better exploration. Or you might be interested in amortized inference.</p>
+<p>All these cases turn your computation graph into a stochastic one – previously deterministic nodes now become random. And it’s not obvious how to do backpropagation through these nodes. In <a href="../tags/stochastic%20computation%20graphs%20series.html">this series</a> I’d like to outline possible approaches. This time we’re going to see why general approach works poorly, and see what we can do in continuous case.</p>
+
+	</section>
+</article>
+
+<hr />
+
+    </section>
+    <footer>
+        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+    </footer>
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-38530232-1']);
+_gaq.push(['_trackPageview']);
+(function() {
+ var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+ var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+</body>
+</html>

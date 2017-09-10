@@ -55,8 +55,8 @@ Blackbox Variational Inference
 \nabla_{\Lambda} \mathcal{L}(\Theta, \Lambda)
 &amp;= \nabla_{\Lambda} \int q(z \mid x, \Lambda) \left[\log p(x, z \mid \Theta) - \log q(z \mid x, \Lambda) \right] dz  \\
 &amp;= \int \nabla_{\Lambda} q(z \mid x, \Lambda) \left[\log p(x, z \mid \Theta) - \log q(z \mid x, \Lambda) \right] dz - \int q(z \mid x, \Lambda) \nabla_{\Lambda} \log q(z \mid x, \Lambda) dz  \\
-&amp;= \mathbb{E}_{q} \left[\frac{\nabla_{\Lambda} q(z \mid x, \Lambda)}{q(z \mid x, \Lambda)} \log \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)} \right] - \int q(z \mid x, \Lambda) \frac{\nabla_{\Lambda} q(z \mid x, \Lambda)}{q(z \mid x, \Lambda)} dz \\ 
-&amp;= \mathbb{E}_{q} \left[\nabla_{\Lambda} \log q(z \mid x, \Lambda) \log \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)} \right] - \int \nabla_{\Lambda} q(z \mid x, \Lambda) dz \\ 
+&amp;= \mathbb{E}_{q} \left[\frac{\nabla_{\Lambda} q(z \mid x, \Lambda)}{q(z \mid x, \Lambda)} \log \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)} \right] - \int q(z \mid x, \Lambda) \frac{\nabla_{\Lambda} q(z \mid x, \Lambda)}{q(z \mid x, \Lambda)} dz \\
+&amp;= \mathbb{E}_{q} \left[\nabla_{\Lambda} \log q(z \mid x, \Lambda) \log \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)} \right] - \int \nabla_{\Lambda} q(z \mid x, \Lambda) dz \\
 &amp;= \mathbb{E}_{q} \left[\nabla_{\Lambda} \log q(z \mid x, \Lambda) \log \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)} \right] - \nabla_{\Lambda} \overbrace{\int q(z \mid x, \Lambda) dz}^{=1} \\
 &amp;= \mathbb{E}_{q} \left[\nabla_{\Lambda} \log q(z \mid x, \Lambda) \log \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)} \right]
 \end{align}
@@ -138,7 +138,7 @@ Neural Variational Inference and Learning
 </ul>
 </section>
 
-<div class="tags-pane">Tagged as <a href="../tags/machine%20learning.html">machine learning</a>, <a href="../tags/deep%20learning.html">deep learning</a>, <a href="../tags/variational%20inference.html">variational inference</a></div>
+<div class="tags-pane">Tagged as <a href="../tags/machine%20learning.html">machine learning</a>, <a href="../tags/deep%20learning.html">deep learning</a>, <a href="../tags/variational%20inference.html">variational inference</a>, <a href="../tags/modern%20variational%20inference%20series.html">modern variational inference series</a></div>
 </article>
 
 <section class="post-comments">

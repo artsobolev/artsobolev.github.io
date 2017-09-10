@@ -101,9 +101,9 @@ Variational inference for Monte Carlo objectives
 &amp;= \nabla_\Lambda \mathbb{E}_{q(z_1, \dots, z_K \mid x, \Lambda)} \log \frac{1}{K} \sum_{k=1}^K w(x, z_k, \Theta, \Lambda) \\
 &amp;= \nabla_\Lambda \int q(z_1, \dots, z_K \mid x, \Lambda) \log \frac{1}{K} \sum_{k=1}^K w(x, z_k, \Theta, \Lambda) \; dz_1 \dots dz_K \\
 &amp;= \mathbb{E}_{q(z_1, \dots, z_K \mid x, \Lambda)} \left[ \sum_{k=1}^K \nabla_\Lambda \log q(z_k \mid x, \Lambda) \log \frac{1}{K} \sum_{k=1}^K w(x, z_k, \Theta, \Lambda) \right] \\
-&amp; \quad+ \mathbb{E}_{q(z_1, \dots, z_K \mid x, \Lambda)} \nabla_\Lambda \log \sum_{k=1}^K w(x, z_k, \Theta, \Lambda) \\ 
+&amp; \quad+ \mathbb{E}_{q(z_1, \dots, z_K \mid x, \Lambda)} \nabla_\Lambda \log \sum_{k=1}^K w(x, z_k, \Theta, \Lambda) \\
 &amp;= \mathbb{E}_{q(z_1, \dots, z_K \mid x, \Lambda)} \left[ \sum_{k=1}^K \nabla_\Lambda \log q(z_k \mid x, \Lambda) \log \frac{1}{K} \sum_{k=1}^K w(x, z_k, \Theta, \Lambda) \right] \\
-&amp; \quad+ \mathbb{E}_{q(z_1, \dots, z_K \mid x, \Lambda)} \left[ \sum_{k=1}^K \hat w_k(x, z_{1 \dots K}, \Theta, \Lambda) \nabla_\Lambda \log w(x, z_k, \Theta, \Lambda) \right] 
+&amp; \quad+ \mathbb{E}_{q(z_1, \dots, z_K \mid x, \Lambda)} \left[ \sum_{k=1}^K \hat w_k(x, z_{1 \dots K}, \Theta, \Lambda) \nabla_\Lambda \log w(x, z_k, \Theta, \Lambda) \right]
 \end{align}
 \]</span></p>
 <p>The second term is exactly the gradient of the reparametrized case, and it does not cause us any troubles. The first term, however has some issues.</p>
@@ -113,7 +113,7 @@ Variational inference for Monte Carlo objectives
 <p>This paper has also caught Dr. Larochelle’s attention: <a href="https://www.evernote.com/shard/s189/sh/54a9fb88-1a71-4e8a-b0e3-f13480a68b8d/0663de49b93d397f519c7d7f73b6a441">Notes on Variational inference for Monte Carlo objectives</a>.</p>
 </section>
 
-<div class="tags-pane">Tagged as <a href="../tags/machine%20learning.html">machine learning</a>, <a href="../tags/deep%20learning.html">deep learning</a>, <a href="../tags/variational%20inference.html">variational inference</a></div>
+<div class="tags-pane">Tagged as <a href="../tags/machine%20learning.html">machine learning</a>, <a href="../tags/deep%20learning.html">deep learning</a>, <a href="../tags/variational%20inference.html">variational inference</a>, <a href="../tags/modern%20variational%20inference%20series.html">modern variational inference series</a></div>
 </article>
 
 <section class="post-comments">

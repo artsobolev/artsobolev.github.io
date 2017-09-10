@@ -120,13 +120,13 @@ q(z_{nj} \mid \phi_{nj}) = h(z_{nj}) \exp(\phi_{nj}^T t(z_{nj}) - a_m(\phi_{nj})
 &amp;= \mathbb{E}_q (t(\beta) - \nabla_\lambda a_g(\lambda)) (t(\beta) - \nabla_\lambda a_g(\lambda))^T
 = \mathbb{E}_q (t(\beta) - \mathbb{E}_q t(\beta)) (t(\beta) - \mathbb{E}_q t(\beta))^T \\
 &amp;= \text{Cov}_q (t(\beta))
- = \nabla_\lambda^2 a_g(\lambda) 
+ = \nabla_\lambda^2 a_g(\lambda)
 \end{align}
 \]</span></p>
 <p>Where we’ve used another <a href="https://en.wikipedia.org/wiki/Exponential_family#Differential_identities_for_cumulants">differential identity for exponential family</a>. All these calculations lead us to the natural gradients of ELBO for variational parameters:</p>
 <p><span class="math display">\[
 \nabla_\lambda^\text{N} \mathcal{L}(\lambda) = \mathbb{E}_{q(z)} \eta_g(x, z, \alpha) - \lambda \\
-\nabla_{\phi_{nj}}^\text{N} \mathcal{L}(\lambda) = \mathbb{E}_{q(\beta) q(z_{n,-j})} \eta_l(x_n, z_{n,-j}, \beta) - \phi_{nj} 
+\nabla_{\phi_{nj}}^\text{N} \mathcal{L}(\lambda) = \mathbb{E}_{q(\beta) q(z_{n,-j})} \eta_l(x_n, z_{n,-j}, \beta) - \phi_{nj}
 \]</span></p>
 <p>Surprisingly, computation-wise calculating natural gradients is even simpler that calculating classical gradients! There’s an interesting connection between the mean-field update and a natural gradient step. In particular, if we make a step along the natural gradient with step size equal 1, we’d get <span class="math inline">\(\lambda^{\text{new}} = \lambda^{\text{old}} + (\mathbb{E}_{q(z)} \eta_g(x, z, \alpha) - \lambda^{\text{old}}) = \mathbb{E}_{q(z)} \eta_g(x, z, \alpha)\)</span>. The same applies to parameters <span class="math inline">\(\phi\)</span>. This means that the mean field updates are exactly natural gradient steps, and vice versa.</p>
 <p>Recall, we have derived mean field updates by finding a minima of KL-divergence with the true posterior, that is in just one step (one update) we arrive at minimum. Obviously, we have the same in the natural gradient formulation, when just one step brings us to the optimum.</p>
@@ -177,7 +177,7 @@ Update the global update <span class="math inline">\(\lambda^{(t+1)} = (1-\rho_t
 </ul>
 </section>
 
-<div class="tags-pane">Tagged as <a href="../tags/machine%20learning.html">machine learning</a>, <a href="../tags/deep%20learning.html">deep learning</a>, <a href="../tags/variational%20inference.html">variational inference</a></div>
+<div class="tags-pane">Tagged as <a href="../tags/machine%20learning.html">machine learning</a>, <a href="../tags/deep%20learning.html">deep learning</a>, <a href="../tags/variational%20inference.html">variational inference</a>, <a href="../tags/modern%20variational%20inference%20series.html">modern variational inference series</a></div>
 </article>
 
 <section class="post-comments">
