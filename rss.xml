@@ -73,12 +73,10 @@
 <p>Then <span class="math inline">\(\gamma_1 - \gamma_0\)</span> has <a href="https://en.wikipedia.org/wiki/Logistic_distribution">Logistic</a>(0, 1) distribution <a href="#fn7" class="footnoteRef" id="fnref7"><sup>7</sup></a>. This estimator is a bit more efficient since you can generate Logistic random variables faster than generating two independent Gumbel r.v.s. <a href="#fn8" class="footnoteRef" id="fnref8"><sup>8</sup></a></p>
 <p>Even though this choice of Logistic distribution in binary case seems arbitrary, let’s not forget, that it’s a special case of a more general relaxation of any categorical r.v. If we chose some other<a href="#fn9" class="footnoteRef" id="fnref9"><sup>9</sup></a> distribution in a binary case, we’d have to construct some cumbersome stick-breaking procedure to generalize it to the multivariate case.</p>
 <h2 id="marginalization-via-continuous-noise">Marginalization via Continuous Noise</h2>
-<p>An interesting approach was proposed in the <a href="https://arxiv.org/abs/1609.02200">Discrete Variational Autoencoders paper</a>. The core idea is that you can smooth binary r.v. <span class="math inline">\(z\)</span> with p.m.f. <span class="math inline">\(p(z)\)</span> by multiplying it by continuous noise <span class="math inline">\(\tau\)</span>. Indeed, consider such smoothed r.v. <span class="math inline">\(\zeta = z \cdot \tau\)</span>. Then we marginalize out <span class="math inline">\(z\)</span>, and get the following PDF and CDF:</p>
+<p>An interesting approach was proposed in the <a href="https://arxiv.org/abs/1609.02200">Discrete Variational Autoencoders paper</a>. The core idea is that you can smooth binary r.v. <span class="math inline">\(z\)</span> with p.m.f. <span class="math inline">\(p(z)\)</span> by adding extra noise <span class="math inline">\(\tau_1\)</span> and <span class="math inline">\(\tau_2\)</span> and treating <span class="math inline">\(z\)</span> as a swticher between these. Indeed, consider such smoothed r.v. <span class="math inline">\(\zeta = z \cdot \tau_1 + (1 - z) \tau_0\)</span>. Now if we choose <span class="math inline">\(\tau_0\)</span> and <span class="math inline">\(\tau_1\)</span> such that the CDF of marginal <span class="math inline">\(\zeta\)</span> can be computed and inverted, we would be able to devise a reparametrization for this scheme.</p>
+<p>Consider a particular example of <span class="math inline">\(\tau_0 = 0\)</span> – a constant zero, and <span class="math inline">\(\tau_1\)</span> having some continuous distribution. The marginal CDF of <span class="math inline">\(\zeta\)</span> would then be</p>
 <p><span class="math display">\[
-p(\zeta) = p(z = 0) \delta(\zeta) + p(z=1) p_\tau(\zeta)
-\]</span></p>
-<p><span class="math display">\[
-\mathbb{P}(\zeta &lt; y) = p(z = 0) [y \ge 0] + p(z = 1) \mathbb{P}(\tau &lt; y)
+\mathbb{P}(\zeta &lt; x) = \mathbb{P}(z = 0) [\zeta &gt; 0] + \mathbb{P}(z=1) \mathbb{P}(\tau_1 &lt; x)
 \]</span></p>
 <p>Now we can invert this CDF:</p>
 <p><span class="math display">\[
@@ -112,7 +110,7 @@ p(\zeta) = p(z = 0) \delta(\zeta) + p(z=1) p_\tau(\zeta)
 <p><img src="/files/dvae-experiments.png" /></p>
 </div>
 <p>First, the Relaxed ELBO pane tells us all methods have no problems optimizing their target objective. However, one should refrain from comparing them according to this number, since these are different relaxations, they are not even lower bounds for a marginal log-likelihood for some relaxed model <a href="#fn11" class="footnoteRef" id="fnref11"><sup>11</sup></a>.</p>
-<p>Instead, let’s look at the second and third panes. The second shows the Evidence Lower Bound for discrete unrelaxed model, and the third shows the gap between the discrete ELBO and the relaxed one. First, the marginal likelihood estimation agrees with the discrete ELBO – that’s a good thing and means nothing bad is happening to the KL-divergence between the true posterior and the approximate one.</p>
+<p>Instead, let’s look at the second and third panes. The second shows the Evidence Lower Bound for the original discrete model, and the third shows the gap between the discrete ELBO and the relaxed one. First, the marginal likelihood estimation agrees with the discrete ELBO – that’s a good thing and means nothing bad is happening to the KL-divergence between the true posterior and the approximate one.</p>
 <p>You can see that the green line – the logistic distribution-based relaxation with unit temperature – actually diverges. This is a direct consequence of the chosen temperature: for <span class="math inline">\(\tau = 1\)</span> the density of relaxed random variables is unimodal and has its mode somewhere in the interior of the [0, 1] interval. This leads the network to adjust to the values around this mode, which poorly represent test time samples.</p>
 <p>As you can see the normal distribution with temperature 0.4 works very well at first, but then starts diverging. This might be because of the problems of Gaussian distribution we discussed earlier: namely, it has zero mass at exact 0 and 1: the network might adapt to having some small non-zero elements, and be very surprised to see them zeroed out completely at the testing time.</p>
 <p>The asymptotic reparametrization seems to be suffering from the inaccuracy of the CLT approximation. Latent code of 200 units is big, but not infinitely big for the approximation to be exact. Unfortunately, there’s no hyperparameter to adjust the approximation quality. Moreover, the relaxation gap keeps increasing.</p>
@@ -138,7 +136,7 @@ p(\zeta) = p(z = 0) \delta(\zeta) + p(z=1) p_\tau(\zeta)
  0, &amp; \rho \le p(z=0) \\
  \mathbb{Q}_\tau \left( \frac{\rho - p(z = 0)}{1 - p(z = 0)} \right), &amp; \text{otherwise}
  \end{cases}
- \]</span> This formula has less branching, and thus is more efficient to compute.<a href="#fnref10">↩</a></p></li>
+ \]</span> This formula has less branching, and thus is more efficient to compute. <br/> Moreover, in general one can avoid inverting the CDF by noticing that <span class="math inline">\(y = [\rho &lt; \mathbb{P}(z=0)] \mathbb{Q}_{\tau_0}\left(\tfrac{\rho}{\mathbb{P}(z=0)}\right) + [\rho &gt; \mathbb{P}(z=0)] \mathbb{Q}_{\tau_1}\left(\tfrac{1-\rho}{1-\mathbb{P}(z=0)}\right)\)</span> for <span class="math inline">\(\rho \sim U[0,1]\)</span> has exactly the same distribution as the marginal <span class="math inline">\(p(\zeta)\)</span>.<a href="#fnref10">↩</a></p></li>
 <li id="fn11"><p>Authors of the Concrete Distribution paper did also relax the KL-divergence term, which means they optimized lower bound for marginal likelihood in a different model, however, it’s reported to lead to better results.<a href="#fnref11">↩</a></p></li>
 </ol>
 </div>]]></description>
