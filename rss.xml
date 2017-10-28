@@ -120,6 +120,7 @@ p(\zeta) = p(z = 0) \delta(\zeta) + p(z=1) p_\tau(\zeta)
 <p>Straight through estimators perform surprisingly good: not as good as the Gumbel-Softmax relaxation, but better than what you’d expect from a mathematically unsound method.</p>
 <h2 id="conclusion">Conclusion</h2>
 <p>In this post we talked about continuous relaxations of discrete models. These relaxations allow you to invoke the reparametrization trick to backpropagate the gradients, but this comes at a cost of bias. The gradients are no more unbiased as you essentially optimize different objective. In the next blogpost we will return back to where we started – to the score-function estimator, and try to reduce its variance keeping zero bias.</p>
+<p>By the way, if you’re interested, the code for DVAE implementations is <a href="https://github.com/artsobolev/dvaes">available on my GitHub</a>. However, I should warn you: it’s still work-in-progress, and lacks any documentation. I’ll add it one I’m finished with the series.</p>
 <div class="footnotes">
 <hr />
 <ol>
