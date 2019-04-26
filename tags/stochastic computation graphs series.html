@@ -34,6 +34,20 @@
     <section>
         <article>
 	<header>
+		<h3><a href="../posts/2017-11-12-stochastic-computation-graphs-fixing-reinforce.html">Stochastic Computation Graphs: Fixing REINFORCE</a></h3>
+		<time>November 12, 2017</time>
+	</header>
+
+	<section>
+		<p>This is the final post of the <a href="../tags/stochastic%20computation%20graphs%20series.html">stochastic computation graphs series</a>. Last time we discussed models with <a href="../posts/2017-10-28-stochastic-computation-graphs-discrete-relaxations.html">discrete relaxations of stochastic nodes</a>, which allowed us to employ the power of reparametrization.</p>
+<p>These methods, however, posses one flaw: they consider different models, thus introducing inherent bias – your test time discrete model will be doing something different from what your training time model did. Therefore in this post we’ll get back to the REINFORCE aka Score Function estimator, and see if we can fix its problems.</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
+	<header>
 		<h3><a href="../posts/2017-10-28-stochastic-computation-graphs-discrete-relaxations.html">Stochastic Computation Graphs: Discrete Relaxations</a></h3>
 		<time>October 28, 2017</time>
 	</header>
