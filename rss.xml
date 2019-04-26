@@ -38,9 +38,8 @@ p(z|x)
 =
 D_{KL}(q_\phi(z|x) \mid\mid p_\theta(z|x))
 \]</span></p>
-<p>Now it’s easy to see that maximizing the ELBO w.r.t. <span class="math inline">\(\phi\)</span> tightens the bound and performs approximate inference – <span class="math inline">\(q(z|x)\)</span> becomes closer to the true posterior <span class="math inline">\(p(z|x)\)</span> as measured by the KL divergence. While we hope that maximizig the bound w.r.t. <span class="math inline">\(\theta\)</span> increases marginal log-likelihood <span class="math inline">\(\log p_\theta(x)\)</span>, this is obstructed by the KL-divergence. In a more realistic setting maximizing the ELBO is equivalent to maximizing the marginal log-likelihood regularized with the <span class="math inline">\(D_{KL}(q_\phi(z|x) \mid\mid p_\theta(z|x))\)</span>, except there’s no hyperparameter to control the strength of this regularization. This regularization prevents the true posterior <span class="math inline">\(p_\theta(z|x)\)</span> from deviating too much from the variational distribution <span class="math inline">\(q(z|x)\)</span>, which is not bad, as you’d know that the true posterior has somewhat simple form, but on the other hand it prevents us from learning powerful and expressive models <span class="math inline">\(p_\theta(x) = \int p_\theta(x|z) p_\theta(z) dz\)</span>.</p>
-<p>Intuitively, tighter the bound – lesser the regularizational effect is. And it’s relatively easy to obtain a tighter bound:</p>
-<p><span class="math display">\[
+<p>Now it’s easy to see that maximizing the ELBO w.r.t. <span class="math inline">\(\phi\)</span> tightens the bound and performs approximate inference – <span class="math inline">\(q(z|x)\)</span> becomes closer to the true posterior <span class="math inline">\(p(z|x)\)</span> as measured by the KL divergence. While we hope that maximizig the bound w.r.t. <span class="math inline">\(\theta\)</span> increases marginal log-likelihood <span class="math inline">\(\log p_\theta(x)\)</span>, this is obstructed by the KL-divergence. In a more realistic setting maximizing the ELBO is equivalent to maximizing the marginal log-likelihood regularized with the <span class="math inline">\(D_{KL}(q_\phi(z|x) \mid\mid p_\theta(z|x))\)</span>, except there’s no hyperparameter to control the strength of this regularization. This regularization prevents the true posterior <span class="math inline">\(p_\theta(z|x)\)</span> from deviating too much from the variational distribution <span class="math inline">\(q(z|x)\)</span>, which is not bad, as you’d know that the true posterior has somewhat simple form, but on the other hand it prevents us from learning powerful and expressive models <span class="math inline">\(p_\theta(x) = \int p_\theta(x|z) p_\theta(z) dz\)</span>. Therefore if we’re after expressive models <span class="math inline">\(p_\theta(x)\)</span>, we probably should minimize such regularization effect, for example, by means of more expressive variational approximations.</p>
+<p>Intuitively, tighter the bound – lesser the regularizational effect is. And it’s relatively easy to obtain a tighter bound: <span class="math display">\[
 \begin{align*}
 \log p_\theta(x)
 &amp;= \log \mathbb{E}_{p_\theta(z)} p_\theta(x|z)
@@ -49,8 +48,7 @@ D_{KL}(q_\phi(z|x) \mid\mid p_\theta(z|x))
 =: \mathcal{L}_K
 \ge \mathcal{L}
 \end{align*}
-\]</span></p>
-<p>That is, by simply taking several samples to estimate the marginal likelihood <span class="math inline">\(p_\theta(x)\)</span> under the logarithm, we made the bound tighter. Such bounds usually are called <a href="/posts/2016-07-14-neural-variational-importance-weighted-autoencoders.html">IWAE bounds</a> (for <a href="https://arxiv.org/abs/1509.00519">Importance Weighted Autoencoders paper</a> they were first introduced in), but we’ll be calling these bounds <em>Multisample Variational Lower Bounds</em>. Such bounds are very powerful, but require multiple evaluations of the decoder <span class="math inline">\(p_\theta(x|z)\)</span>, which might be very expensive for complex models, for example, when applying VAEs to text modelling.</p>
+\]</span> That is, by simply taking several samples to estimate the marginal likelihood <span class="math inline">\(p_\theta(x)\)</span> under the logarithm, we made the bound tighter. Such bounds usually are called <a href="/posts/2016-07-14-neural-variational-importance-weighted-autoencoders.html">IWAE bounds</a> (for <a href="https://arxiv.org/abs/1509.00519">Importance Weighted Autoencoders paper</a> they were first introduced in), but we’ll be calling these bounds <em>Multisample Variational Lower Bounds</em>. Such bounds <a href="https://arxiv.org/abs/1808.09034">were shown</a> to correspond to using more expressive proposal distributions and are very powerful, but require multiple evaluations of the decoder <span class="math inline">\(p_\theta(x|z)\)</span>, which might be very expensive for complex models, for example, when applying <a href="https://arxiv.org/abs/1802.02032">VAEs to dialogue modelling</a>.</p>
 <p>An alternative direction is to use more expressive family of variational distributions <span class="math inline">\(q_\phi(z|x)\)</span>. Moreover, with the explosion of Deep Learning we actually know one family of models that have empirically demonstrated terrific approximation capabilities – Neural Networks. We therefore will consider so called Neural Samplers as generators of approximate posterior <span class="math inline">\(q(z|x)\)</span> samples. A <em>Neural Sampler</em> is simply a neural network that is trained to take some simple (say, Gaussian) random variable <span class="math inline">\(\psi \sim q(\psi|x)\)</span> and transform it into <span class="math inline">\(z\)</span> that has the properties we seek. Canonical examples are GANs and VAEs and we’ll get back to them later in the discussion.</p>
 <p>And using neural nets is not a new idea. There’s been a lot of research along this direction, which we might roughly classify into 3 directions based on how they deal with the intractable <span class="math inline">\(\log q_\phi(z|x)\)</span> term:</p>
 <ul>
@@ -86,8 +84,7 @@ D_{KL}(q_\phi(z|x) \mid\mid p_\theta(z|x))
 :=
 \mathcal{U}
 \]</span></p>
-<p>Except – oops – it needs a sample from the true inverse model <span class="math inline">\(q_\phi(\psi|z, x)\)</span>, which in general is not any easier to obtain than to calculate the <span class="math inline">\(\log q_\phi(z)\)</span> in the first place. Bummer? No turns out, we can use the fact that samples <span class="math inline">\(z\)</span> are coming from the same distribution <span class="math inline">\(q_\phi(z|x)\)</span>! Indeed, we’re interested in the <span class="math inline">\(\log q_\phi(z)\)</span> averaged over all <span class="math inline">\(z|x\)</span>:</p>
-<p><span class="math display">\[
+<p>Except – oops – it needs a sample from the true inverse model <span class="math inline">\(q_\phi(\psi|z, x)\)</span>, which in general is not any easier to obtain than to calculate the <span class="math inline">\(\log q_\phi(z)\)</span> in the first place. Bummer? No – turns out, we can use the fact that samples <span class="math inline">\(z\)</span> are coming from the same hierarchical process <span class="math inline">\(q_\phi(z, \psi|x)\)</span>! Indeed, since we’re interested in the <span class="math inline">\(\log q_\phi(z)\)</span> averaged over all <span class="math inline">\(z|x\)</span>: <span class="math display">\[
 \begin{align*}
 \mathbb{E}_{q_\phi(z|x)}
 \log q_\phi(z|x)
@@ -101,7 +98,7 @@ D_{KL}(q_\phi(z|x) \mid\mid p_\theta(z|x))
 \mathbb{E}_{q_\phi(z|\psi, x)} \log \frac{q_\phi(z, \psi|x)}{\tau_\eta(\psi|z, x)}
 \end{align*}
 \]</span></p>
-<p>These algebraic manipulations show that if we sampled <span class="math inline">\(z\)</span> through a hierarchical scheme, then <span class="math inline">\(\psi\)</span> used to generate this <span class="math inline">\(z\)</span> can be though of as a free posterior sample. This leads to the following lower bound on the ELBO, introduced in <a href="https://arxiv.org/abs/1511.02386">Hierarchical Variational Models</a> paper:</p>
+<p>These algebraic manipulations show that if we sampled <span class="math inline">\(z\)</span> through a hierarchical scheme, then <span class="math inline">\(\psi\)</span> used to generate this <span class="math inline">\(z\)</span> can be thought of as a free posterior sample<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>. This leads to the following lower bound on the ELBO, introduced in <a href="https://arxiv.org/abs/1511.02386">Hierarchical Variational Models</a> paper:</p>
 <p><span class="math display">\[
 \log p_\theta(x)
 \ge
@@ -128,12 +125,21 @@ D_{KL}(q_\phi(z|x) \mid\mid p_\theta(z|x))
 \mathbb{E}_{q_\phi(\psi_{1:K}|z, x)} 
 \log \frac{1}{\frac{1}{K} \sum_{k=1}^K \frac{\tau_\eta(\psi_k|z, x)}{q_\phi(z, \psi_k|x)}}
 \]</span></p>
-<p>However, this bound is no good – it uses <span class="math inline">\(K\)</span> samples from the true inverse model <span class="math inline">\(q_\phi(\psi|x,z)\)</span>, and we can have only one free sample. The rest have to be obtained through expensive MCMC sampling and that doesn’t scale well. Interestingly, this estimator was already presented in the original VAE paper (though buried in the Appendix D), but discarded as too unstable.</p>
-<p>So… No efficient multisample variational upper bounds? A year ago you might have thought so, until… [To be continued]</p>
+<p>However, this bound – Variational Harmonic Mean Estimator – is no good as it uses <span class="math inline">\(K\)</span> samples from the true inverse model <span class="math inline">\(q_\phi(\psi|x,z)\)</span> whereas we can have only one free sample. The rest have to be obtained through expensive MCMC sampling and that doesn’t scale well. Interestingly, this estimator was already presented in the original VAE paper (though buried in the Appendix D), but discarded as too unstable.</p>
+<h3 id="why-multisample-variational-upper-bound">Why multisample variational upper bound?</h3>
+<p>The gap between the ELBO and it’s tractable lower bound can be shown to be <span class="math display">\[
+\mathcal{L}
+-
+\mathbb{E}_{q_\phi(z, \psi|x)} \log \frac{p_\theta(x, z)}{ \tfrac{q_\phi(z, \psi|x)}{\tau_\eta(\psi|z, x)} }
+=
+D_{KL}(q_\phi(\psi|x,z) \mid\mid \tau_\eta(\psi|x,z))
+\]</span> So since we’ll be using some simple <span class="math inline">\(\tau_eta(\psi|x,z)\)</span>, we’ll be restricting the true inverse model <span class="math inline">\(q_\phi(\psi|x,z)\)</span> to also be somewhat simple, limiting the expressivity of <span class="math inline">\(q(z|x)\)</span>, thus limiting the expressivity <span class="math inline">\(p(z|x)\)</span>… Looks like we ended up with where we started, right? Well, not quite so, as we might have gained more than lost by moving the simple distribution from <span class="math inline">\(q(z|x)\)</span> to <span class="math inline">\(\tau(\psi|x,z)\)</span>, but still not quite satisfying. So having a multisample upper bound would allow us to give tighter bounds (which don’t suffer from the regularization that much) and not invoke any additional model’s decoder <span class="math inline">\(p_\theta(x|z)\)</span> evaluations (see the Variational Harmonic Mean Estimator above as example).</p>
+<p>So… Are there efficient multisample variational upper bounds? A year ago you might have thought the answer is “Probably no”, until… [To be continued]</p>
 <div class="footnotes">
 <hr />
 <ol>
 <li id="fn1"><p>The problem is that delta function is not a real function, but a generalized function, and a special case has to be taken to deal with them.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>This is not a new result, see <a href="https://arxiv.org/abs/1511.02543">Grosse et al.</a>, section 4.2, paragraph on “simulated data”.<a href="#fnref2">↩</a></p></li>
 </ol>
 </div>]]></description>
     <pubDate>Fri, 26 Apr 2019 00:00:00 UT</pubDate>
