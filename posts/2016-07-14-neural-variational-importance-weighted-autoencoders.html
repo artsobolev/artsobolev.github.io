@@ -17,13 +17,21 @@ On a dessert we’ll discuss another paper, Variational inference for Monte Carl
 
   <link rel="stylesheet" type="text/css" href="../css/default.css" />
   <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
-  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
+      MathJax.InputJax.TeX.Definitions.Add({
+              macros: {
+                        E: ["Macro", "\\mathop{\\mathbb{E}}"]
+                      }
+            });
+});
+  </script>
 </head>
 <body>
     <header>
       <hgroup>
         <h1><a href="../">B.log</a></h1>
-        <h2>Random notes on Computer Science, Mathematics and Software Engineering</h2>
+        <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
@@ -36,7 +44,7 @@ On a dessert we’ll discuss another paper, Variational inference for Monte Carl
     <section>
         <article>
 <header>
-	<h3>Neural Variational Inference: Importance Weighted Autoencoders</h3>
+	<h1>Neural Variational Inference: Importance Weighted Autoencoders</h1>
 	<time>July 14, 2016</time>
 </header>
 

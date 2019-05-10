@@ -15,13 +15,21 @@
 
   <link rel="stylesheet" type="text/css" href="../css/default.css" />
   <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
-  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
+      MathJax.InputJax.TeX.Definitions.Add({
+              macros: {
+                        E: ["Macro", "\\mathop{\\mathbb{E}}"]
+                      }
+            });
+});
+  </script>
 </head>
 <body>
     <header>
       <hgroup>
         <h1><a href="../">B.log</a></h1>
-        <h2>Random notes on Computer Science, Mathematics and Software Engineering</h2>
+        <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
@@ -39,7 +47,7 @@
 
 <section>
 <p>Hello there and welcome to my blog! I’m a Machine Learning Researcher at <a href="https://bayesgroup.ru/">Bayesian Methods Research Group</a>. I’m particularly interested in everything Bayesian, Deep Learning, Applied Math (Statistics, Optimization, Probability Theory and Stochastic Proccesses, Linear Algebra, Numerical Methods), but also like more traditional CS topics like Algorithms, Computer Security and Functional Programming. Before discovering Machine Learning I was keen on Software Engineering and still have some ideas as how to solve SWE problems.</p>
-<p>By the way, I have a <img src="http://www.google.com/s2/favicons?domain=twitter.com" style="vertical-align:middle" /> <a href="https://twitter.com/art_sobolev">twitter</a> account where I occasionally post interesting things that fit 140 symbols limit.</p>
+<p>By the way, I have a <img src="http://www.google.com/s2/favicons?domain=twitter.com" style="vertical-align:middle" /> <a href="https://twitter.com/art_sobolev">twitter</a> account where I occasionally post interesting things that fit 280 symbols limit.</p>
 <div style="float:right">
 <p><a href="http://stackoverflow.com/users/1190430/"><br /> <img src="http://stackexchange.com/users/flair/1224582.png?theme=clean" width="208" height="58" alt="profile for Artem Sobolev at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="profile for Artem Sobolev at Stack Overflow, Q&amp;A for professional and enthusiast programmers"><br /> </a></p>
 </div>

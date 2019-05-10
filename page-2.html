@@ -15,13 +15,21 @@
 
   <link rel="stylesheet" type="text/css" href="./css/default.css" />
   <link rel="stylesheet" type="text/css" href="./css/syntax.css" />
-  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
+      MathJax.InputJax.TeX.Definitions.Add({
+              macros: {
+                        E: ["Macro", "\\mathop{\\mathbb{E}}"]
+                      }
+            });
+});
+  </script>
 </head>
 <body>
     <header>
       <hgroup>
         <h1><a href="./">B.log</a></h1>
-        <h2>Random notes on Computer Science, Mathematics and Software Engineering</h2>
+        <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
@@ -33,6 +41,19 @@
     </nav>
     <section>
         <article>
+	<header>
+		<h3><a href="./posts/2016-07-11-neural-variational-inference-variational-autoencoders-and-Helmholtz-machines.html">Neural Variational Inference: Variational Autoencoders and Helmholtz machines</a></h3>
+		<time>July 11, 2016</time>
+	</header>
+
+	<section>
+		<p>So far we had a little of “neural” in our VI methods. Now it’s time to fix it, as we’re going to consider <a href="https://arxiv.org/abs/1312.6114">Variational Autoencoders</a> (VAE), a paper by D. Kingma and M. Welling, which made a lot of buzz in ML community. It has 2 main contributions: a new approach (AEVB) to large-scale inference in non-conjugate models with continuous latent variables, and a probabilistic model of autoencoders as an example of this approach. We then discuss connections to <a href="https://en.wikipedia.org/wiki/Helmholtz_machine">Helmholtz machines</a> — a predecessor of VAEs.</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
 	<header>
 		<h3><a href="./posts/2016-07-05-neural-variational-inference-blackbox.html">Neural Variational Inference: Blackbox Mode</a></h3>
 		<time>July  5, 2016</time>

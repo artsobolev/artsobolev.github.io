@@ -15,13 +15,21 @@
 
   <link rel="stylesheet" type="text/css" href="../css/default.css" />
   <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
-  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
+      MathJax.InputJax.TeX.Definitions.Add({
+              macros: {
+                        E: ["Macro", "\\mathop{\\mathbb{E}}"]
+                      }
+            });
+});
+  </script>
 </head>
 <body>
     <header>
       <hgroup>
         <h1><a href="../">B.log</a></h1>
-        <h2>Random notes on Computer Science, Mathematics and Software Engineering</h2>
+        <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
@@ -33,6 +41,20 @@
     </nav>
     <section>
         <article>
+	<header>
+		<h3><a href="../posts/2019-05-10-importance-weighted-hierarchical-variational-inference.html">Importance Weighted Hierarchical Variational Inference</a></h3>
+		<time>May 10, 2019</time>
+	</header>
+
+	<section>
+		<p>This post finishes the discussion on <a href="../posts/2019-04-26-neural-samplers-and-hierarchical-variational-inference.html">Neural Samplers for Variational Inference</a> by introducing some recent results (including mine).</p>
+<p>Also, there’s <a href="https://youtu.be/pdSu7XfGhHw">a talk recording</a> of me presenting this post’s content, so if you like videos more than texts, check it out.</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
 	<header>
 		<h3><a href="../posts/2019-04-26-neural-samplers-and-hierarchical-variational-inference.html">Neural Samplers and Hierarchical Variational Inference</a></h3>
 		<time>April 26, 2019</time>

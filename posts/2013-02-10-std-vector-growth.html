@@ -20,13 +20,21 @@ I haven’t got it first time. Recently I recalled that article and decided to d
 
   <link rel="stylesheet" type="text/css" href="../css/default.css" />
   <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
-  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
+      MathJax.InputJax.TeX.Definitions.Add({
+              macros: {
+                        E: ["Macro", "\\mathop{\\mathbb{E}}"]
+                      }
+            });
+});
+  </script>
 </head>
 <body>
     <header>
       <hgroup>
         <h1><a href="../">B.log</a></h1>
-        <h2>Random notes on Computer Science, Mathematics and Software Engineering</h2>
+        <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
@@ -39,7 +47,7 @@ I haven’t got it first time. Recently I recalled that article and decided to d
     <section>
         <article>
 <header>
-	<h3>Resizing Policy of std::vector</h3>
+	<h1>Resizing Policy of std::vector</h1>
 	<time>February 10, 2013</time>
 </header>
 

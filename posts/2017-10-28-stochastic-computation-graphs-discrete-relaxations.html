@@ -18,13 +18,21 @@ In this post I’ll talk about continuous relaxations of discrete random variabl
 
   <link rel="stylesheet" type="text/css" href="../css/default.css" />
   <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
-  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
+      MathJax.InputJax.TeX.Definitions.Add({
+              macros: {
+                        E: ["Macro", "\\mathop{\\mathbb{E}}"]
+                      }
+            });
+});
+  </script>
 </head>
 <body>
     <header>
       <hgroup>
         <h1><a href="../">B.log</a></h1>
-        <h2>Random notes on Computer Science, Mathematics and Software Engineering</h2>
+        <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
@@ -37,7 +45,7 @@ In this post I’ll talk about continuous relaxations of discrete random variabl
     <section>
         <article>
 <header>
-	<h3>Stochastic Computation Graphs: Discrete Relaxations</h3>
+	<h1>Stochastic Computation Graphs: Discrete Relaxations</h1>
 	<time>October 28, 2017</time>
 </header>
 

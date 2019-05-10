@@ -15,13 +15,21 @@
 
   <link rel="stylesheet" type="text/css" href="./css/default.css" />
   <link rel="stylesheet" type="text/css" href="./css/syntax.css" />
-  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
+      MathJax.InputJax.TeX.Definitions.Add({
+              macros: {
+                        E: ["Macro", "\\mathop{\\mathbb{E}}"]
+                      }
+            });
+});
+  </script>
 </head>
 <body>
     <header>
       <hgroup>
         <h1><a href="./">B.log</a></h1>
-        <h2>Random notes on Computer Science, Mathematics and Software Engineering</h2>
+        <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
@@ -33,6 +41,20 @@
     </nav>
     <section>
         <article>
+	<header>
+		<h3><a href="./posts/2019-05-10-importance-weighted-hierarchical-variational-inference.html">Importance Weighted Hierarchical Variational Inference</a></h3>
+		<time>May 10, 2019</time>
+	</header>
+
+	<section>
+		<p>This post finishes the discussion on <a href="./posts/2019-04-26-neural-samplers-and-hierarchical-variational-inference.html">Neural Samplers for Variational Inference</a> by introducing some recent results (including mine).</p>
+<p>Also, there’s <a href="https://youtu.be/pdSu7XfGhHw">a talk recording</a> of me presenting this post’s content, so if you like videos more than texts, check it out.</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
 	<header>
 		<h3><a href="./posts/2019-04-26-neural-samplers-and-hierarchical-variational-inference.html">Neural Samplers and Hierarchical Variational Inference</a></h3>
 		<time>April 26, 2019</time>
@@ -150,19 +172,6 @@
 	<section>
 		<p>Previously we covered <a href="./posts/2016-07-11-neural-variational-inference-variational-autoencoders-and-Helmholtz-machines.html">Variational Autoencoders</a> (VAE) — popular inference tool based on neural networks. In this post we’ll consider, a followup work from Torronto by Y. Burda, R. Grosse and R. Salakhutdinov, <a href="https://arxiv.org/abs/1509.00519">Importance Weighted Autoencoders</a> (IWAE). The crucial contribution of this work is introduction of a new lower-bound on the marginal log-likelihood <span class="math inline">\(\log p(x)\)</span> which generalizes ELBO, but also allows one to use less accurate approximate posteriors <span class="math inline">\(q(z \mid x, \Lambda)\)</span>.</p>
 <p>On a dessert we’ll discuss another paper, <a href="https://arxiv.org/abs/1602.06725">Variational inference for Monte Carlo objectives</a> by A. Mnih and D. Rezende which aims to broaden the applicability of this approach to models where reparametrization trick can not be used (e.g. for discrete variables).</p>
-
-	</section>
-</article>
-
-<hr />
-<article>
-	<header>
-		<h3><a href="./posts/2016-07-11-neural-variational-inference-variational-autoencoders-and-Helmholtz-machines.html">Neural Variational Inference: Variational Autoencoders and Helmholtz machines</a></h3>
-		<time>July 11, 2016</time>
-	</header>
-
-	<section>
-		<p>So far we had a little of “neural” in our VI methods. Now it’s time to fix it, as we’re going to consider <a href="https://arxiv.org/abs/1312.6114">Variational Autoencoders</a> (VAE), a paper by D. Kingma and M. Welling, which made a lot of buzz in ML community. It has 2 main contributions: a new approach (AEVB) to large-scale inference in non-conjugate models with continuous latent variables, and a probabilistic model of autoencoders as an example of this approach. We then discuss connections to <a href="https://en.wikipedia.org/wiki/Helmholtz_machine">Helmholtz machines</a> — a predecessor of VAEs.</p>
 
 	</section>
 </article>
