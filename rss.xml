@@ -145,7 +145,7 @@
 \log \frac{\hat\rho_\eta(x|z_0)}{\frac{1}{K+1} \sum_{k=0}^K \hat\rho_\eta(x|z_k) \frac{p(z_k)}{q_\phi(z_k|x)}}
 \]</span></p>
 <p>Where <span class="math inline">\(\hat\rho_\eta(x|z) = \exp(h_\eta(x|z))\)</span> is any non-normalized energy-based model that essentially estimates the unknown density <span class="math inline">\(p(x|z)\)</span>.</p>
-<p>I am not aware of any good <em>upper</em> bounds and if they are possible. I would think the answer is negative due to hardness of upper-bounding the entropy in the black-box case.</p>
+<p>I am not aware of any good <em>upper</em> bounds and if they are possible. I would think the answer is negative due to hardness of upper-bounding the crossentropy in the black-box case.</p>
 <h3 id="known-nothing">Known Nothing</h3>
 <p>Staying in the realm of implicit models, let’s assume we trained an implicit inference model (think of GANs with encoders) and would like estimate the MI much like in the case of VAE’s encoder in the “known conditional” section. Denoting our inference model <span class="math inline">\(q(z|x)\)</span> and the data-generating process <span class="math inline">\(p(x)\)</span> (both densities are unknown to us, but we can sample from them), we can adapt the previous section’s lower bound by choosing the proposal <span class="math inline">\(\tau_\eta(x|z) = p(x)\)</span> <span class="math display">\[
 \text{MI}[q(z | x) p(x)]
