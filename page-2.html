@@ -42,6 +42,20 @@ MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
     <section>
         <article>
 	<header>
+		<h3><a href="./posts/2016-07-14-neural-variational-importance-weighted-autoencoders.html">Neural Variational Inference: Importance Weighted Autoencoders</a></h3>
+		<time>July 14, 2016</time>
+	</header>
+
+	<section>
+		<p>Previously we covered <a href="./posts/2016-07-11-neural-variational-inference-variational-autoencoders-and-Helmholtz-machines.html">Variational Autoencoders</a> (VAE) — popular inference tool based on neural networks. In this post we’ll consider, a followup work from Torronto by Y. Burda, R. Grosse and R. Salakhutdinov, <a href="https://arxiv.org/abs/1509.00519">Importance Weighted Autoencoders</a> (IWAE). The crucial contribution of this work is introduction of a new lower-bound on the marginal log-likelihood <span class="math inline">\(\log p(x)\)</span> which generalizes ELBO, but also allows one to use less accurate approximate posteriors <span class="math inline">\(q(z \mid x, \Lambda)\)</span>.</p>
+<p>On a dessert we’ll discuss another paper, <a href="https://arxiv.org/abs/1602.06725">Variational inference for Monte Carlo objectives</a> by A. Mnih and D. Rezende which aims to broaden the applicability of this approach to models where reparametrization trick can not be used (e.g. for discrete variables).</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
+	<header>
 		<h3><a href="./posts/2016-07-11-neural-variational-inference-variational-autoencoders-and-Helmholtz-machines.html">Neural Variational Inference: Variational Autoencoders and Helmholtz machines</a></h3>
 		<time>July 11, 2016</time>
 	</header>
@@ -172,23 +186,6 @@ MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
 </article>
 
 <hr />
-<article>
-	<header>
-		<h3><a href="./posts/2013-02-10-std-vector-growth.html">Resizing Policy of std::vector</a></h3>
-		<time>February 10, 2013</time>
-	</header>
-
-	<section>
-		Sometime ago when Facebook opensourced their <a title="Folly is an open-source C++ library developed and used at Facebook" href="https://github.com/facebook/folly">Folly library</a> I was reading their docs and found <a title="folly/FBvector.h documentation" href="https://github.com/facebook/folly/blob/master/folly/docs/FBVector.md">something interesting</a>. In section “Memory Handling” they state
-<blockquote>
-In fact it can be mathematically proven that a growth factor of 2 is rigorously the worst possible because it never allows the vector to reuse any of its previously-allocated memory
-</blockquote>
-<p>I haven’t got it first time. Recently I recalled that article and decided to deal with it. So after reading and googling for a while I finally understood the idea, so I’d like to say a few words about it.</p>
-
-	</section>
-</article>
-
-<hr />
 
 
 <div class="paginator">
@@ -198,6 +195,8 @@ In fact it can be mathematically proven that a growth factor of 2 is rigorously 
 &nbsp;
 </div>
 <div class="paginator-older">
+
+<a href="./page-3.html">Older Entries &rarr;</a>
 &nbsp;
 </div>
 </div>
