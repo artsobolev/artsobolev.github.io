@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Thoughts on Mutual Information: Formal Limitations - B.log</title>
+  <meta charset="utf-8" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@art_sobolev" />
+  <meta name="twitter:title" content="Thoughts on Mutual Information: Formal Limitations" />
+
+  <meta name="twitter:description" content="This posts continues the discussion started in the Thoughts on Mutual Information: More Estimators. This time we’ll focus on drawbacks and limitations of these bounds.
+" />
+
+
+  <link rel="shortcut icon" href="../favicon.ico" />
+
+  <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
+      MathJax.InputJax.TeX.Definitions.Add({
+              macros: {
+                        E: ["Macro", "\\mathop{\\mathbb{E}}"]
+                      }
+            });
+});
+  </script>
+</head>
+<body>
+    <header>
+      <hgroup>
+        <h1><a href="../">B.log</a></h1>
+        <h2>Random notes mostly on Machine Learning</h2>
+      </hgroup>
+    </header>
+    <nav>
+        <menu>
+          <a href="../">Home</a>
+          <a href="../pages/about.html">About me</a>
+          <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
+        </menu>
+    </nav>
+    <section>
+        <article>
+<header>
+	<h1>Thoughts on Mutual Information: Formal Limitations</h1>
+	<time>August 14, 2019</time>
+</header>
+
+<section class="post-body">
+<p>This posts continues the discussion started in the <a href="../posts/2019-08-10-thoughts-on-mutual-information-more-estimators.html">Thoughts on Mutual Information: More Estimators</a>. This time we’ll focus on drawbacks and limitations of these bounds.</p>
+<!--more-->
+<p>Let’s start with a elephant in the room: a year ago an interesting preprint has been uploaded to arxiv: <a href="https://arxiv.org/abs/1811.04251">Formal Limitations on the Measurement of Mutual Information</a> in which authors essentially argue that if you don’t know any densities (the hardest case, according to my hierarchy), then any <strong>distribution-free high-confidence lower bound</strong> on the MI would require <span class="math inline">\(\exp(\text{MI})\)</span> number of samples and thus black-box MI lower bounds should be deemed impractical.</p>
+<h2 id="formal-limitations">Formal Limitations</h2>
+<p>The paper mounts a massive attack on distribution-free lower bounds on the Mutual Information. Not only McAllester and Stratos show that existing bounds are inferior, but also kill any blackbox lower bounds on the KL divergence. The core result that warrants impossibility of cheap and good lower bounds on the Mutual Information is the Theorem 2, which states (in a slightly reformulated notation)</p>
+<blockquote>
+<p><strong>Theorem</strong>: Let <span class="math inline">\(B\)</span> be any distribution-free high-confidence lower bound on <span class="math inline">\(\mathbb{H}[p(x)]\)</span> computed from a sample <span class="math inline">\(x_{1:N} \sim p(x)\)</span> More specifically, let <span class="math inline">\(B(x_{1:N}, \delta)\)</span> be any real-valued function of a sample and a confidence parameter <span class="math inline">\(\delta\)</span> such that for any <span class="math inline">\(p(x)\)</span>, with probability at least <span class="math inline">\((1 − \delta)\)</span> over a draw of <span class="math inline">\(x_{1:N}\)</span> from <span class="math inline">\(p(x)\)</span>, we have <span class="math display">\[\mathbb{H}[p(x)] \ge B(x_{1:N}, δ).\]</span> For any such bound, and for <span class="math inline">\(N \ge 50\)</span> and <span class="math inline">\(k \ge 2\)</span>, with probability at least <span class="math inline">\(1 − \delta − 1.01/k\)</span> over the draw of <span class="math inline">\(x_{1:N}\)</span> we have <span class="math display">\[B(x_{1:N}, \delta) ≤ \log(2k N^2)\]</span></p>
+</blockquote>
+<p>Indeed, since (in discrete case) <span class="math inline">\(I(X, X) = H(X)\)</span> <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>, any good<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a> lower bound on the MI would give a good lower bound on the entropy, and the theorem above says there are no such bounds (only those that are either exponentially expensive to compute or are not high-confidence or are not black-box). Authors then argue that one can have good estimators if they forgo the lower bound guarantee and settle with an estimate that is neither a lower or an upper bound. However, this is undesirable in many cases, especially when we’d like to compare two numbers.</p>
+<p>Unfortunately, I found the paper hard to digest and as far as I know, it’s still not published, so probably we should be cautious about the presented result. Nevertheless, I’ll show below that several often used bounds do indeed seem to have this limitation.</p>
+<h3 id="the-nguyen-wainwright-jordan-bound">The Nguyen-Wainwright-Jordan Bound</h3>
+<p>The process we’ve followed so far to derive a lower bound on the MI has been somewhat cumbersome: we first decomposed the MI into some expectation and then used fancy bounds on some of the terms. An alternative and easier approach is to recall that the MI is a certain KL divergence take any off-the-shelf lower bounds on the KL divergence.</p>
+<p>One such lower bound can be obtained using the Fenchel conjugate functions (<a href="https://arxiv.org/abs/0809.0853">Nguyen et al.</a>, alternatively see the <a href="https://arxiv.org/abs/1606.00709">f-GANs</a> paper):</p>
+<p><span class="math display">\[
+KL(p(x) \mid\mid q(x)) \ge
+\mathbb{E}_{p(x)} f(x)
+-
+\mathbb{E}_{q(x)} \exp(f(x))
++ 1
+\]</span></p>
+<p>Where <span class="math inline">\(f(x)\)</span> (a critic) is any function that takes <span class="math inline">\(x\)</span> as input and outputs a scalar. The optimal choice can be shown to be <span class="math inline">\(f^*(x) = \ln \tfrac{p(x)}{q(x)}\)</span>. And all is nice, except the lurking menace of the <span class="math inline">\(\exp\)</span> term. Consider a Monte Carlo estimate in the case of optimal critic (<span class="math inline">\(x_{1:N} \sim p(x), y_{1:M} \sim q(y)\)</span>): <span class="math display">\[
+\frac{1}{N} \sum_{n=1}^N \ln \frac{p(x_n)}{q(x_n)}
+-
+\frac{1}{M} \sum_{m=1}^M \frac{p(y_m)}{q(y_m)}
++ 1
+\]</span> The first term is exactly the Monte Carlo estimate of the KL divergence, while the second (the balancing term as it’s counterweights the first one) in expectation gives 1. However, ratio of densities might take on extremely large values and in general has enormous variance. Indeed, the variance of the balancing term is</p>
+<p><span class="math display">\[
+\begin{align*}
+\mathbb{V}_{q(y_{1:M})} \left[ \frac{1}{M} \sum_{m=1}^M \frac{p(y_m)}{q(y_m)} \right]
+&amp;=
+\frac{1}{M} 
+\mathbb{V}_{q(y)} \left[ \frac{p(y)}{q(y)} \right]
+=
+\frac{1}{M} 
+\E_{q(y)} \left[ \left(\frac{p(y)}{q(y)} \right)^2 - 1 \right] \\
+&amp;=
+\frac{1}{M} 
+\E_{p(y)} \left[ \frac{p(y)}{q(y)} - 1 \right]
+=
+\frac{\E_{p(y)} \left[ \exp \log \frac{p(y)}{q(y)} \right] - 1}{M} \\
+&amp; \ge
+\frac{\exp \E_{p(y)} \left[ \log \frac{p(y)}{q(y)} \right] - 1}{M}
+=
+\frac{\exp\left(\text{KL}(p(y) \mid\mid q(y))\right) - 1}{M}
+\end{align*}
+\]</span></p>
+<p>So, one can see that indeed, the NWJ bound can’t give us high-confidence few-samples lower bound on any KL, not only the MI. This is because the second term would bias the bound by contributing large zero-mean noise. The only way to drive the magnitude of this noise down is to take more samples, and as the analysis above shows, number of samples should be exponential in the KL (The statement could be made more precise by appealing to the Chebyshev’s inequality).</p>
+<h3 id="the-donsker-varadhan-estimator">The Donsker-Varadhan Estimator</h3>
+<p>Donsker and Varadhan have proposed essentially a tighter bound on the KL divergence, of the form <span class="math display">\[
+KL(p(x) \mid\mid q(x)) \ge
+\E_{p(x)} f(x)
+-
+\log \E_{q(x)} \exp(f(x))
++ 1
+\]</span> With the same <span class="math inline">\(f^*(x) = \ln \tfrac{p(x)}{q(x)}\)</span> being an optimal critic. There are two key differences to the previous bound: the first is that it uses a logarithm in front of the balancing term, preventing it from contributing huge variance (but this variance still has to go somewhere, and we’ll see where it goes), and the second (and the most important) is that this bound is no loger amendable to (unbiased) Monte Carlo estimation due to the logarithm outside of the expectation. In practice <a href="https://arxiv.org/abs/1801.04062">people just take an empirical average</a> under the expectation thus obtaining a biased estimate (which in general is neither a lower nor an upper bound):</p>
+<p><span class="math display">\[
+\frac{1}{N} \sum_{n=1}^N \ln \frac{p(x_n)}{q(x_n)}
+-
+\log
+\frac{1}{M} \sum_{m=1}^M \frac{p(y_m)}{q(y_m)}
+\]</span></p>
+<p>It can be shown that the balancing term now has huge bias and is always negative. It’s also easy to see that the biased converges to 0 as we take more samples <span class="math inline">\(M\)</span>, so one might hope that with moderately many samples we’d have some tolerable bias. Well, this doesn’t seem to be the case.</p>
+<p>Take a closer look at the bias of the balancing term <span class="math display">\[
+\E_{q(y_{1:M})}
+\log
+\frac{1}{M} \sum_{m=1}^M \frac{p(y_m)}{q(y_m)}
+\]</span> It can be seen as an asymptotically unbiased estimate (a lower bound for all finite <span class="math inline">\(M\)</span>) of the log-normalizing constant of <span class="math inline">\(p(y)\)</span> (which is 1 since it’s already normalized) and is well-studied. In particular, <a href="https://arxiv.org/abs/1808.09034">Domke and Sheldon</a> have shown (Theorem 3) that, essentially, the bias of the balancing term converges to 0 with the following rate:</p>
+<p><span class="math display">\[
+O\left(M^{-1} \mathbb{V}_{q(y)} \left[ \frac{p(y)}{q(y)} \right] \right)
+\]</span></p>
+<p>Which 1) shows us where the variance has gone; 2) hints that in order to eliminate the bias we’d again need to take exponential number of samples.I don’t know what happens to the actual variance of the balancing term, but it can only make things worse.</p>
+<h3 id="the-contrastive-predictive-coding-bound">The Contrastive-Predictive-Coding Bound</h3>
+<p>Let’s leave the realm of lower bounds on KL now. Previously I have already presented the InfoNCE bound: <span class="math display">\[
+\text{MI}[p(x, z)]
+\ge
+\E_{p(z_{0:K})}
+\E_{p(x | z_0)}
+\log \frac{p(x|z_0)}{\frac{1}{K+1} \sum_{k=0}^K p(x|z_k)}
+\]</span></p>
+<p>Importantly, this bound does not have access to any marginals of the <span class="math inline">\(p(x,z)\)</span> joint. It’s easy to show that this lower bound is upper bounded by <span class="math inline">\(\log (K+1)\)</span>, which confirms the thesis:</p>
+<p><span class="math display">\[
+\begin{align*}
+\E_{p(z_{0:K})}
+\E_{p(x | z_0)}
+\log \frac{p(x|z_0)}{\frac{1}{K+1} \sum\limits_{k=0}^K p(x|z_k)}
+&amp; =
+\log (K+1)
++
+\E_{p(z_{0:K})}
+\E_{p(x | z_0)}
+\log \frac{p(x|z_0)}{\sum\limits_{k=0}^K p(x|z_k)} \\
+&amp; \le
+\log (K+1)
+\end{align*}
+\]</span> Which is due to the log’s argument being between 0 and 1. So this <span class="math inline">\(\log(K+1)\)</span> upper bound on the lower bound means that if the true MI is much larger than this value, the bound will be very loose.</p>
+<p>Given all these negative results, one might ask themselves if knowing the marginal <span class="math inline">\(p(z)\)</span> would do much better. Consider the “known prior” case:</p>
+<p><span class="math display">\[
+\text{MI}[p(x, z)]
+\ge
+\E_{p(x, z_0)}
+\E_{q_\phi(z_{1:K}|x)}
+\log \frac{\hat\varrho_\eta(x|z_0)}{\frac{1}{K+1} \sum_{k=0}^K \hat\varrho_\eta(x|z_k) \frac{p(z_k)}{q_\phi(z_k|x)}}
+\]</span></p>
+<p>Then we have <span class="math display">\[
+\begin{align*}
+\E_{\substack{p(x, z_0) \\ q_\phi(z_{1:K}|x)}}
+&amp;
+\log \frac{\hat\varrho_\eta(x|z_0)}{\frac{1}{K+1} \sum_{k=0}^K \hat\varrho_\eta(x|z_k) \frac{p(z_k)}{q_\phi(z_k|x)}} \\
+&amp; =
+\log(K+1)
++
+\E_{\substack{p(x, z_0) \\ q_\phi(z_{1:K}|x)}}
+\left[
+\log \frac{\hat\varrho_\eta(x|z_0) \frac{p(z_0)}{q_\phi(z_0|x)}}{\sum_{k=0}^K \hat\varrho_\eta(x|z_k) \frac{p(z_k)}{q_\phi(z_k|x)}}
+-
+\log \frac{p(z_0)}{q_\phi(z_0|x)}
+\right]
+\\
+&amp; \le
+\log(K+1)
++
+\E_{\substack{p(x, z_0) \\ q_\phi(z_{1:K}|x)}}
+\log \frac{q_\phi(z_0|x) p(x|z_0)}{p(z_0) p(x|z_0)} \\
+&amp; =
+\log(K+1)
++
+\E_{p(x, z_0)}
+\log \frac{q_\phi(z|x) p(x|z)}{p(z|x) p(x)} \\
+&amp; =
+\log(K+1)
++
+\E_{p(x, z)}
+\log \frac{p(x|z)}{p(x)}
+-
+\E_{p(x, z)}
+\log \frac{p(z|x)}{q_\phi(z|x)} \\
+&amp; =
+\log(K+1)
++
+\text{MI}[p(x, z)]
+-
+\text{KL}(p(x,z) \mid\mid q_\phi(z|x) p(x))
+\end{align*}
+\]</span></p>
+<p>Which shows that by choosing <span class="math inline">\(q_\phi(z|x) = p(z)\)</span> we essentially threw the baby out with the bathwater. Yes, <span class="math inline">\(K\)</span> still needs to be exponential, but this time not in the original MI, but rather in <span class="math inline">\(\text{KL}(p(x,z) \mid\mid q_\phi(z|x) p(x))\)</span>, which can be made much smaller with a good choice of the variational distribution <span class="math inline">\(q_\phi(z|x)\)</span>.</p>
+<p>Also recall that we can reparametrize the bound in terms of <span class="math inline">\(\hat\rho_\eta(x, z) = \hat\varrho_\eta(x|z) p(z)\)</span></p>
+<p><span class="math display">\[
+\begin{align*}
+\text{MI}[p(x, z)]
+&amp; \ge
+\E_{p(x, z_0)}
+\E_{q_\phi(z_{1:K}|x)}
+\log \frac{\hat\rho_\eta(x, z_0)}{\frac{1}{K+1} \sum_{k=0}^K \frac{\hat\rho_\eta(x, z_k) }{q_\phi(z_k|x)}}
+-
+\E_{p(z)}
+\log p(z) \\
+\text{MI}[p(x, z)]
+&amp; =
+\E_{p(x, z)} \log p(z|x) - \E_{p(z)} \log p(z)
+\end{align*}
+\]</span></p>
+<p>Hence <span class="math display">\[
+\E_{p(x, z_0)} \log p(z_0|x)
+\ge
+\E_{p(x, z_0)}
+\E_{q_\phi(z_{1:K}|x)}
+\log \frac{\hat\rho_\eta(x, z_0)}{\frac{1}{K+1} \sum_{k=0}^K \frac{\hat\rho_\eta(x, z_k) }{q_\phi(z_k|x)}}
+\]</span> Now we can choose the <span class="math inline">\(p(x)\)</span> marginal freely. Let <span class="math inline">\(p(x) = \delta(x - \tilde{x})\)</span>. Then <span class="math display">\[
+\E_{p(z_0|\tilde{x})}
+\log p(z_0|\tilde{x})
+\ge
+\E_{p(z_0|\tilde{x})}
+\E_{q_\phi(z_{1:K}|\hat{x})}
+\log \frac{\hat\rho_\eta(\tilde{x}, z_0)}{\frac{1}{K+1} \sum_{k=0}^K \frac{\hat\rho_\eta(\tilde{x}, z_k) }{q_\phi(z_k|\tilde{x})}}
+\]</span></p>
+<p>So in a sense (and this is indeed how we derived the bound in the first place), this “known prior” lower bound is based on a distribution-free <em>upper</em> bound on the entropy of <span class="math inline">\(z|x\)</span> and avoids lower bounding any entropies.</p>
+<h2 id="but-why-does-it-work-in-practice">But why does it work in practice?</h2>
+<p>Despite the negative results above, there’s a lot of empirical evidence of successful applications of all of the distribution-free bounds presented above. So what’s going on? Quite possibly, this was the question folks from the Google Brain have asked themselves in their recent preprint <a href="https://arxiv.org/abs/1907.13625">On Mutual Information Maximization for Representation Learning</a>. In this paper researchers investigated representations obtained by the Mutual Information maximization principle. For example, one finding is that tighter MI estimates surprisingly led to worse performance. Overall, the apparent conclusion of the paper is that MI estimation perspective does not seem to explain the observed behavior. Authors then suggest the metric learning perspective and reinterpret lower bounds on the MI as metric learning objectives.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>All this evidence suggests that estimating the MI is an even harder problem than we used to think. In particular, blackbox MI estimation seems to be intractable in non-toy cases. Luckily, representation learning works nevertheless, probably due to a different phenomena.</p>
+<p>However, for many problems it’d be really nice to have a way to quantify the dependence between <span class="math inline">\(x\)</span> and <span class="math inline">\(z\)</span>. A possible approach here is to consider different divergences between the joint <span class="math inline">\(p(x, z)\)</span> and the product of marginals <span class="math inline">\(p(x) p(z)\)</span>. For example, one possible direction is to replace the KL divergence with some other <a href="https://en.wikipedia.org/wiki/F-divergence"><span class="math inline">\(f\)</span>-divergence</a> (see <a href="https://ieeexplore.ieee.org/document/4455754">Lautum Information</a>, for example), or, <a href="https://en.wikipedia.org/wiki/Wasserstein_metric">Wasserstein distance</a>. And there’s already some works in this direction: <a href="https://arxiv.org/abs/1903.11780">Wasserstein Dependency Measure for Representation Learning</a> explores, unsurprisingly, the Wasserstein distance, or, <a href="https://arxiv.org/abs/1808.06670">Learning deep representations by mutual information estimation and maximization</a> considers Jensen-Shannon divergence instead of the KL divergence. It’d curious to see some theorems / efficient bounds for these and other divergences.</p>
+<p>Finally, one additional contribution of the Formal Limitations paper is the impossibility or good lower bounds on the KL divergence (supported by the reasoning above). This raises the question: given the whole family of <span class="math inline">\(f\)</span>-divergences and their Fenchel conjugate-based blackbox lower bounds, do all of them exhibit such computationally unfavorable behavior? If no, which ones do?</p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Or, in my notation, <span class="math inline">\(\text{MI}[p(x) \delta(z - x)] = \mathbb{H}[p(x)]\)</span>.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>By “good lower bound” I mean distribution-free high-confidence lower bound that uses some decent amount of samples, say, polynomial or even linear in the MI.<a href="#fnref2">↩</a></p></li>
+</ol>
+</div>
+</section>
+
+<div class="tags-pane">Tagged as <a href="../tags/machine%20learning.html">machine learning</a>, <a href="../tags/mutual%20information.html">mutual information</a></div>
+</article>
+
+<section class="post-comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'barmaley-exe'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+    </section>
+    <footer>
+        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+    </footer>
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-38530232-1']);
+_gaq.push(['_trackPageview']);
+(function() {
+ var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+ var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+</body>
+</html>
