@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Posts tagged REINFORCE - B.log</title>
+  <meta charset="utf-8" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@art_sobolev" />
+  <meta name="twitter:title" content="Posts tagged REINFORCE" />
+
+  <meta name="twitter:description" content />
+
+
+  <link rel="shortcut icon" href="../favicon.ico" />
+
+  <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
+      MathJax.InputJax.TeX.Definitions.Add({
+              macros: {
+                        E: ["Macro", "\\mathop{\\mathbb{E}}"]
+                      }
+            });
+});
+  </script>
+</head>
+<body>
+    <header>
+      <hgroup>
+        <h1><a href="../">B.log</a></h1>
+        <h2>Random notes mostly on Machine Learning</h2>
+      </hgroup>
+    </header>
+    <nav>
+        <menu>
+          <a href="../">Home</a>
+          <a href="../pages/about.html">About me</a>
+          <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
+        </menu>
+    </nav>
+    <section>
+        <article>
+	<header>
+		<h3><a href="../posts/2020-11-29-reinforce-is-not-rl.html">Not every REINFORCE should be called Reinforcement Learning</a></h3>
+		<time>November 29, 2020</time>
+	</header>
+
+	<section>
+		<p>Deep RL is hot these days. It’s one of the most popular topics in the submissions at NeurIPS / ICLR / ICML and other ML conferences. And while the definition of RL is pretty general, in this note I’d argue that the famous REINFORCE algorithm <em>alone</em> is not enough to label your method as a Reinforcement Learning one.</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
+	<header>
+		<h3><a href="../posts/2017-11-12-stochastic-computation-graphs-fixing-reinforce.html">Stochastic Computation Graphs: Fixing REINFORCE</a></h3>
+		<time>November 12, 2017</time>
+	</header>
+
+	<section>
+		<p>This is the final post of the <a href="../tags/stochastic%20computation%20graphs%20series.html">stochastic computation graphs series</a>. Last time we discussed models with <a href="../posts/2017-10-28-stochastic-computation-graphs-discrete-relaxations.html">discrete relaxations of stochastic nodes</a>, which allowed us to employ the power of reparametrization.</p>
+<p>These methods, however, posses one flaw: they consider different models, thus introducing inherent bias – your test time discrete model will be doing something different from what your training time model did. Therefore in this post we’ll get back to the REINFORCE aka Score Function estimator, and see if we can fix its problems.</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
+	<header>
+		<h3><a href="../posts/2017-09-10-stochastic-computation-graphs-continuous-case.html">Stochastic Computation Graphs: Continuous Case</a></h3>
+		<time>September 10, 2017</time>
+	</header>
+
+	<section>
+		<p>Last year I covered <a href="../tags/modern%20variational%20inference%20series.html">some modern Variational Inference theory</a>. These methods are often used in conjunction with Deep Neural Networks to form deep generative models (VAE, for example) or to enrich deterministic models with stochastic control, which leads to better exploration. Or you might be interested in amortized inference.</p>
+<p>All these cases turn your computation graph into a stochastic one – previously deterministic nodes now become random. And it’s not obvious how to do backpropagation through these nodes. In <a href="../tags/stochastic%20computation%20graphs%20series.html">this series</a> I’d like to outline possible approaches. This time we’re going to see why general approach works poorly, and see what we can do in a continuous case.</p>
+
+	</section>
+</article>
+
+<hr />
+
+    </section>
+    <footer>
+        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+    </footer>
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-38530232-1']);
+_gaq.push(['_trackPageview']);
+(function() {
+ var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+ var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+</body>
+</html>

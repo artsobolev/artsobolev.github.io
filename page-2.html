@@ -42,6 +42,19 @@ MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
     <section>
         <article>
 	<header>
+		<h3><a href="./posts/2017-08-14-icml-2017.html">ICML 2017 Summaries</a></h3>
+		<time>August 14, 2017</time>
+	</header>
+
+	<section>
+		<p>Just like with <a href="./posts/2016-12-31-nips-2016-summaries.html">NIPS last year</a>, here’s a list of ICML’17 summaries (updated as I stumble upon new ones)</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
+	<header>
 		<h3><a href="./posts/2017-07-23-no-free-lunch-theorem.html">On No Free Lunch Theorem and some other impossibility results</a></h3>
 		<time>July 23, 2017</time>
 	</header>
@@ -157,19 +170,6 @@ MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
 	<section>
 		<p>During work on my machine learning project I was needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would just slow down overall running time because of increased amount of context switches. Yet running 4 (=number of cores in my CPU) of them at a time (actually, 3 since other applications need CPU, too) should speed it up.</p>
 <p>Fortunately, I have an old laptop with 2 cores as well as an access to somewhat more modern machine with 4 cores. That results in 10 cores spread across 3 machines (all of`em have some version of GNU Linux installed). The question was how to exploit such a treasury.</p>
-
-	</section>
-</article>
-
-<hr />
-<article>
-	<header>
-		<h3><a href="./posts/2014-05-01-on-sorting-complexity.html">On Sorting Complexity</a></h3>
-		<time>May  1, 2014</time>
-	</header>
-
-	<section>
-		<p>It’s well known that lower bound for sorting problem (in general case) is <span class="math inline">\(\Omega(n \log n)\)</span>. The proof I was taught is somewhat involved and is based on paths in “decision” trees. Recently I’ve discovered an information-theoretic approach (or reformulation) to that proof.</p>
 
 	</section>
 </article>

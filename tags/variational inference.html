@@ -69,20 +69,6 @@ MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
 <hr />
 <article>
 	<header>
-		<h3><a href="../posts/2017-11-12-stochastic-computation-graphs-fixing-reinforce.html">Stochastic Computation Graphs: Fixing REINFORCE</a></h3>
-		<time>November 12, 2017</time>
-	</header>
-
-	<section>
-		<p>This is the final post of the <a href="../tags/stochastic%20computation%20graphs%20series.html">stochastic computation graphs series</a>. Last time we discussed models with <a href="../posts/2017-10-28-stochastic-computation-graphs-discrete-relaxations.html">discrete relaxations of stochastic nodes</a>, which allowed us to employ the power of reparametrization.</p>
-<p>These methods, however, posses one flaw: they consider different models, thus introducing inherent bias – your test time discrete model will be doing something different from what your training time model did. Therefore in this post we’ll get back to the REINFORCE aka Score Function estimator, and see if we can fix its problems.</p>
-
-	</section>
-</article>
-
-<hr />
-<article>
-	<header>
 		<h3><a href="../posts/2017-10-28-stochastic-computation-graphs-discrete-relaxations.html">Stochastic Computation Graphs: Discrete Relaxations</a></h3>
 		<time>October 28, 2017</time>
 	</header>
@@ -91,20 +77,6 @@ MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
 		<p>This is the second post of the <a href="../tags/stochastic%20computation%20graphs%20series.html">stochastic computation graphs series</a>. Last time we discussed models with <a href="../posts/2017-09-10-stochastic-computation-graphs-continuous-case.html">continuous stochastic nodes</a>, for which there are powerful reparametrization technics.</p>
 <p>Unfortunately, these methods don’t work for discrete random variables. Moreover, it looks like there’s no way to backpropagate through discrete stochastic nodes, as there’s no infinitesimal change of random values when you infinitesimally perturb their parameters.</p>
 <p>In this post I’ll talk about continuous relaxations of discrete random variables.</p>
-
-	</section>
-</article>
-
-<hr />
-<article>
-	<header>
-		<h3><a href="../posts/2017-09-10-stochastic-computation-graphs-continuous-case.html">Stochastic Computation Graphs: Continuous Case</a></h3>
-		<time>September 10, 2017</time>
-	</header>
-
-	<section>
-		<p>Last year I covered <a href="../tags/modern%20variational%20inference%20series.html">some modern Variational Inference theory</a>. These methods are often used in conjunction with Deep Neural Networks to form deep generative models (VAE, for example) or to enrich deterministic models with stochastic control, which leads to better exploration. Or you might be interested in amortized inference.</p>
-<p>All these cases turn your computation graph into a stochastic one – previously deterministic nodes now become random. And it’s not obvious how to do backpropagation through these nodes. In <a href="../tags/stochastic%20computation%20graphs%20series.html">this series</a> I’d like to outline possible approaches. This time we’re going to see why general approach works poorly, and see what we can do in a continuous case.</p>
 
 	</section>
 </article>
