@@ -17,13 +17,13 @@
   <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:,b" />
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
+  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
       MathJax.InputJax.TeX.Definitions.Add({
-              macros: {
-                        E: ["Macro", "\\mathop{\\mathbb{E}}"]
-                      }
-            });
-});
+          macros: {
+              E: ["Macro", "\\mathop{\\mathbb{E}}"]
+          }
+      });
+  });
   </script>
 </head>
 <body>
@@ -42,6 +42,24 @@ MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
     </nav>
     <section>
         <article>
+	<header>
+		<h3><a href="../posts/2021-05-02-reciprocal-convexity-to-reverse-the-jensen-inequality.html">Reciprocal Convexity to reverse the Jensen Inequality</a></h3>
+		<time>May  2, 2021</time>
+	</header>
+
+	<section>
+		<p><a href="https://en.wikipedia.org/wiki/Jensen%27s_inequality">Jensen’s inequality</a> is a powerful tool often used in mathematical derivations and analyses. It states that for a convex function <span class="math inline">\(f(x)\)</span> and an arbitrary random variable <span class="math inline">\(X\)</span> we have the following <em>upper</em> bound: <span class="math display">\[
+f\left(\E X\right)
+\le
+\E f\left(X\right)
+\]</span></p>
+<p>However, oftentimes we want the inequality to work in the other direction, to give a <em>lower</em> bound. In this post I’ll outline one possible approach to this.</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
 	<header>
 		<h3><a href="../posts/2017-01-29-matrix-and-vector-calculus-via-differentials.html">Matrix and Vector Calculus via Differentials</a></h3>
 		<time>January 29, 2017</time>

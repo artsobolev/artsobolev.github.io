@@ -17,13 +17,13 @@
   <link rel="stylesheet" type="text/css" href="./css/syntax.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:,b" />
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
+  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
       MathJax.InputJax.TeX.Definitions.Add({
-              macros: {
-                        E: ["Macro", "\\mathop{\\mathbb{E}}"]
-                      }
-            });
-});
+          macros: {
+              E: ["Macro", "\\mathop{\\mathbb{E}}"]
+          }
+      });
+  });
   </script>
 </head>
 <body>
@@ -42,6 +42,20 @@ MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
     </nav>
     <section>
         <article>
+	<header>
+		<h3><a href="./posts/2014-08-01-gnu-parallel.html">Exploiting Multiple Machines for Embarrassingly Parallel Applications</a></h3>
+		<time>August  1, 2014</time>
+	</header>
+
+	<section>
+		<p>During work on my machine learning project I was needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would just slow down overall running time because of increased amount of context switches. Yet running 4 (=number of cores in my CPU) of them at a time (actually, 3 since other applications need CPU, too) should speed it up.</p>
+<p>Fortunately, I have an old laptop with 2 cores as well as an access to somewhat more modern machine with 4 cores. That results in 10 cores spread across 3 machines (all of`em have some version of GNU Linux installed). The question was how to exploit such a treasury.</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
 	<header>
 		<h3><a href="./posts/2014-05-01-on-sorting-complexity.html">On Sorting Complexity</a></h3>
 		<time>May  1, 2014</time>

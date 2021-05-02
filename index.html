@@ -17,13 +17,13 @@
   <link rel="stylesheet" type="text/css" href="./css/syntax.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:,b" />
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
+  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
       MathJax.InputJax.TeX.Definitions.Add({
-              macros: {
-                        E: ["Macro", "\\mathop{\\mathbb{E}}"]
-                      }
-            });
-});
+          macros: {
+              E: ["Macro", "\\mathop{\\mathbb{E}}"]
+          }
+      });
+  });
   </script>
 </head>
 <body>
@@ -42,6 +42,24 @@ MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
     </nav>
     <section>
         <article>
+	<header>
+		<h3><a href="./posts/2021-05-02-reciprocal-convexity-to-reverse-the-jensen-inequality.html">Reciprocal Convexity to reverse the Jensen Inequality</a></h3>
+		<time>May  2, 2021</time>
+	</header>
+
+	<section>
+		<p><a href="https://en.wikipedia.org/wiki/Jensen%27s_inequality">Jensen’s inequality</a> is a powerful tool often used in mathematical derivations and analyses. It states that for a convex function <span class="math inline">\(f(x)\)</span> and an arbitrary random variable <span class="math inline">\(X\)</span> we have the following <em>upper</em> bound: <span class="math display">\[
+f\left(\E X\right)
+\le
+\E f\left(X\right)
+\]</span></p>
+<p>However, oftentimes we want the inequality to work in the other direction, to give a <em>lower</em> bound. In this post I’ll outline one possible approach to this.</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
 	<header>
 		<h3><a href="./posts/2020-11-29-reinforce-is-not-rl.html">Not every REINFORCE should be called Reinforcement Learning</a></h3>
 		<time>November 29, 2020</time>
@@ -157,20 +175,6 @@ MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
 		<p>This is the second post of the <a href="./tags/stochastic%20computation%20graphs%20series.html">stochastic computation graphs series</a>. Last time we discussed models with <a href="./posts/2017-09-10-stochastic-computation-graphs-continuous-case.html">continuous stochastic nodes</a>, for which there are powerful reparametrization technics.</p>
 <p>Unfortunately, these methods don’t work for discrete random variables. Moreover, it looks like there’s no way to backpropagate through discrete stochastic nodes, as there’s no infinitesimal change of random values when you infinitesimally perturb their parameters.</p>
 <p>In this post I’ll talk about continuous relaxations of discrete random variables.</p>
-
-	</section>
-</article>
-
-<hr />
-<article>
-	<header>
-		<h3><a href="./posts/2017-09-10-stochastic-computation-graphs-continuous-case.html">Stochastic Computation Graphs: Continuous Case</a></h3>
-		<time>September 10, 2017</time>
-	</header>
-
-	<section>
-		<p>Last year I covered <a href="./tags/modern%20variational%20inference%20series.html">some modern Variational Inference theory</a>. These methods are often used in conjunction with Deep Neural Networks to form deep generative models (VAE, for example) or to enrich deterministic models with stochastic control, which leads to better exploration. Or you might be interested in amortized inference.</p>
-<p>All these cases turn your computation graph into a stochastic one – previously deterministic nodes now become random. And it’s not obvious how to do backpropagation through these nodes. In <a href="./tags/stochastic%20computation%20graphs%20series.html">this series</a> I’d like to outline possible approaches. This time we’re going to see why general approach works poorly, and see what we can do in a continuous case.</p>
 
 	</section>
 </article>

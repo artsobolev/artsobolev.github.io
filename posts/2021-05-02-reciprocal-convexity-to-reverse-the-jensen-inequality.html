@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Reciprocal Convexity to reverse the Jensen Inequality - B.log</title>
+  <meta charset="utf-8" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@art_sobolev" />
+  <meta name="twitter:title" content="Reciprocal Convexity to reverse the Jensen Inequality" />
+
+  <meta name="twitter:description" content="Jensen’s inequality is a powerful tool often used in mathematical derivations and analyses. It states that for a convex function \(f(x)\) and an arbitrary random variable \(X\) we have the following upper bound: \[
+f\left(\E X\right)
+\le
+\E f\left(X\right)
+\]
+However, oftentimes we want the inequality to work in the other direction, to give a lower bound. In this post I’ll outline one possible approach to this.
+" />
+
+
+  <link rel="shortcut icon" href="../favicon.ico" />
+
+  <link rel="stylesheet" type="text/css" href="../css/default.css" />
+  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:,b" />
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
+      MathJax.InputJax.TeX.Definitions.Add({
+          macros: {
+              E: ["Macro", "\\mathop{\\mathbb{E}}"]
+          }
+      });
+  });
+  </script>
+</head>
+<body>
+    <header>
+      <hgroup>
+        <h1><a href="../">B.log</a></h1>
+        <h2>Random notes mostly on Machine Learning</h2>
+      </hgroup>
+    </header>
+    <nav>
+        <menu>
+          <a href="../">Home</a>
+          <a href="../pages/about.html">About me</a>
+          <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
+        </menu>
+    </nav>
+    <section>
+        <article>
+<header>
+	<h1>Reciprocal Convexity to reverse the Jensen Inequality</h1>
+	<time>May  2, 2021</time>
+</header>
+
+<section class="post-body">
+<p><a href="https://en.wikipedia.org/wiki/Jensen%27s_inequality">Jensen’s inequality</a> is a powerful tool often used in mathematical derivations and analyses. It states that for a convex function <span class="math inline">\(f(x)\)</span> and an arbitrary random variable <span class="math inline">\(X\)</span> we have the following <em>upper</em> bound: <span class="math display">\[
+f\left(\E X\right)
+\le
+\E f\left(X\right)
+\]</span></p>
+<p>However, oftentimes we want the inequality to work in the other direction, to give a <em>lower</em> bound. In this post I’ll outline one possible approach to this.</p>
+<!--more-->
+<h2 id="the-trick">The Trick</h2>
+<p>The basic idea is very simple: let’s turn our convex function into a concave function. First, define</p>
+<p><span class="math display">\[
+\hat{f}(x) = f\left(\tfrac{1}{x}\right)
+\]</span></p>
+<p>As <a href="https://core.ac.uk/download/pdf/82634388.pdf">defined by Merkle</a>, a function <span class="math inline">\(h(x)\)</span> is called <strong>reciprocally convex</strong> if <span class="math inline">\(h(x)\)</span> is concave and <span class="math inline">\(\hat{h}(x) = h(1/x)\)</span> is convex. For the sake of this discussion we’ll assume <span class="math inline">\(f(x)\)</span> is <strong>reciprocally concave</strong>, that is, of course, <span class="math inline">\(-f(x)\)</span> is reciprocally convex.</p>
+<p>Next, we’ll need an unbiased estimator <span class="math inline">\(Y\)</span> of the reciprocal of the mean <span class="math inline">\(\E X\)</span>, that is, <span class="math inline">\(Y\)</span> should satisfy the following:</p>
+<p><span class="math display">\[
+\E Y = \frac{1}{\E X}
+\]</span></p>
+<p>Now, the rest is simple algebra and the standard Jensen’s inequality (remember <span class="math inline">\(\hat{f}\)</span> is concave by definition): <span class="math display">\[
+f\left(\E X\right)
+= \hat{f}\left(\frac{1}{\E X}\right)
+= \hat{f}\left(\E Y\right)
+\ge \E \hat{f}\left(Y\right)
+= \E f\left(\frac{1}{Y}\right)
+\tag{1}
+\]</span></p>
+<h3 id="example">Example</h3>
+<p>This trick is actually the reason why we can have both <a href="../posts/2019-05-10-importance-weighted-hierarchical-variational-inference.html">upper</a> and lower bounds on the log marginal likelihood in latent variable models. Indeed, consider the following example:</p>
+<p><span class="math display">\[
+f(x) := -\log(x),
+\quad X := p(x \mid Z),
+\quad Z \sim p(z)
+\]</span></p>
+<p>This is the standard Variational Inference setup. Putting it all together, we’d like to give bounds on</p>
+<p><span class="math display">\[
+-\log \left( \E_{Z \sim p(z)} p(x|Z) \right)
+= -\log p(x)
+\]</span></p>
+<p>Normally, in VI we use the standard Jensen’s Inequality to obtain an upper bound on this negative log-likelihood, and all is good. However, sometimes we need lower bounds on the same quantity. This is where the framework above comes to the rescue.</p>
+<p>First, it’s easy to see that we’re very lucky – <span class="math inline">\(f(x)\)</span> is indeed reciprocally concave: <span class="math inline">\(-\log(x)\)</span> is convex, and <span class="math inline">\(-\log\tfrac{1}{x} = \log(x)\)</span> is concave.</p>
+<p>Next, we need an unbiased estimator <span class="math inline">\(Y\)</span> of the inverse mean of <span class="math inline">\(X\)</span>, that is, an unbiased estimator of <span class="math inline">\(1/p(x)\)</span>. Such estimator can be given this way:</p>
+<p><span class="math display">\[
+\frac{1}{p(x)}
+= \int \frac{q(z)}{p(x)} dz
+= \int \frac{q(z) p(z|x)}{p(x) p(z | x)} dz
+= \E_{p(z|x)} \frac{q(z)}{p(x, z)}
+\]</span></p>
+<p>Where <span class="math inline">\(q(z)\)</span> is an arbitrary distribution. Thus, the estimator is <span class="math inline">\(Y\)</span> generated by r.v. <span class="math inline">\(Z\)</span>: <span class="math display">\[
+Y := \frac{q(Z)}{p(x, Z)},
+\quad Z \sim p(z|x)
+\]</span></p>
+<p>Now, putting these into (1) we obtain: <span class="math display">\[
+-\log p(x)
+\ge -\E_{p(z|x)} \log \frac{p(x, z)}{q(z)}
+\]</span> Or, equivalently, <span class="math display">\[
+\log p(x)
+\le \E_{p(z|x)} \log \frac{p(x, z)}{q(z)}
+\]</span> By the way, for comparison, here’s the classical lower bound obtained through the standard Jensen’s Inequality. Curiously, the only difference is where the random variables <span class="math inline">\(z\)</span> are coming from: <span class="math display">\[
+\log p(x)
+\ge \E_{q(z)} \log \frac{p(x, z)}{q(z)}
+\]</span></p>
+<h3 id="generalization">Generalization</h3>
+<p>Why limit ourselves to a particular <span class="math inline">\(\hat{f} = f \circ (1/x)\)</span>? One can consider other invertible functions <span class="math inline">\(g(x)\)</span> instead of the <span class="math inline">\(1/x\)</span>. Here’s the recipe:</p>
+<ul>
+<li>Define <span class="math inline">\(f^{[g]}(x) = f(g(x))\)</span></li>
+<li>First, we need <span class="math inline">\(f^{[g]}(x)\)</span> to be concave</li>
+<li>Second, we need an unbiased estimator <span class="math inline">\(Y\)</span> of <span class="math inline">\(g^{-1}(\E X)\)</span></li>
+</ul>
+<p>This leads to a generalization of (1): <span class="math display">\[
+f\left(\E X\right)
+= f^{[g]}\left( g^{-1}(\E X) \right)
+= f^{[g]}\left( \E Y \right)
+\ge \E f^{[g]}\left( Y \right)
+= \E f\left( g(Y) \right)
+\]</span></p>
+<h2 id="conclusion">Conclusion</h2>
+<p>This trick is simple, and perhaps obvious even without any fancy words such as reciprocal convexity. Moreover, it has its limitations: you either need to get lucky with <span class="math inline">\(f(x)\)</span> being reciprocally concave, or need to find an invertible <span class="math inline">\(g(x)\)</span> such that <span class="math inline">\(f \circ g\)</span> is concave. But even that’s not enough, as you also need to construct an unbiased estimator <span class="math inline">\(Y\)</span>, and if you fancy practical applications, efficiency of the resulting bound will heavily depend on the quality of this estimator.</p>
+<p>Nevertheless, I believe this is an interesting idea and it might prove itself useful in various analyses and derivations.</p>
+</section>
+
+<div class="tags-pane">Tagged as <a href="../tags/math.html">math</a></div>
+</article>
+
+<section class="post-comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'barmaley-exe'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+    </section>
+    <footer>
+        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+    </footer>
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-38530232-1']);
+_gaq.push(['_trackPageview']);
+(function() {
+ var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+ var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+</body>
+</html>

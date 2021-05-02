@@ -17,13 +17,13 @@
   <link rel="stylesheet" type="text/css" href="./css/syntax.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:,b" />
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
+  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
       MathJax.InputJax.TeX.Definitions.Add({
-              macros: {
-                        E: ["Macro", "\\mathop{\\mathbb{E}}"]
-                      }
-            });
-});
+          macros: {
+              E: ["Macro", "\\mathop{\\mathbb{E}}"]
+          }
+      });
+  });
   </script>
 </head>
 <body>
@@ -42,6 +42,20 @@ MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
     </nav>
     <section>
         <article>
+	<header>
+		<h3><a href="./posts/2017-09-10-stochastic-computation-graphs-continuous-case.html">Stochastic Computation Graphs: Continuous Case</a></h3>
+		<time>September 10, 2017</time>
+	</header>
+
+	<section>
+		<p>Last year I covered <a href="./tags/modern%20variational%20inference%20series.html">some modern Variational Inference theory</a>. These methods are often used in conjunction with Deep Neural Networks to form deep generative models (VAE, for example) or to enrich deterministic models with stochastic control, which leads to better exploration. Or you might be interested in amortized inference.</p>
+<p>All these cases turn your computation graph into a stochastic one – previously deterministic nodes now become random. And it’s not obvious how to do backpropagation through these nodes. In <a href="./tags/stochastic%20computation%20graphs%20series.html">this series</a> I’d like to outline possible approaches. This time we’re going to see why general approach works poorly, and see what we can do in a continuous case.</p>
+
+	</section>
+</article>
+
+<hr />
+<article>
 	<header>
 		<h3><a href="./posts/2017-08-14-icml-2017.html">ICML 2017 Summaries</a></h3>
 		<time>August 14, 2017</time>
@@ -157,20 +171,6 @@ MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
 		<p>As a member of <a href="http://bayesgroup.ru/">Bayesian methods research group</a> I’m heavily interested in Bayesian approach to machine learning. One of the strengths of this approach is ability to work with hidden (unobserved) variables which are interpretable. This power however comes at a cost of generally intractable exact inference, which limits the scope of solvable problems.</p>
 <p>Another topic which gained lots of momentum in Machine Learning recently is Deep Learning, of course. With Deep Learning we can now build big and complex models that outperform most hand-engineered approaches given lots of data and computational power. The fact that Deep Learning needs a considerable amount of data also requires these methods to be scalable — a really nice property for any algorithm to have, especially in a Big Data epoch.</p>
 <p>Given how appealing both topics are it’s not a surprise there’s been some work to marry these two recently. In this <a href="./tags/modern%20variational%20inference%20series.html">series</a> of blogsposts I’d like to summarize recent advances, particularly in variational inference. This is not meant to be an introductory discussion as prior familiarity with classical topics (Latent variable models, <a href="https://en.wikipedia.org/wiki/Variational_Bayesian_methods">Variational Inference, Mean-field approximation</a>) is required, though I’ll introduce these ideas anyway just to remind it and setup the notation.</p>
-
-	</section>
-</article>
-
-<hr />
-<article>
-	<header>
-		<h3><a href="./posts/2014-08-01-gnu-parallel.html">Exploiting Multiple Machines for Embarrassingly Parallel Applications</a></h3>
-		<time>August  1, 2014</time>
-	</header>
-
-	<section>
-		<p>During work on my machine learning project I was needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would just slow down overall running time because of increased amount of context switches. Yet running 4 (=number of cores in my CPU) of them at a time (actually, 3 since other applications need CPU, too) should speed it up.</p>
-<p>Fortunately, I have an old laptop with 2 cores as well as an access to somewhat more modern machine with 4 cores. That results in 10 cores spread across 3 machines (all of`em have some version of GNU Linux installed). The question was how to exploit such a treasury.</p>
 
 	</section>
 </article>
