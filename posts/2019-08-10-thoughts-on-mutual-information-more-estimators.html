@@ -1,74 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Thoughts on Mutual Information: More Estimators - B.log</title>
+  <title>Thoughts on Mutual Information: More Estimators – B.log</title>
   <meta charset="utf-8" />
 
-  <meta name="twitter:card" content="summary" />
+  <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
-  <meta name="twitter:title" content="Thoughts on Mutual Information: More Estimators" />
-  <meta name="twitter:description" content="In this post I’d like to show how Self-Normalized Importance Sampling (IWHVI and IWAE) and Annealed Importance Sampling can be used to give (sometimes sandwich) bounds on the MI in many different cases.
-" /> 
+  <meta property="og:title" content="Thoughts on Mutual Information: More Estimators – B.log" />
+  <meta property="og:description" content="In this post I'd like to show how Self-Normalized Importance Sampling (IWHVI and IWAE) and Annealed Importance Sampling can be used to give (sometimes sandwich) bounds on the MI in many different cases. Mutual Information (MI) is an important concept..." />
 
-  <link rel="shortcut icon" href="../favicon.ico" />
+  <link rel="shortcut icon" href="/favicon.ico"/>
 
-  <link rel="stylesheet" type="text/css" href="../css/default.css" />
-  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/default.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/syntax.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:,b" />
-  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
-      MathJax.InputJax.TeX.Definitions.Add({
-          macros: {
-              E: ["Macro", "\\mathop{\\mathbb{E}}"]
-          }
-      });
-  });
+  <script type="text/javascript">
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        macros: {
+	  E: '\\mathop{\\mathbb{E}}'
+	}
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
   </script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <header>
       <hgroup>
-        <h1><a href="../">B.log</a></h1>
+        <h1><a href="/">B.log</a></h1>
         <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
         <menu>
-          <a href="../">Home</a>
-          <a href="../pages/about.html">About me</a>
+          <a href="/">Home</a>
+          <a href="/pages/about.html">About me</a>
           <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
         </menu>
     </nav>
     <section>
-        <article>
+<article>
 <header>
 	<h1>Thoughts on Mutual Information: More Estimators</h1>
 	<time>August 10, 2019</time>
 </header>
 
 <section class="post-body">
-<p>In this post I’d like to show how Self-Normalized Importance Sampling (<a href="../posts/2019-05-10-importance-weighted-hierarchical-variational-inference.html">IWHVI</a> and IWAE) and Annealed Importance Sampling can be used to give (sometimes sandwich) bounds on the MI in many different cases.</p>
+    <p>In this post I'd like to show how Self-Normalized Importance Sampling (<a href="/posts/2019-05-10-importance-weighted-hierarchical-variational-inference.html">IWHVI</a> and IWAE) and Annealed Importance Sampling can be used to give (sometimes sandwich) bounds on the MI in many different cases.</p>
 <!--more-->
-<p><a href="https://en.wikipedia.org/wiki/Mutual_information">Mutual Information</a> (MI) is an important concept from the Information Theory that captures the idea of information one random variable <span class="math inline">\(X\)</span> carries about the r.v. <span class="math inline">\(Z\)</span> and is usually denoted <span class="math inline">\(I(X, Z)\)</span>, however in order to emphasize the underlying joint distribution I’ll be using a non-standard notation <span class="math inline">\(\text{MI}[p(x,z)]\)</span>. Formally the MI has the following definition:</p>
-<p><span class="math display">\[
+
+<p><a href="https://en.wikipedia.org/wiki/Mutual_information">Mutual Information</a> (MI) is an important concept from the Information Theory that captures the idea of information one random variable $X$ carries about the r.v. $Z$ and is usually denoted $I(X, Z)$, however in order to emphasize the underlying joint distribution I'll be using a non-standard notation $\text{MI}[p(x,z)]$. Formally the MI has the following definition:</p>
+<p>$$
 \text{MI}[p(x,z)]
 := \E_{p(x, z)} \log \frac{p(x, z)}{p(x) p(z)}
 = \E_{p(x, z)} \log \frac{p(x \mid z)}{p(x)}
-\]</span></p>
-<p>Having such a nice information-measuring interpretation, MI is a natural objective and/or metric in many problems in Machine Learning. One <a href="https://arxiv.org/abs/1802.04874">particular application</a> is evaluatiuon of encoder-decoder-like architectures as MI quantifies amount of information contained in the code. In particular, in Variational Autoencoders a good decoder should have high <span class="math inline">\(\text{MI}[p(x,z)]\)</span>, meaning the code is very useful for generations. A good encoder though… has to keep balance between providing enough information to the decoder, while not deviating too much from the prior by, for example, encoding redundant / unnecessary information. <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
-<h2 id="mi-estimation">MI Estimation</h2>
-<p>In general estimating the MI is intractable as it requires knowing the log marginal density <span class="math inline">\(\log p(x)\)</span> or the intractable log posterior <span class="math inline">\(\log p(z|x)\)</span>. However, there are many efficient variational bounds which can be employed to give tractable lower or upper bounds on the MI. Many existing bounds are reviewed in the <a href="https://arxiv.org/abs/1905.06922">On Variational Bounds of Mutual Information</a> paper.</p>
-<p>It is important to take into account what we know about the joint distribution of <span class="math inline">\(x\)</span> and <span class="math inline">\(z\)</span>. We’ll consider several nested “layers” of decreasing complexity:</p>
-<ol style="list-style-type: decimal">
-<li><strong>Blackbox</strong> case: Distributions <span class="math inline">\(p(x, z)\)</span> we can only sample from, but don’t know any densities. This way we can form Monte Carlo estimates after some learning and surprisingly we can give some lower bounds already in this case.</li>
-<li><strong>Known conditional</strong> case: Distributions <span class="math inline">\(p(x, z)\)</span> we can sample from and know one conditional distribution, say, <span class="math inline">\(p(x|z)\)</span>.</li>
-<li><strong>Known marginal</strong> case: Distributions <span class="math inline">\(p(x, z)\)</span> we can sample from and know one marginal distribution, say, <span class="math inline">\(p(z)\)</span>.</li>
-<li><strong>Known joint</strong> case: Distributions <span class="math inline">\(p(x, z)\)</span> we can sample from and know both a marginal and a conditional distributions, say, <span class="math inline">\(p(z)\)</span> and <span class="math inline">\(p(x|z)\)</span>.</li>
-<li><strong>Known everything</strong> case: Distributions <span class="math inline">\(p(x, z)\)</span> which we can sample from and know all conditionals and marginals. This is a trivial case and doesn’t require any bounds. The MI can be estimated using Monte Carlo directly, so we’ll omit it from the discussion.</li>
+$$</p>
+<p>Having such a nice information-measuring interpretation, MI is a natural objective and/or metric in many problems in Machine Learning. One <a href="https://arxiv.org/abs/1802.04874">particular application</a> is evaluatiuon of encoder-decoder-like architectures as MI quantifies amount of information contained in the code. In particular, in Variational Autoencoders a good decoder should have high $\text{MI}[p(x,z)]$, meaning the code is very useful for generations. A good encoder though... has to keep balance between providing enough information to the decoder, while not deviating too much from the prior by, for example, encoding redundant / unnecessary information. <sup id="fnref:elbo-surgery"><a class="footnote-ref" href="#fn:elbo-surgery">1</a></sup></p>
+<h2>MI Estimation</h2>
+<p>In general estimating the MI is intractable as it requires knowing the log marginal density $\log p(x)$ or the intractable log posterior $\log p(z|x)$. However, there are many efficient variational bounds which can be employed to give tractable lower or upper bounds on the MI. Many existing bounds are reviewed in the <a href="https://arxiv.org/abs/1905.06922">On Variational Bounds of Mutual Information</a> paper.</p>
+<p>It is important to take into account what we know about the joint distribution of $x$ and $z$. We'll consider several nested "layers" of decreasing complexity:</p>
+<ol>
+<li><strong>Blackbox</strong> case: Distributions $p(x, z)$ we can only sample from, but don't know any densities. This way we can form Monte Carlo estimates after some learning and surprisingly we can give some  lower bounds already in this case.</li>
+<li><strong>Known conditional</strong> case: Distributions $p(x, z)$ we can sample from and know one conditional distribution, say, $p(x|z)$.</li>
+<li><strong>Known marginal</strong> case: Distributions $p(x, z)$ we can sample from and know one marginal distribution, say, $p(z)$.</li>
+<li><strong>Known joint</strong> case: Distributions $p(x, z)$ we can sample from and know both a marginal and a conditional distributions, say, $p(z)$ and $p(x|z)$.</li>
+<li><strong>Known everything</strong> case: Distributions $p(x, z)$ which we can sample from and know all conditionals and marginals. This is a trivial case and doesn't require any bounds. The MI can be estimated using Monte Carlo directly, so we'll omit it from the discussion.</li>
 </ol>
-<h2 id="bounds-based-on-self-normalized-importance-sampling">Bounds based on Self-Normalized Importance Sampling</h2>
+<h2>Bounds based on Self-Normalized Importance Sampling</h2>
 <p>Self-Normalized Importance Sampling (SNIS) has been shown (see my previous posts) to give both lower and upper bounds on the marginal log-likelihood:</p>
-<p><span class="math display">\[
+<p>$$
 \begin{align*}
 \text{IWAE}:&amp;
 \quad\quad\quad
@@ -78,13 +84,13 @@
 \quad\quad\quad
 \log p(x) \le \E_{p(z_{0}|x)} \E_{q(z_{1:K}|x)} \log \frac{1}{K+1} \sum_{k=0}^K \frac{p(x,z_k)}{q(z_k|x)}
 \end{align*}
-\]</span></p>
+$$</p>
 <p>We use such bounds to give sandwich bound on the intractable entropy term in the MI. Another useful insight is that</p>
-<p><span class="math display">\[
+<p>$$
 \omega(z_{0:K}|x) := \frac{\hat\rho(x, z_0) \tau(z_{1:K}|x)}{\frac{1}{K+1} \sum_{k=0}^K \frac{\hat\rho(x, z_k)}{\tau(z_k|x)}}
-\]</span></p>
-<p>is a distribution (a valid pdf, to be precise) for almost any (the only condition is the same as in the standard importance sampling) unnormalized distribution <span class="math inline">\(\hat\rho(x, z)\)</span> (a joint distribution over <span class="math inline">\(z\)</span> and <span class="math inline">\(x\)</span>) and a normalized distribution <span class="math inline">\(\tau(z|x)\)</span> (a distribution over <span class="math inline">\(z\)</span> possibly conditioned on <span class="math inline">\(x\)</span>). The fact that <span class="math inline">\(\omega(z_{0:K}|x)\)</span> is a valid distribution allows us to consider the following KL divergence:</p>
-<p><span class="math display">\[
+$$</p>
+<p>is a distribution (a valid pdf, to be precise) for almost any (the only condition is the same as in the standard importance sampling) unnormalized distribution $\hat\rho(x, z)$ (a joint distribution over $z$ and $x$) and a normalized distribution $\tau(z|x)$ (a distribution over $z$ possibly conditioned on $x$). The fact that $\omega(z_{0:K}|x)$ is a valid distribution allows us to consider the following KL divergence:</p>
+<p>$$
 \begin{align*}
 0
 \le
@@ -95,8 +101,9 @@
 \log
 \frac{p(x, z_0) \tau(z_{1:K}|x)}{p(x) \omega(z_{0:K}|x)}
 \end{align*}
-\]</span></p>
-<p>Which gives the following lower bound on the MI: <span class="math display">\[
+$$</p>
+<p>Which gives the following lower bound on the MI:
+$$
 \begin{align*}
 \E_{p(x, z_0)}
 \E_{\tau(z_{1:K}|x)}
@@ -115,8 +122,9 @@
 -
 \E_{p(z)} \log p(z)
 \end{align*}
-\]</span></p>
-<p>Equivalently, by reparametrizing the bound in terms of <span class="math inline">\(\hat\varrho(x|z) = \hat\rho(x, z) / p(z)\)</span> we have <span class="math display">\[
+$$</p>
+<p>Equivalently, by reparametrizing the bound in terms of $\hat\varrho(x|z) = \hat\rho(x, z) / p(z)$ we have
+$$
 \begin{align*}
 \E_{p(x, z_0)}
 \E_{\tau(z_{1:K}|x)}
@@ -128,17 +136,17 @@
 \log
 \frac{\hat\varrho(x | z_0)}{\frac{1}{K+1} \sum_{k=0}^K \hat\varrho(x | z_k) \frac{p(z_k)}{\tau(z_k|x)}}
 \end{align*}
-\]</span></p>
-<p>These lower bounds work for any <span class="math inline">\(\rho\)</span> and <span class="math inline">\(\varrho\)</span>, and the optimal choices are <span class="math inline">\(p(x, z)\)</span> and <span class="math inline">\(p(x|z)\)</span>, correspondingly.</p>
-<h3 id="known-joint">Known Joint</h3>
-<p>First, we’ll consider the easiest case – when we know the joint distribution in the form of a prior + conditional. A prominent example of this class is VAEs decoders, which is defined by some prior in the latent space <span class="math inline">\(p(z)\)</span> and a decoder <span class="math inline">\(p_\theta(x|z)\)</span> that uses a neural network to generate a distribution over observations <span class="math inline">\(x\)</span> for a particular <span class="math inline">\(z\)</span>. Computing the MI of the decoder is arguably a natural way to measure the extent of posterior collapse<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>, since MI can be expressed in the following form, which essentially measures the true posterior’s deviation from the prior:</p>
-<p><span class="math display">\[
+$$</p>
+<p>These lower bounds work for any $\rho$ and $\varrho$, and the optimal choices are $p(x, z)$ and $p(x|z)$, correspondingly.</p>
+<h3>Known Joint</h3>
+<p>First, we'll consider the easiest case -- when we know the joint distribution in the form of a prior + conditional. A prominent example of this class is VAEs decoders, which is defined by some prior in the latent space $p(z)$ and a decoder $p_\theta(x|z)$ that uses a neural network to generate a distribution over observations $x$ for a particular $z$. Computing the MI of the decoder is arguably a natural way to measure the extent of posterior collapse<sup id="fnref:contrast-with-kl-to-prior"><a class="footnote-ref" href="#fn:contrast-with-kl-to-prior">2</a></sup>, since MI can be expressed in the following form, which essentially measures the true posterior's deviation from the prior:</p>
+<p>$$
 \text{MI}[p(x, z)]
 := \E_{p(x, z)} \log \frac{p(z|x)}{p(z)}
 = \E_{p(x)} D_{KL}(p(z|x) \mid\mid p(z))
-\]</span></p>
-<p>However the MI as introduced above requires knowing marginal <span class="math inline">\(p(x)\)</span>, which is intractable. Luckily, the <a href="../posts/2019-04-26-neural-samplers-and-hierarchical-variational-inference.html">Multisample Variational Bounds</a> allow us to give efficient variational sandwich bounds on MI (where <span class="math inline">\(q_\phi(z|x)\)</span> is an encoder with known density<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a>):</p>
-<p><span class="math display">\[
+$$</p>
+<p>However the MI as introduced above requires knowing marginal $p(x)$, which is intractable. Luckily, the <a href="/posts/2019-04-26-neural-samplers-and-hierarchical-variational-inference.html">Multisample Variational Bounds</a> allow us to give efficient variational sandwich bounds on MI (where $q_\phi(z|x)$ is an encoder with known density<sup id="fnref:sandwich-q"><a class="footnote-ref" href="#fn:sandwich-q">4</a></sup>):</p>
+<p>$$
 \E_{\substack{p_\theta(x, z_0) \\ q_\phi(z_{1:K}|x)} }
 \log \frac{p_\theta(x|z_0)}{\frac{1}{K+1} \sum_{k=0}^K \frac{p_\theta(x, z_k)}{q_\phi(z_k|x)}}
 \le
@@ -147,10 +155,11 @@
 \le
 \E_{\substack{p_\theta(x, z_0) \\ q_\phi(z_{1:K}|x)} }
 \log \frac{p_\theta(x|z_0)}{\frac{1}{K} \sum_{k=1}^K \frac{p_\theta(x, z_k)}{q_\phi(z_k|x)}}
-\]</span></p>
-<h3 id="known-conditional">Known Conditional</h3>
-<p>However, we might not have any of marginal densities in the closed form. For example, this is the case if we want to estimate the amount of information the encoder <span class="math inline">\(q_\phi(z|x)\)</span> puts into the code <span class="math inline">\(z\)</span>. Since it only defines the conditional distribution, we pair it with some data-generating process <span class="math inline">\(p(x)\)</span> which defines the population we’d like to evaluate the encoder over.</p>
-<p>Direct application of the aforementioned bounds leads to (where <span class="math inline">\(\tau_\eta(x_k|z)\)</span> is our variational inverse distribution) <span class="math display">\[
+$$</p>
+<h3>Known Conditional</h3>
+<p>However, we might not have any of marginal densities in the closed form. For example, this is the case if we want to estimate the amount of information the encoder $q_\phi(z|x)$ puts into the code $z$. Since it only defines the conditional distribution, we pair it with some data-generating process $p(x)$ which defines the population we'd like to evaluate the encoder over.</p>
+<p>Direct application of the aforementioned bounds leads to (where $\tau_\eta(x_k|z)$ is our variational inverse distribution)
+$$
 \E_{\substack{p(x_0) \\ q_\phi(z | x_0) \\ \tau_\eta(x_{1:K}|z)}}
 \!\!\!
 \log \frac{q_\phi(z|x_0)}{\frac{1}{K+1} \sum\limits_{k=0}^K \frac{q_\phi(z|x_k) p(x_k)}{\tau_\eta(x_k|z)}}
@@ -161,8 +170,9 @@
 \E_{\substack{p(x_0) \\ q_\phi(z | x_0) \\ \tau_\eta(x_{1:K}|z)}}
 \!\!\!
 \log \frac{q_\phi(z|x_0)}{\frac{1}{K} \sum\limits_{k=1}^K \frac{q_\phi(z|x_k) p(x_k)}{\tau_\eta(x_k|z)}}
-\]</span></p>
-<p>However, we might not have an access to the density <span class="math inline">\(p(x)\)</span>. In this case one can resort to SIVI-like bounds by setting <span class="math inline">\(\tau_\eta(x|z) = p(x)\)</span> and arrive to the following bounds: <span class="math display">\[
+$$</p>
+<p>However, we might not have an access to the density $p(x)$. In this case one can resort to SIVI-like bounds by setting $\tau_\eta(x|z) = p(x)$ and arrive to the following bounds:
+$$
 \E_{\substack{p(x_{0:K}) \\ q_\phi(z | x_0)}}
 \log \frac{q_\phi(z|x_0)}{\frac{1}{K+1} \sum\limits_{k=0}^K q_\phi(z|x_k)}
 \le
@@ -170,40 +180,43 @@
 \le
 \E_{\substack{p(x_{0:K}) \\ q_\phi(z | x_0)}}
 \log \frac{q_\phi(z|x_0)}{\frac{1}{K} \sum\limits_{k=1}^K q_\phi(z|x_k)}
-\]</span></p>
-<p>These bounds are known as special case of <a href="https://arxiv.org/abs/1807.03748">InfoNCE bounds</a> and are much worse due to uninformed proposal <span class="math inline">\(\tau\)</span>.</p>
-<h3 id="known-prior">Known Prior</h3>
-<p>Sometimes we use complex implicit models as decoders and don’t have closed-form densities for <span class="math inline">\(p(x|z)\)</span>. The most popular instance of such models is Generative Adversarial Networks, which is similar to VAE with an exception of not having a well-defined decoder’s density <span class="math inline">\(p(x|z)\)</span> (but the prior <span class="math inline">\(p(z)\)</span> is typically simple and known). In some sense, this density is degenerate: <span class="math inline">\(p(x|z) = \delta(x - f(z))\)</span> where <span class="math inline">\(f\)</span> is generator’s neural network. Unfortunately, we cannot use such density in the IWHVI bounds. Are we doomed then? Turns out, not quite so. Even in this case it’s still possible to give an efficient multisample variational lower bound: <span class="math display">\[
+$$</p>
+<p>These bounds are known as special case of <a href="https://arxiv.org/abs/1807.03748">InfoNCE bounds</a> and are much worse due to uninformed proposal $\tau$.</p>
+<h3>Known Prior</h3>
+<p>Sometimes we use complex implicit models as decoders and don't have closed-form densities for $p(x|z)$. The most popular instance of such models is Generative Adversarial Networks, which is similar to VAE with an exception of not having a well-defined decoder's density $p(x|z)$ (but the prior $p(z)$ is typically simple and known). In some sense, this density is degenerate: $p(x|z) = \delta(x - f(z))$ where $f$ is generator's neural network. Unfortunately, we cannot use such density in the IWHVI bounds. Are we doomed then? Turns out, not quite so. Even in this case it's still possible to give an efficient multisample variational lower bound:
+$$
 \text{MI}[p(x, z)]
 \ge
 \E_{p(x, z_0)}
 \E_{q_\phi(z_{1:K}|x)}
 \log \frac{\hat\rho_\eta(x|z_0)}{\frac{1}{K+1} \sum_{k=0}^K \hat\rho_\eta(x|z_k) \frac{p(z_k)}{q_\phi(z_k|x)}}
-\]</span></p>
-<p>Where <span class="math inline">\(\hat\rho_\eta(x|z) = \exp(h_\eta(x|z))\)</span> is any non-normalized energy-based model that essentially estimates the unknown density <span class="math inline">\(p(x|z)\)</span>.</p>
+$$</p>
+<p>Where $\hat\rho_\eta(x|z) = \exp(h_\eta(x|z))$ is any non-normalized energy-based model that essentially estimates the unknown density $p(x|z)$.</p>
 <p>I am not aware of any good <em>upper</em> bounds and if they are possible. I would think the answer is negative due to hardness of upper-bounding the crossentropy in the black-box case.</p>
-<h3 id="known-nothing">Known Nothing</h3>
-<p>Staying in the realm of implicit models, let’s assume we trained an implicit inference model (think of GANs with encoders) and would like estimate the MI much like in the case of VAE’s encoder in the “known conditional” section. Denoting our inference model <span class="math inline">\(q(z|x)\)</span> and the data-generating process <span class="math inline">\(p(x)\)</span> (both densities are unknown to us, but we can sample from them), we can adapt the previous section’s lower bound by choosing the proposal <span class="math inline">\(\tau_\eta(x|z) = p(x)\)</span> <span class="math display">\[
+<h3>Known Nothing</h3>
+<p>Staying in the realm of implicit models, let's assume we trained an implicit inference model (think of GANs with encoders) and would like estimate the MI much like in the case of VAE's encoder in the "known conditional" section. Denoting our inference model $q(z|x)$ and the data-generating process $p(x)$ (both densities are unknown to us, but we can sample from them), we can adapt the previous section's lower bound by choosing the proposal $\tau_\eta(x|z) = p(x)$
+$$
 \text{MI}[q(z | x) p(x)]
 \ge
 \E_{p(x_{0:K})}
 \E_{q(z|x_0)}
 \log \frac{\hat\rho_\eta(z|x_0)}{\frac{1}{K+1} \sum_{k=0}^K \hat\rho_\eta(z|x_k)}
-\]</span></p>
-<p>Where <span class="math inline">\(\hat\rho_\eta(z|x) = \exp(h_\eta(z|x))\)</span> is again a non-normalized energy-based model that estimates the unknown density <span class="math inline">\(q(z|x)\)</span>.</p>
-<p>While convenient in its wide applicability, this bound is known to be very loose in cases when the true MI is high. We’ll discuss drawbacks and limitations in the next post on the topic.</p>
-<h2 id="bounds-based-on-annealed-importance-sampling">Bounds based on Annealed Importance Sampling</h2>
+$$</p>
+<p>Where $\hat\rho_\eta(z|x) = \exp(h_\eta(z|x))$ is again a non-normalized energy-based model that estimates the unknown density $q(z|x)$.</p>
+<p>While convenient in its wide applicability, this bound is known to be very loose in cases when the true MI is high. We'll discuss drawbacks and limitations in the next post on the topic.</p>
+<h2>Bounds based on Annealed Importance Sampling</h2>
 <p>SNIS is not the only way to obtain variational sandwich bounds on log marginal likelihood. Another widely known and powerful approach is <a href="https://arxiv.org/abs/1511.02543">Annealed Importance Sampling</a> (AIS)</p>
-<p>AIS uses two distributions, called forward and backward: <span class="math display">\[
+<p>AIS uses two distributions, called forward and backward:
+$$
 q_\rightarrow(z_{1:T} | x) = q(z_1|x) \mathcal{T}_2(z_2 \mid z_1, x) \cdots  \mathcal{T}_{T}(z_{T} \mid z_{T-1}, x)
 \\
 q_\leftarrow(z_{T:1} | x) = p(z_{T}|x) \mathcal{T}_{T}(z_{T-1} \mid z_{T}, x) \cdots  \mathcal{T}_{2}(z_{1} \mid z_{2}, x)
 \\
 q_\leftarrow(x, z_{T:1}) = p(x, z_{T}) \mathcal{T}_{T}(z_{T-1} \mid z_{T}, x) \cdots  \mathcal{T}_{2}(z_{1} \mid z_{2}, x)
-\]</span></p>
-<p>Where <span class="math inline">\(\mathcal{T}_t\)</span> is a transition operator that is designed to be invariant to <span class="math inline">\(p_t(z|x) \propto q(z|x)^{1-\beta_t} p(x, z)^{\beta_t}\)</span> and <span class="math inline">\(\beta_{1:T+1}\)</span> is a monotonically increasing sequence s.t. <span class="math inline">\(\beta_1 = 0\)</span> and <span class="math inline">\(\beta_{T+1} = 1\)</span>. That is, in the <em>forward distribution</em> <span class="math inline">\(q_\rightarrow(z_{1:T} | x)\)</span> one starts with a sample <span class="math inline">\(z_1\)</span> from some proposal <span class="math inline">\(q(z|x)\)</span> and then transforms it into a sample from <span class="math inline">\(p_2(z|x)\)</span> using the <span class="math inline">\(\mathcal{T}_t\)</span> transition operator (typically a MCMC kernel). The sample <span class="math inline">\(z_2\)</span> is then analogously transformed into <span class="math inline">\(z_3\)</span> amd so on. The <em>backward distribution</em> <span class="math inline">\(q_\rightarrow(z_{T:1} | x)\)</span> is similar except it starts with the true posterior sample <span class="math inline">\(z_T \sim p(z|x)\)</span> and then sequentially transforms it into a sample from the proposal <span class="math inline">\(z_1 \sim q(z|x)\)</span>.</p>
+$$</p>
+<p>Where $\mathcal{T}_t$ is a transition operator that is designed to be invariant to $p_t(z|x) \propto q(z|x)^{1-\beta_t} p(x, z)^{\beta_t}$ and $\beta_{1:T+1}$ is a monotonically increasing sequence s.t. $\beta_1 = 0$ and $\beta_{T+1} = 1$. That is, in the <em>forward distribution</em> $q_\rightarrow(z_{1:T} | x)$ one starts with a sample $z_1$ from some proposal $q(z|x)$ and then transforms it into a sample from $p_2(z|x)$ using the $\mathcal{T}_t$ transition operator (typically a MCMC kernel). The sample $z_2$ is then analogously transformed into $z_3$ amd so on. The <em>backward distribution</em> $q_\rightarrow(z_{T:1} | x)$ is similar except it starts with the true posterior sample $z_T \sim p(z|x)$ and then sequentially transforms it into a sample from the proposal $z_1 \sim q(z|x)$.</p>
 <p>Then one defines the importance weight</p>
-<p><span class="math display">\[
+<p>$$
 \begin{align*}
 w(z_{1:T} \mid x)
 &amp;=
@@ -225,7 +238,9 @@ w(z_{1:T} \mid x)
 \cdots
 \left(\tfrac{p(x, z_{T})}{q(z_{T}|x)} \right)^{\beta_{T+1} - \beta_{T}} \\
 \end{align*}
-\]</span> Where the second identity is due to <span class="math inline">\(\mathcal{T}_t\)</span> satisfying the detailed balance equation. Then one can show that <span class="math display">\[
+$$
+Where the second identity is due to $\mathcal{T}_t$ satisfying the detailed balance equation. Then one can show that
+$$
 \E_{q_\rightarrow(z_{1:T} | x)} w(z_{1:T} \mid x) = p(x)
 \quad\Rightarrow\quad
 \E_{q_\rightarrow(z_{1:T} | x)} \log w(z_{1:T} \mid x) \le \log p(x),
@@ -233,8 +248,9 @@ w(z_{1:T} \mid x)
 \E_{q_\leftarrow(z_{T:1} | x)} \frac{1}{w(z_{1:T} \mid x)} = \frac{1}{p(x)}
 \quad\Rightarrow\quad
 \E_{q_\leftarrow(z_{T:1} | x)} \log w(z_{1:T} \mid x) \ge \log p(x)
-\]</span></p>
-<p>Which gives us another set of sandwich bounds, which we can use to sandwich bound the MI: <span class="math display">\[
+$$</p>
+<p>Which gives us another set of sandwich bounds, which we can use to sandwich bound the MI:
+$$
 \boxed{
 \E_{q_\leftarrow(x, z_{T:1} | x)}
 % \E_{p_\theta(x, z_T)}
@@ -247,13 +263,16 @@ w(z_{1:T} \mid x)
 \E_{q_\rightarrow(z_{1:T} | x)}
 \log \frac{p_\theta(x|z_0)}{ w(z_{1:T} \mid x) }
 }
-\]</span></p>
-<p>One can also come up with a “decoder-free” version of the bound in a similar fashion to what we’ve done above. First, introduce the following distributions: <span class="math display">\[
+$$</p>
+<p>One can also come up with a "decoder-free" version of the bound in a similar fashion to what we've done above. First, introduce the following distributions:
+$$
 \gamma_\rightarrow(z_{1:T} | x) = q(z_1|x) \mathcal{K}_2(z_2 \mid z_1, x) \cdots \mathcal{K}_{T}(z_{T} \mid z_{T-1}, x)
 \\
 \gamma_\leftarrow(x, z_{T:1}) = p(x, z_{T}) \mathcal{K}_{T}(z_{T-1} \mid z_{T}, x) \cdots \mathcal{K}_{2}(z_{1} \mid z_{2}, x)
-\]</span> Where <span class="math inline">\(\mathcal{K}_t\)</span> is now tailored to <span class="math inline">\(\kappa_t(z|x) \propto q(z|x)^{1-\beta_t} \left( \hat\varrho(x|z) p(z) \right)^{\beta_t}\)</span> for certain unnormalized <span class="math inline">\(\hat\varrho(x|z)\)</span></p>
-<p>Now consider <span class="math display">\[
+$$
+Where $\mathcal{K}_t$ is now tailored to $\kappa_t(z|x) \propto q(z|x)^{1-\beta_t} \left( \hat\varrho(x|z) p(z) \right)^{\beta_t}$ for certain unnormalized $\hat\varrho(x|z)$</p>
+<p>Now consider
+$$
 \begin{align*}
 0
 &amp; \le
@@ -303,16 +322,18 @@ p(x) \gamma_\rightarrow(z_{1:T} | x)
 \left( \frac{\hat\varrho(x|z_t) p(z_t)}{q(z_t|x)} \right)^{\beta_{t+1}-\beta_t}
 \right]
 \end{align*}
-\]</span> Hence <span class="math display">\[
+$$
+Hence
+$$
 \text{MI}[p(x, z)]
 \ge
 \mathbb{E}_{\gamma_\leftarrow(x, z_{T:1})}
 \log
 \frac{\hat\varrho(x|z_T)}{\prod_{t=1}^T
 \left( \frac{\hat\varrho(x|z_t) p(z_t)}{q(z_t|x)} \right)^{\beta_{t+1}-\beta_t}}
-\]</span></p>
-<p>Now we can again reparametrize this formula in terms of <span class="math inline">\(\hat\rho(x, z) = \hat\varrho(x|z) p(z)\)</span>:</p>
-<p><span class="math display">\[
+$$</p>
+<p>Now we can again reparametrize this formula in terms of $\hat\rho(x, z) = \hat\varrho(x|z) p(z)$:</p>
+<p>$$
 \text{MI}[p(x, z)]
 \ge
 \mathbb{E}_{\gamma_\leftarrow(x, z_{T:1})}
@@ -320,23 +341,33 @@ p(x) \gamma_\rightarrow(z_{1:T} | x)
 \frac{\hat\rho(x, z_T)}{\prod_{t=1}^T
 \left( \frac{\hat\rho(x, z_t)}{q(z_t|x)} \right)^{\beta_{t+1}-\beta_t}}
 - \mathbb{E}_{p(z)} \log p(z)
-\]</span></p>
-<p>It’s tempting to simply put <span class="math inline">\(q(z|x) = p(z)\)</span> to obtain a blackbox AIS-based analogue of the InfoNCE bound, however notice that <span class="math inline">\(\gamma_\leftarrow(x, z_{T:1})\)</span> relies on an MCMC kernel that gradually transforms a sample <span class="math inline">\(z_T \sim p(z_T|x)\)</span> into <span class="math inline">\(z_1 \sim p(z_1)\)</span> and thus needs to know this density. Thus I don’t think one can use AIS in the blackbox mode.</p>
-<p>Finally, note while the bound is valid for any <span class="math inline">\(\hat\rho\)</span> and <span class="math inline">\(\hat\varrho\)</span>, it’s not quite differentiable w.r.t. their parameters as any proper MCMC method would require an accept-reject step which is not differentiable. Thus if one seeks to learn <span class="math inline">\(\hat\rho\)</span> or <span class="math inline">\(\hat\varrho\)</span>, an alternative objective should be used. Luckily, the SNIS-based lower bound with small <span class="math inline">\(K\)</span> would work just fine.</p>
-<h2 id="conclusion">Conclusion</h2>
-<p>I presented two different ways to give bounds on the MI in cases of variable complexity. The SNIS-based approach seem to be somewhat novel (the special case of InfoNCE has been already known), and is applicable in many different problems. The AIS-based one is based on well-known sandwich bounds on the log marginal likelihoods, but I haven’t seen it being applied to the problem of MI estimation. The reason might be that it’s more restrictive that the SNIS-based estimations: AIS only works for continuous variables, requires complicated MCMC to function and does not seem to allow blackbox estimators. On the positive side of things, AIS-based estimator should perform much better in high-dimensional problems with large MI, especially if one uses gradient-based kernels like HMC.</p>
-<p>Next, I’ll share some of my thoughts on drawbacks of these (and some other) bounds, in particular in light of the notorious “Formal Limitations” paper.</p>
-<div class="footnotes">
-<hr />
+$$</p>
+<p>It's tempting to simply put $q(z|x) = p(z)$ to obtain a blackbox AIS-based analogue of the InfoNCE bound, however notice that $\gamma_\leftarrow(x, z_{T:1})$ relies on an MCMC kernel that gradually transforms a sample $z_T \sim p(z_T|x)$ into $z_1 \sim p(z_1)$ and thus needs to know this density. Thus I don't think one can use AIS in the blackbox mode.</p>
+<p>Finally, note while the bound is valid for any $\hat\rho$ and $\hat\varrho$, it's not quite differentiable w.r.t. their parameters as any proper MCMC method would require an accept-reject step which is not differentiable. Thus if one seeks to learn $\hat\rho$ or $\hat\varrho$, an alternative objective should be used. Luckily, the SNIS-based lower bound with small $K$ would work just fine.</p>
+<h2>Conclusion</h2>
+<p>I presented two different ways to give bounds on the MI in cases of variable complexity. The SNIS-based approach seem to be somewhat novel (the special case of InfoNCE has been already known), and is applicable in many different problems. The AIS-based one is based on well-known sandwich bounds on the log marginal likelihoods, but I haven't seen it being applied to the problem of MI estimation. The reason might be that it's more restrictive that the SNIS-based estimations: AIS
+only works for continuous variables, requires complicated MCMC to function and does not seem to allow blackbox estimators. On the positive side of things, AIS-based estimator should perform much better in high-dimensional problems with large MI, especially if one uses gradient-based kernels like HMC.</p>
+<p>Next, I'll share some of my thoughts on drawbacks of these (and some other) bounds, in particular in light of the notorious "Formal Limitations" paper.</p>
+<div class="footnote">
+<hr>
 <ol>
-<li id="fn1"><p>See <a href="http://approximateinference.org/accepted/HoffmanJohnson2016.pdf">ELBO surgery: yet another way to carve up the variational evidence lower bound</a><a href="#fnref1">↩</a></p></li>
-<li id="fn2"><p>Oftentimes <span class="math inline">\(D_{KL}(q_\phi(z|x) \mid\mid p(z))\)</span> is used to measure the extent of the so called posterior collapse. One can argue this is an indirect metric as it does not use <em>decoder at all</em> and relies on the encoder’s ability to approximate the true posterior better than the prior. Moreover, high <span class="math inline">\(D_{KL}(q_\phi(z|x) \mid\mid p(z))\)</span> is likely to be an indicator of poor encoder <span class="math inline">\(q(z|x)\)</span>, whereas the Mutual Information is monotonic in decoder’s quality.<a href="#fnref2">↩</a></p></li>
-<li id="fn3"><p>As I have argued in the IWHVI paper, it might be beneficial to fit two different encoders for lower and upper bounds, correspondingly.<a href="#fnref3">↩</a></p></li>
+<li id="fn:elbo-surgery">
+<p>See <a href="http://approximateinference.org/accepted/HoffmanJohnson2016.pdf">ELBO surgery: yet another way to carve up the variational evidence lower bound</a>&#160;<a class="footnote-backref" href="#fnref:elbo-surgery" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:contrast-with-kl-to-prior">
+<p>Oftentimes $D_{KL}(q_\phi(z|x) \mid\mid p(z))$ is used to measure the extent of the so called posterior collapse. One can argue this is an indirect metric as it does not use <em>decoder at all</em> and relies on the encoder's ability to approximate the true posterior better than the prior. Moreover, high $D_{KL}(q_\phi(z|x) \mid\mid p(z))$ is likely to be an indicator of poor encoder $q(z|x)$, whereas the Mutual Information is monotonic in decoder's quality.&#160;<a class="footnote-backref" href="#fnref:contrast-with-kl-to-prior" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:hierarchical-q-in-mi">
+<p>It is possible to give such bounds in case of $q_\phi(z|x)$ being a Neural Sampler. The upper bound is essentially given by IWAE-like tightening, while deriving a lower bound is much more complicated and will be presented in an extended version of the paper.&#160;<a class="footnote-backref" href="#fnref:hierarchical-q-in-mi" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:sandwich-q">
+<p>As I have argued in the IWHVI paper, it might be beneficial to fit two different encoders for lower and upper bounds, correspondingly.&#160;<a class="footnote-backref" href="#fnref:sandwich-q" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
 </ol>
 </div>
 </section>
 
-<div class="tags-pane">Tagged as <a href="../tags/machine%20learning.html">machine learning</a>, <a href="../tags/mutual%20information.html">mutual information</a></div>
+<div class="tags-pane">Tagged as <a href="/tags/machine-learning.html">machine learning</a>, <a href="/tags/mutual-information.html">mutual information</a></div>
 </article>
 
 <section class="post-comments">
@@ -355,10 +386,9 @@ p(x) \gamma_\rightarrow(z_{1:T} | x)
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 </section>
-
     </section>
     <footer>
-        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+        Generated with Pelican 
     </footer>
 
 <script type="text/javascript">

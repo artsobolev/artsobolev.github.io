@@ -1,199 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>index - B.log</title>
+  <title>Index – B.log</title>
   <meta charset="utf-8" />
 
-  <meta name="twitter:card" content="summary" />
+  <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
-  <meta name="twitter:title" content="index" />
-  <meta name="twitter:description" content /> 
+  <meta property="og:title" content="Index – B.log" />
+  <meta property="og:description" content="" />
 
-  <link rel="shortcut icon" href="./favicon.ico" />
+  <link rel="shortcut icon" href="/favicon.ico"/>
 
-  <link rel="stylesheet" type="text/css" href="./css/default.css" />
-  <link rel="stylesheet" type="text/css" href="./css/syntax.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/default.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/syntax.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:,b" />
-  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
-      MathJax.InputJax.TeX.Definitions.Add({
-          macros: {
-              E: ["Macro", "\\mathop{\\mathbb{E}}"]
-          }
-      });
-  });
+  <script type="text/javascript">
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        macros: {
+	  E: '\\mathop{\\mathbb{E}}'
+	}
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
   </script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <header>
       <hgroup>
-        <h1><a href="./">B.log</a></h1>
+        <h1><a href="/">B.log</a></h1>
         <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
         <menu>
-          <a href="./">Home</a>
-          <a href="./pages/about.html">About me</a>
+          <a href="/">Home</a>
+          <a href="/pages/about.html">About me</a>
           <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
         </menu>
     </nav>
     <section>
-        <article>
-	<header>
-		<h3><a href="./posts/2021-05-02-reciprocal-convexity-to-reverse-the-jensen-inequality.html">Reciprocal Convexity to reverse the Jensen Inequality</a></h3>
-		<time>May  2, 2021</time>
-	</header>
 
-	<section>
-		<p><a href="https://en.wikipedia.org/wiki/Jensen%27s_inequality">Jensen’s inequality</a> is a powerful tool often used in mathematical derivations and analyses. It states that for a convex function <span class="math inline">\(f(x)\)</span> and an arbitrary random variable <span class="math inline">\(X\)</span> we have the following <em>upper</em> bound: <span class="math display">\[
+    <article>
+        <header>
+            <h3><a href="/posts/2021-05-02-reciprocal-convexity-to-reverse-the-jensen-inequality.html">Reciprocal Convexity to reverse the Jensen Inequality</a></h3>
+            <time>May 2, 2021</time>
+        </header>
+
+        <section><p><a href="https://en.wikipedia.org/wiki/Jensen%27s_inequality">Jensen's inequality</a> is a powerful tool often used in mathematical derivations and analyses. It states that for a convex function $f(x)$ and an arbitrary random variable $X$ we have the following <em>upper</em> bound:
+$$
 f\left(\E X\right)
 \le
 \E f\left(X\right)
-\]</span></p>
-<p>However, oftentimes we want the inequality to work in the other direction, to give a <em>lower</em> bound. In this post I’ll outline one possible approach to this.</p>
+$$</p>
+<p>However, oftentimes we want the inequality to work in the other direction, to give a <em>lower</em> bound. In this post I'll outline one possible approach to this.</p>
+</section>
+    </article>
 
-	</section>
-</article>
+    <hr/>
 
-<hr />
-<article>
-	<header>
-		<h3><a href="./posts/2020-11-29-reinforce-is-not-rl.html">Not every REINFORCE should be called Reinforcement Learning</a></h3>
-		<time>November 29, 2020</time>
-	</header>
+    <article>
+        <header>
+            <h3><a href="/posts/2020-11-29-reinforce-is-not-rl.html">Not every REINFORCE should be called Reinforcement Learning</a></h3>
+            <time>November 29, 2020</time>
+        </header>
 
-	<section>
-		<p>Deep RL is hot these days. It’s one of the most popular topics in the submissions at NeurIPS / ICLR / ICML and other ML conferences. And while the definition of RL is pretty general, in this note I’d argue that the famous REINFORCE algorithm <em>alone</em> is not enough to label your method as a Reinforcement Learning one.</p>
+        <section><p>Deep RL is hot these days. It's one of the most popular topics in the submissions at NeurIPS / ICLR / ICML and other ML conferences. And while the definition of RL is pretty general, in this note I'd argue that the famous REINFORCE algorithm <em>alone</em> is not enough to label your method as a Reinforcement Learning one.</p>
+</section>
+    </article>
 
-	</section>
-</article>
+    <hr/>
 
-<hr />
-<article>
-	<header>
-		<h3><a href="./posts/2019-12-01-a-simpler-derivation-of-f-gans.html">A simpler derivation of f-GANs</a></h3>
-		<time>December  1, 2019</time>
-	</header>
+    <article>
+        <header>
+            <h3><a href="/posts/2019-12-01-a-simpler-derivation-of-f-gans.html">A simpler derivation of f-GANs</a></h3>
+            <time>December 1, 2019</time>
+        </header>
 
-	<section>
-		<p>I have been looking at <span class="math inline">\(f\)</span>-GANs derivation doing some of my research, and found an easier way to derive its lower bound, without invoking convex conjugate functions.</p>
+        <section><p>I have been looking at $f$-GANs derivation doing some of my research, and found an easier way to derive its lower bound, without invoking convex conjugate functions.</p>
+</section>
+    </article>
 
-	</section>
-</article>
+    <hr/>
 
-<hr />
-<article>
-	<header>
-		<h3><a href="./posts/2019-09-15-thoughts-on-mutual-information-alternative-dependency-measures.html">Thoughts on Mutual Information: Alternative Dependency Measures</a></h3>
-		<time>September 15, 2019</time>
-	</header>
+    <article>
+        <header>
+            <h3><a href="/posts/2019-09-15-thoughts-on-mutual-information-alternative-dependency-measures.html">Thoughts on Mutual Information: Alternative Dependency Measures</a></h3>
+            <time>September 15, 2019</time>
+        </header>
 
-	<section>
-		<p>This posts finishes the discussion started in the <a href="./posts/2019-08-10-thoughts-on-mutual-information-more-estimators.html">Thoughts on Mutual Information: More Estimators</a> with a consideration of alternatives to the Mutual Information.</p>
+        <section><p>This posts finishes the discussion started in the <a href="/posts/2019-08-10-thoughts-on-mutual-information-more-estimators.html">Thoughts on Mutual Information: More Estimators</a> with a consideration of alternatives to the Mutual Information.</p>
+</section>
+    </article>
 
-	</section>
-</article>
+    <hr/>
 
-<hr />
-<article>
-	<header>
-		<h3><a href="./posts/2019-08-14-thoughts-on-mutual-information-formal-limitations.html">Thoughts on Mutual Information: Formal Limitations</a></h3>
-		<time>August 14, 2019</time>
-	</header>
+    <article>
+        <header>
+            <h3><a href="/posts/2019-08-14-thoughts-on-mutual-information-formal-limitations.html">Thoughts on Mutual Information: Formal Limitations</a></h3>
+            <time>August 14, 2019</time>
+        </header>
 
-	<section>
-		<p>This posts continues the discussion started in the <a href="./posts/2019-08-10-thoughts-on-mutual-information-more-estimators.html">Thoughts on Mutual Information: More Estimators</a>. This time we’ll focus on drawbacks and limitations of these bounds.</p>
+        <section><p>This posts continues the discussion started in the <a href="/posts/2019-08-10-thoughts-on-mutual-information-more-estimators.html">Thoughts on Mutual Information: More Estimators</a>. This time we'll focus on drawbacks and limitations of these bounds.</p>
+</section>
+    </article>
 
-	</section>
-</article>
+    <hr/>
 
-<hr />
-<article>
-	<header>
-		<h3><a href="./posts/2019-08-10-thoughts-on-mutual-information-more-estimators.html">Thoughts on Mutual Information: More Estimators</a></h3>
-		<time>August 10, 2019</time>
-	</header>
+    <article>
+        <header>
+            <h3><a href="/posts/2019-08-10-thoughts-on-mutual-information-more-estimators.html">Thoughts on Mutual Information: More Estimators</a></h3>
+            <time>August 10, 2019</time>
+        </header>
 
-	<section>
-		<p>In this post I’d like to show how Self-Normalized Importance Sampling (<a href="./posts/2019-05-10-importance-weighted-hierarchical-variational-inference.html">IWHVI</a> and IWAE) and Annealed Importance Sampling can be used to give (sometimes sandwich) bounds on the MI in many different cases.</p>
+        <section><p>In this post I'd like to show how Self-Normalized Importance Sampling (<a href="/posts/2019-05-10-importance-weighted-hierarchical-variational-inference.html">IWHVI</a> and IWAE) and Annealed Importance Sampling can be used to give (sometimes sandwich) bounds on the MI in many different cases.</p>
+</section>
+    </article>
 
-	</section>
-</article>
+    <hr/>
 
-<hr />
-<article>
-	<header>
-		<h3><a href="./posts/2019-05-10-importance-weighted-hierarchical-variational-inference.html">Importance Weighted Hierarchical Variational Inference</a></h3>
-		<time>May 10, 2019</time>
-	</header>
+    <article>
+        <header>
+            <h3><a href="/posts/2019-05-10-importance-weighted-hierarchical-variational-inference.html">Importance Weighted Hierarchical Variational Inference</a></h3>
+            <time>May 10, 2019</time>
+        </header>
 
-	<section>
-		<p>This post finishes the discussion on <a href="./posts/2019-04-26-neural-samplers-and-hierarchical-variational-inference.html">Neural Samplers for Variational Inference</a> by introducing some recent results (including mine).</p>
-<p>Also, there’s <a href="https://youtu.be/pdSu7XfGhHw">a talk recording</a> of me presenting this post’s content, so if you like videos more than texts, check it out.</p>
+        <section><p>This post finishes the discussion on <a href="/posts/2019-04-26-neural-samplers-and-hierarchical-variational-inference.html">Neural Samplers for Variational Inference</a> by introducing some recent results (including mine).</p>
+<p>Also, there's <a href="https://youtu.be/pdSu7XfGhHw">a talk recording</a> of me presenting this post's content, so if you like videos more than texts, check it out.</p>
+</section>
+    </article>
 
-	</section>
-</article>
+    <hr/>
 
-<hr />
-<article>
-	<header>
-		<h3><a href="./posts/2019-04-26-neural-samplers-and-hierarchical-variational-inference.html">Neural Samplers and Hierarchical Variational Inference</a></h3>
-		<time>April 26, 2019</time>
-	</header>
+    <article>
+        <header>
+            <h3><a href="/posts/2019-04-26-neural-samplers-and-hierarchical-variational-inference.html">Neural Samplers and Hierarchical Variational Inference</a></h3>
+            <time>April 26, 2019</time>
+        </header>
 
-	<section>
-		<p>This post sets background for the upcoming post on my work on more efficient use of neural samplers for Variational Inference.</p>
+        <section><p>This post sets background for the upcoming post on my work on more efficient use of neural samplers for Variational Inference.</p>
+</section>
+    </article>
 
-	</section>
-</article>
+    <hr/>
 
-<hr />
-<article>
-	<header>
-		<h3><a href="./posts/2017-11-12-stochastic-computation-graphs-fixing-reinforce.html">Stochastic Computation Graphs: Fixing REINFORCE</a></h3>
-		<time>November 12, 2017</time>
-	</header>
+    <article>
+        <header>
+            <h3><a href="/posts/2017-11-12-stochastic-computation-graphs-fixing-reinforce.html">Stochastic Computation Graphs: Fixing REINFORCE</a></h3>
+            <time>November 12, 2017</time>
+        </header>
 
-	<section>
-		<p>This is the final post of the <a href="./tags/stochastic%20computation%20graphs%20series.html">stochastic computation graphs series</a>. Last time we discussed models with <a href="./posts/2017-10-28-stochastic-computation-graphs-discrete-relaxations.html">discrete relaxations of stochastic nodes</a>, which allowed us to employ the power of reparametrization.</p>
-<p>These methods, however, posses one flaw: they consider different models, thus introducing inherent bias – your test time discrete model will be doing something different from what your training time model did. Therefore in this post we’ll get back to the REINFORCE aka Score Function estimator, and see if we can fix its problems.</p>
+        <section><p>This is the final post of the <a href="/tags/stochastic%20computation%20graphs%20series.html">stochastic computation graphs series</a>. Last time we discussed models with <a href="/posts/2017-10-28-stochastic-computation-graphs-discrete-relaxations.html">discrete relaxations of stochastic nodes</a>, which allowed us to employ the power of reparametrization.</p>
+<p>These methods, however, posses one flaw: they consider different models, thus introducing inherent bias – your test time discrete model will be doing something different from what your training time model did. Therefore in this post we'll get back to the REINFORCE aka Score Function estimator, and see if we can fix its problems.</p>
+</section>
+    </article>
 
-	</section>
-</article>
+    <hr/>
 
-<hr />
-<article>
-	<header>
-		<h3><a href="./posts/2017-10-28-stochastic-computation-graphs-discrete-relaxations.html">Stochastic Computation Graphs: Discrete Relaxations</a></h3>
-		<time>October 28, 2017</time>
-	</header>
+    <article>
+        <header>
+            <h3><a href="/posts/2017-10-28-stochastic-computation-graphs-discrete-relaxations.html">Stochastic Computation Graphs: Discrete Relaxations</a></h3>
+            <time>October 28, 2017</time>
+        </header>
 
-	<section>
-		<p>This is the second post of the <a href="./tags/stochastic%20computation%20graphs%20series.html">stochastic computation graphs series</a>. Last time we discussed models with <a href="./posts/2017-09-10-stochastic-computation-graphs-continuous-case.html">continuous stochastic nodes</a>, for which there are powerful reparametrization technics.</p>
-<p>Unfortunately, these methods don’t work for discrete random variables. Moreover, it looks like there’s no way to backpropagate through discrete stochastic nodes, as there’s no infinitesimal change of random values when you infinitesimally perturb their parameters.</p>
-<p>In this post I’ll talk about continuous relaxations of discrete random variables.</p>
+        <section><p>This is the second post of the <a href="/tags/stochastic%20computation%20graphs%20series.html">stochastic computation graphs series</a>. Last time we discussed models with <a href="/posts/2017-09-10-stochastic-computation-graphs-continuous-case.html">continuous stochastic nodes</a>, for which there are powerful reparametrization technics.</p>
+<p>Unfortunately, these methods don't work for discrete random variables. Moreover, it looks like there's no way to backpropagate through discrete stochastic nodes, as there's no infinitesimal change of random values when you infinitesimally perturb their parameters.</p>
+<p>In this post I'll talk about continuous relaxations of discrete random variables.</p>
+</section>
+    </article>
 
-	</section>
-</article>
+    <hr/>
 
-<hr />
-
+<!-- /#posts-list -->
 
 <div class="paginator">
 <div class="paginator-newer">
-&nbsp;
+    &nbsp;
 </div>
 <div class="paginator-older">
-
-<a href="./page-2.html">Older Entries &rarr;</a>
-&nbsp;
+        <a href="./index2.html">Older Entries &rarr;</a>
+    &nbsp;
 </div>
 </div>
-
     </section>
     <footer>
-        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+        Generated with Pelican 
     </footer>
 
 <script type="text/javascript">

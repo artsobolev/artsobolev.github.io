@@ -1,67 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>About me - B.log</title>
+  <title> – B.log</title>
   <meta charset="utf-8" />
 
-  <meta name="twitter:card" content="summary" />
+  <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
-  <meta name="twitter:title" content="About me" />
-  <meta name="twitter:description" content="A bit about me and this blog" /> 
+  <meta property="og:title" content=" – B.log" />
+  <meta property="og:description" content="" />
 
-  <link rel="shortcut icon" href="../favicon.ico" />
+  <link rel="shortcut icon" href="/favicon.ico"/>
 
-  <link rel="stylesheet" type="text/css" href="../css/default.css" />
-  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/default.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/syntax.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:,b" />
-  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
-      MathJax.InputJax.TeX.Definitions.Add({
-          macros: {
-              E: ["Macro", "\\mathop{\\mathbb{E}}"]
-          }
-      });
-  });
+  <script type="text/javascript">
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        macros: {
+	  E: '\\mathop{\\mathbb{E}}'
+	}
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
   </script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <header>
       <hgroup>
-        <h1><a href="../">B.log</a></h1>
+        <h1><a href="/">B.log</a></h1>
         <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
         <menu>
-          <a href="../">Home</a>
-          <a href="../pages/about.html">About me</a>
+          <a href="/">Home</a>
+          <a href="/pages/about.html">About me</a>
           <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
         </menu>
     </nav>
     <section>
-        <article>
-<header>
-	<h3>About me</h3>
-</header>
-
-<section>
-<p>Hello there and welcome to my blog! I’m a Machine Learning Researcher at <a href="https://bayesgroup.ru/">Bayesian Methods Research Group</a>. I’m particularly interested in everything Bayesian, Deep Learning, Applied Math (Statistics, Optimization, Probability Theory and Stochastic Proccesses, Linear Algebra, Numerical Methods), but also like more traditional CS topics like Algorithms, Computer Security and Functional Programming. Before discovering Machine Learning I was keen on Software Engineering and still keep by SWE hat nearby.</p>
+<article>
+  <header>
+    <h3>Who is Artem Sobolev?</h3>
+  </header>
+  
+  <section>
+    <p>Hello there and welcome to my blog! I'm a Machine Learning Researcher at <a href="https://bayesgroup.ru/">Bayesian Methods Research Group</a>. I'm particularly interested in everything Bayesian, Deep Learning, Applied Math (Statistics, Optimization, Probability Theory and Stochastic Proccesses, Linear Algebra, Numerical Methods), but also like more traditional CS topics like Algorithms, Computer Security and Functional Programming.
+Before discovering Machine Learning I was keen on Software Engineering and still keep by SWE hat nearby.</p>
 <p>By the way, I have a <img src="http://www.google.com/s2/favicons?domain=twitter.com" style="vertical-align:middle" /> <a href="https://twitter.com/art_sobolev">twitter</a> account where I occasionally post interesting things that fit 280 symbols limit.</p>
 <div style="float:right">
-<p><a href="http://stackoverflow.com/users/1190430/"><br /> <img src="http://stackexchange.com/users/flair/1224582.png?theme=clean" width="208" height="58" alt="profile for Artem Sobolev at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="profile for Artem Sobolev at Stack Overflow, Q&amp;A for professional and enthusiast programmers"><br /> </a></p>
+<a href="http://stackoverflow.com/users/1190430/"><br />
+<img src="http://stackexchange.com/users/flair/1224582.png?theme=clean" width="208" height="58" alt="profile for Artem Sobolev at Stack Overflow, Q&amp;A for professional and enthusiast programmers" title="profile for Artem Sobolev at Stack Overflow, Q&amp;A for professional and enthusiast programmers"><br />
+</a>
 </div>
 <div>
-<p>Also you can find me on:<br />   <img src="http://www.google.com/s2/favicons?domain=github.com" style="vertical-align:middle" /> <a href="https://github.com/artsobolev">GitHub</a><br />   <img src="http://www.google.com/s2/favicons?domain=scholar.google.com" style="vertical-align:middle" /> <a href="https://scholar.google.com/citations?user=bq0AEh4AAAAJ&hl=en">Google Scholar</a><br /></p>
+Also you can find me on:<br />
+ &nbsp; <img src="http://www.google.com/s2/favicons?domain=github.com" style="vertical-align:middle" /> <a href="https://github.com/artsobolev">GitHub</a><br />
+ &nbsp; <img src="http://www.google.com/s2/favicons?domain=scholar.google.com" style="vertical-align:middle" /> <a href="https://scholar.google.com/citations?user=bq0AEh4AAAAJ&hl=en">Google Scholar</a><br />
 </div>
-<p>
-<br style="clear:both" />
-</p>
-</section>
-</article>
+<p><br style="clear:both" /></p>
 
+  </section>
+</article>
     </section>
     <footer>
-        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+        Generated with Pelican 
     </footer>
 
 <script type="text/javascript">

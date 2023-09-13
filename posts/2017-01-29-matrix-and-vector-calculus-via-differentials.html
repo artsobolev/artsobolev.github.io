@@ -1,70 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Matrix and Vector Calculus via Differentials - B.log</title>
+  <title>Matrix and Vector Calculus via Differentials – B.log</title>
   <meta charset="utf-8" />
 
-  <meta name="twitter:card" content="summary" />
+  <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
-  <meta name="twitter:title" content="Matrix and Vector Calculus via Differentials" />
-  <meta name="twitter:description" content="Many tasks of machine learning can be posed as optimization problems. One comes up with a parametric model, defines a loss function, and then minimizes it in order to learn optimal parameters. One very powerful tool of optimization theory is the use of smooth (differentiable) functions: those that can be locally approximated with a linear functions. We all surely know how to differentiate a function, but often it’s more convenient to perform all the derivations in matrix form, since many computational packages like numpy or matlab are optimized for vectorized expressions.
-In this post I want to outline the general idea of how one can calculate derivatives in vector and matrix spaces (but the idea is general enough to be applied to other algebraic structures).
-" /> 
+  <meta property="og:title" content="Matrix and Vector Calculus via Differentials – B.log" />
+  <meta property="og:description" content="Many tasks of machine learning can be posed as optimization problems. One comes up with a parametric model, defines a loss function, and then minimizes it in order to learn optimal parameters. One very powerful tool of optimization theory is the use..." />
 
-  <link rel="shortcut icon" href="../favicon.ico" />
+  <link rel="shortcut icon" href="/favicon.ico"/>
 
-  <link rel="stylesheet" type="text/css" href="../css/default.css" />
-  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/default.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/syntax.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:,b" />
-  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
-      MathJax.InputJax.TeX.Definitions.Add({
-          macros: {
-              E: ["Macro", "\\mathop{\\mathbb{E}}"]
-          }
-      });
-  });
+  <script type="text/javascript">
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        macros: {
+	  E: '\\mathop{\\mathbb{E}}'
+	}
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
   </script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <header>
       <hgroup>
-        <h1><a href="../">B.log</a></h1>
+        <h1><a href="/">B.log</a></h1>
         <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
         <menu>
-          <a href="../">Home</a>
-          <a href="../pages/about.html">About me</a>
+          <a href="/">Home</a>
+          <a href="/pages/about.html">About me</a>
           <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
         </menu>
     </nav>
     <section>
-        <article>
+<article>
 <header>
 	<h1>Matrix and Vector Calculus via Differentials</h1>
 	<time>January 29, 2017</time>
 </header>
 
 <section class="post-body">
-<p>Many tasks of machine learning can be posed as optimization problems. One comes up with a parametric model, defines a loss function, and then minimizes it in order to learn optimal parameters. One very powerful tool of optimization theory is the use of smooth (differentiable) functions: those that can be locally approximated with a linear functions. We all surely know how to differentiate a function, but often it’s more convenient to perform all the derivations in matrix form, since many computational packages like numpy or matlab are optimized for vectorized expressions.</p>
+    <p>Many tasks of machine learning can be posed as optimization problems. One comes up with a parametric model, defines a loss function, and then minimizes it in order to learn optimal parameters. One very powerful tool of optimization theory is the use of smooth (differentiable) functions: those that can be locally approximated with a linear functions.
+We all surely know how to differentiate a function, but often it's more convenient to perform all the derivations in matrix form, since many computational packages like numpy or matlab are optimized for vectorized expressions.</p>
 <p>In this post I want to outline the general idea of how one can calculate derivatives in vector and matrix spaces (but the idea is general enough to be applied to other algebraic structures).</p>
 <!--more-->
-<h3>
-The Gradient
-</h3>
-<p>What is the gradient? Recall that smooth function (for now we’ll be considering scalar functions only) <span class="math inline">\(f : \mathcal{X} \to \mathbb{R}\)</span> is one which is approximately linear within some neighborhood of a given point. That means <span class="math inline">\(f(x + dx) - f(x) = \langle g(x), dx \rangle\)</span> (think of <span class="math inline">\(dx\)</span> as of a very small perturbation of <span class="math inline">\(x\)</span>) where <span class="math inline">\(\langle \cdot, \cdot \rangle\)</span> denotes the dot product in the space <span class="math inline">\(\mathcal{X}\)</span>, and <span class="math inline">\(g(x)\)</span> is called the <strong>gradient</strong> of <span class="math inline">\(f(x)\)</span> at the point <span class="math inline">\(x\)</span> (we’ll be using the nabla notation from now on: <span class="math inline">\(g(x) = \nabla f(x)\)</span>).</p>
-<p>For example, for functions of one variable (<span class="math inline">\(\mathcal{X} = \mathbb{R}\)</span>) we have <span class="math inline">\(\langle a, b \rangle = a b\)</span>, for functions of several variables (<span class="math inline">\(\mathcal{X} = \mathbb{R}^n\)</span>) it’s the usual dot product <span class="math inline">\(\langle a, b \rangle = a^T b\)</span>, and for functions of matrices (<span class="math inline">\(\mathcal{X} = \mathbb{R}^{n \times m}\)</span>) it generalizes vector dot product: <span class="math inline">\(\langle A, B \rangle = \text{Tr}(A^T B)\)</span>.</p>
-<p>Now let’s introduce the notion of <strong>differential</strong> <span class="math inline">\(df(x)\)</span> to be a perturbation of the function <span class="math inline">\(f\)</span> if we perturb <span class="math inline">\(x\)</span> by <span class="math inline">\(dx\)</span>, which we assume to be infinitesimally small. The gradient only affects first-order behavior of <span class="math inline">\(df(x)\)</span>, that is as <span class="math inline">\(dx\)</span> goes to zero, thus if one expands <span class="math inline">\(df(x)\)</span> in terms of <span class="math inline">\(dx\)</span>, it’s enough to write down only the linear term to find the differential. For example, for smooth scalar-valued functions we have <span class="math inline">\(df(x) = \langle \nabla f(x), dx \rangle\)</span>, so the gradient <span class="math inline">\(\nabla f(x)\)</span> defines a linear coefficient for the differential <span class="math inline">\(df(x)\)</span> <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>.</p>
-<h3>
-Calculus
-</h3>
-<p>Okay, how can we derive the gradient of a function? One way is to take a derivative with respect to each scalar input variable, and then compose a vector out of it. This approach is quite inefficient and messy: you might have to recompute the same vector expressions for each input variable, or compute lots of sums (which does not leverage benefits of vector operations), or try to compose vector operations out of them. Instead we’ll develop a formal method that will allow us to derive gradients for many functions (just like differentiation rules you learned in the introduction to calculus) without leaving the realm of vector algebra.</p>
-<p>Recall that the differential <span class="math inline">\(df(x)\)</span> of a scalar-valued function <span class="math inline">\(f\)</span> is a linear function of <span class="math inline">\(dx\)</span> and the gradient. That means, that if we could write a differential <span class="math inline">\(df(x)\)</span> and then simplify it to <span class="math inline">\(g(x)^T dx + O(\|dx\|^2)\)</span> (we ignore higher-order terms, as they are not linear in <span class="math inline">\(dx\)</span>, and go to zero faster than <span class="math inline">\(dx\)</span> does), we’ll recover the gradient <span class="math inline">\(\nabla f(x) = g(x)\)</span>. This is exactly what we’re going to do: develop a set of formal rules that will allow us to compute differentials of various operations and their combinations.</p>
-<p>The general idea is to consider <span class="math inline">\(f(x + \Delta)\)</span>, and manipulate it into something of the form <span class="math inline">\(f(x) + L_x(\Delta) + O(\|\Delta\|^2)\)</span> where <span class="math inline">\(L_x(\Delta)\)</span> is a function of <span class="math inline">\(x\)</span> (maybe constant, though) and <span class="math inline">\(\Delta\)</span> that is linear in <span class="math inline">\(\Delta\)</span> (but not necessarily in <span class="math inline">\(x\)</span>). Then <span class="math inline">\(L_x(dx)\)</span> is exactly the differential <span class="math inline">\(df(x)\)</span>.</p>
-<p>Let’s consider an example. Let <span class="math inline">\(f(X) = A X^{-1} + B\)</span> (all variables are square matrices of the same size):</p>
-<p><span class="math display">\[
+
+<h3>The Gradient</h3>
+
+<p>What is the gradient? Recall that smooth function (for now we'll be considering scalar functions only) $f : \mathcal{X} \to \mathbb{R}$ is one which is approximately linear within some neighborhood of a given point.
+That means $f(x + dx) - f(x) = \langle g(x), dx \rangle$ (think of $dx$ as of a very small perturbation of $x$) where $\langle \cdot, \cdot \rangle$ denotes the dot product in the space $\mathcal{X}$, and $g(x)$ is called the <strong>gradient</strong> of $f(x)$ at the point $x$ (we'll be using the nabla notation from now on: $g(x) = \nabla f(x)$).</p>
+<p>For example, for functions of one variable ($\mathcal{X} = \mathbb{R}$) we have $\langle a, b \rangle = a b$, for functions of several variables ($\mathcal{X} = \mathbb{R}^n$) it's the usual dot product $\langle a, b \rangle = a^T b$, and for functions of matrices ($\mathcal{X} = \mathbb{R}^{n \times m}$) it generalizes vector dot product: $\langle A, B \rangle = \text{Tr}(A^T B)$.</p>
+<p>Now let's introduce the notion of <strong>differential</strong> $df(x)$ to be a perturbation of the function $f$ if we perturb $x$ by $dx$, which we assume to be infinitesimally small. The gradient only affects first-order behavior of $df(x)$, that is as $dx$ goes to zero, thus if one expands $df(x)$ in terms of $dx$, it's enough to write down only the linear term to find the differential.
+For example, for smooth scalar-valued functions we have $df(x) = \langle \nabla f(x), dx \rangle$, so the gradient $\nabla f(x)$ defines a linear coefficient for the differential $df(x)$ <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. </p>
+<h3>Calculus</h3>
+
+<p>Okay, how can we derive the gradient of a function? One way is to take a derivative with respect to each scalar input variable, and then compose a vector out of it. This approach is quite inefficient and messy: you might have to recompute the same vector expressions for each input variable, or compute lots of sums (which does not leverage benefits of vector operations), or try to compose vector operations out of them. Instead we'll develop a formal method that will allow us to derive gradients for many functions (just like differentiation rules you learned in the introduction to calculus) without leaving the realm of vector algebra.</p>
+<p>Recall that the differential $df(x)$ of a scalar-valued function $f$ is a linear function of $dx$ and the gradient. That means, that if we could write a differential $df(x)$ and then simplify it to $g(x)^T dx + O(\|dx\|^2)$ (we ignore higher-order terms, as they are not linear in $dx$, and go to zero faster than $dx$ does), we'll recover the gradient $\nabla f(x) = g(x)$. This is exactly what we're going to do: develop a set of formal rules that will allow us to compute differentials of various operations and their combinations.</p>
+<p>The general idea is to consider $f(x + \Delta)$, and manipulate it into something of the form $f(x) + L_x(\Delta) + O(\|\Delta\|^2)$ where $L_x(\Delta)$ is a function of $x$ (maybe constant, though) and $\Delta$ that is linear in $\Delta$ (but not necessarily in $x$). Then $L_x(dx)$ is exactly the differential $df(x)$.</p>
+<p>Let's consider an example. Let $f(X) = A X^{-1} + B$ (all variables are square matrices of the same size):</p>
+<p>$$
 \begin{align*}
 f(X + \Delta)
 &amp;= A (X + \Delta)^{-1} + B
@@ -73,9 +79,9 @@ f(X + \Delta)
 = A X^{-1} \left(I - \Delta X^{-1} + O(\|\Delta\|^2) \right) + B \\
 &amp;= \underbrace{A X^{-1} + B}_{f(X)} \underbrace{-A X^{-1} \Delta X^{-1}}_{\text{linear in }\Delta} + O(\|\Delta\|^2)
 \end{align*}
-\]</span></p>
-<p>Hence <span class="math inline">\(df(X) = -A X^{-1} dX X^{-1}\)</span> (it’s not of the form <span class="math inline">\(\text{Tr}(g(X)^T dX)\)</span> because <span class="math inline">\(f\)</span> is not scalar-valued, so you can’t extract the gradient from it, because the “gradient” would be something like a 4-dimensional tensor). This way we can derive differentials for many common functions and operations:</p>
-<p><span class="math display">\[
+$$</p>
+<p>Hence $df(X) = -A X^{-1} dX X^{-1}$ (it's not of the form $\text{Tr}(g(X)^T dX)$ because $f$ is not scalar-valued, so you can't extract the gradient from it, because the "gradient" would be something like a 4-dimensional tensor). This way we can derive differentials for many common functions and operations:</p>
+<p>$$
 d(\alpha X) = \alpha dX \\
 d(X + Y) = dX + dY \\
 d(XY) = dX Y + X dY \\
@@ -84,14 +90,14 @@ d(c^T x) = c^T dx \\
 d(x^T A x) = x^T (A + A^T) dx \\
 d(\text{Tr}(X)) = \text{Tr}(dX) \\
 d(\text{det}(X)) = \text{det}(X) \text{Tr}(X^{-1} dX)
-\]</span></p>
-<p>It’s also very helpful to derive a rule to deal with function composition: suppose we have <span class="math inline">\(f(x)\)</span> and <span class="math inline">\(g(x)\)</span> with corresponding differentials <span class="math inline">\(df(x)\)</span> and <span class="math inline">\(dg(x)\)</span>. Then the differential of <span class="math inline">\(h(x) = f(g(x))\)</span> is</p>
-<p><span class="math display">\[
+$$</p>
+<p>It's also very helpful to derive a rule to deal with function composition: suppose we have $f(x)$ and $g(x)$ with corresponding differentials $df(x)$ and $dg(x)$. Then the differential of $h(x) = f(g(x))$ is</p>
+<p>$$
 dh(x) = f(g(x+dx)) - f(g(x)) = f(g(x) + dg(x)) - f(g(x)) = df(y)|_{dy = dg(x), y = g(x)}
-\]</span></p>
-<p>That is, we take <span class="math inline">\(df(y)\)</span>, and replace each <span class="math inline">\(dy\)</span> with <span class="math inline">\(dg(x)\)</span>, and each <span class="math inline">\(y\)</span> with <span class="math inline">\(g(x)\)</span>.</p>
-<p>These rules allow us to differentiate fairly complicated expressions like <span class="math inline">\(f(x) = \text{det}(X + B) \log(a^T X^{-1} a) - \text{Tr}(X)\)</span></p>
-<p><span class="math display">\[
+$$</p>
+<p>That is, we take $df(y)$, and replace each $dy$ with $dg(x)$, and each $y$ with $g(x)$.</p>
+<p>These rules allow us to differentiate fairly complicated expressions like $f(x) = \text{det}(X + B) \log(a^T X^{-1} a) - \text{Tr}(X)$</p>
+<p>$$
 \begin{align*}
 df(X)
 &amp;= d(\text{det}(X + B) \log (a^T X^{-1} a)) - d(\text{Tr}(X)) \\
@@ -100,19 +106,20 @@ df(X)
 &amp;= \text{Tr}\left[\text{det}(X + B)\log (a^T X^{-1} a) (X+B)^{-1} dX \right] - \frac{\text{det}(X + B)}{a^T X^{-1} a} \left(a^T X^{-1} dX X^{-1} a\right) - \text{Tr}(dX) \\
 &amp;= \text{Tr}\left[\left(\text{det}(X + B)\log (a^T X^{-1} a) (X+B)^{-1} - \frac{\text{det}(X + B)}{a^T X^{-1} a} X^{-1} a a^T X^{-1} - I\right) dX \right] \\
 \end{align*}
-\]</span></p>
-<p>One way to sanity-check (not complete, though!) our derivations is to consider <span class="math inline">\(1 \times 1\)</span> matrices, that is, scalar case. In scalar case it all boils down to <span class="math inline">\(f(x) = (x+b) \log(a^2 / x) - x\)</span> with derivative <span class="math inline">\(f'(x) = \log(a^2 / x) - \frac{x+b}{x}-1\)</span>, which coincides with the formula above for <span class="math inline">\(1 \times 1\)</span> matrices.</p>
-<h3 id="the-hessian">The Hessian</h3>
-<p>The same idea can be used to calculate the hessian of a function, that is, a coefficient describing function’s local quadratic behavior. We restrict ourselves with scalar-valued functions of finite-dimensional vectors, but it generalizes to other functions if you consider appropriate bilinear maps.</p>
-<p>We define the second order differential recursively <span class="math inline">\(d^2 f(x) = d(df(x))\)</span> as a linearization of a linearization (and we need to go deeper!). One might note that linearization of a linear function does not make any difference, but we’re actually linearizing not the linear approximation, but the map <span class="math inline">\(x \mapsto df(x)\)</span> itself. In a way, you can think of <span class="math inline">\(df(x)\)</span> as a function of 2 arguments: the point <span class="math inline">\(x\)</span> and an infinitesimal perturbation <span class="math inline">\(dx\)</span>. And we’re linearizing with respect to the first one. Since we have 2 independent linearizations, it’s incorrect to use the same perturbation to both of them, so we’ll introduce <span class="math inline">\(dx_1\)</span> and <span class="math inline">\(dx_2\)</span> as first and second order perturbations.</p>
-<p>If <span class="math inline">\(df^2(x)\)</span> at a given point <span class="math inline">\(x\)</span> is a linearization of a linearization, it’s a function of 2 perturbations: <span class="math inline">\(dx_1\)</span> and <span class="math inline">\(dx_2\)</span>. Moreover, it’s linear in both of them, so <span class="math inline">\(df^2(x)\)</span> is actually a bilinear map. In case of a finite-dimensional vector space a bilinear map can be represented using a matrix <span class="math inline">\(H(x)\)</span>, that is <span class="math inline">\(d^2f(x) = dx_1^T H(x) dx_2\)</span>. The matrix <span class="math inline">\(H(x)\)</span> is called the <strong>hessian</strong> and denoted <span class="math inline">\(\nabla^2 f(x)\)</span>.</p>
-<p>Then one uses the same formal rules, expanding <span class="math inline">\(d^2 f(x) = d(df(x))\)</span> by first computing <span class="math inline">\(df(x)\)</span> w.r.t. <span class="math inline">\(dx_1\)</span>, and then differentiating the resultant expression w.r.t. <span class="math inline">\(dx_2\)</span>. Again, let’s consider an example <span class="math inline">\(f(x) = \text{det}(I + x x^T)\)</span></p>
-<p><span class="math display">\[
+$$</p>
+<p>One way to sanity-check (not complete, though!) our derivations is to consider $1 \times 1$ matrices, that is, scalar case.
+In scalar case it all boils down to $f(x) = (x+b) \log(a^2 / x) - x$ with derivative $f'(x) = \log(a^2 / x) - \frac{x+b}{x}-1$, which coincides with the formula above for $1 \times 1$ matrices.</p>
+<h3>The Hessian</h3>
+<p>The same idea can be used to calculate the hessian of a function, that is, a coefficient describing function's local quadratic behavior. We restrict ourselves with scalar-valued functions of finite-dimensional vectors, but it generalizes to other functions if you consider appropriate bilinear maps.</p>
+<p>We define the second order differential recursively $d^2 f(x) = d(df(x))$ as a linearization of a linearization (and we need to go deeper!). One might note that linearization of a linear function does not make any difference, but we're actually linearizing not the linear approximation, but the map $x \mapsto df(x)$ itself. In a way, you can think of $df(x)$ as a function of 2 arguments: the point $x$ and an infinitesimal perturbation $dx$. And we're linearizing with respect to the first one. Since we have 2 independent linearizations, it's incorrect to use the same perturbation to both of them, so we'll introduce $dx_1$ and $dx_2$ as first and second order perturbations.</p>
+<p>If $df^2(x)$ at a given point $x$ is a linearization of a linearization, it's a function of 2 perturbations: $dx_1$ and $dx_2$. Moreover, it's linear in both of them, so $df^2(x)$ is actually a bilinear map. In case of a finite-dimensional vector space a bilinear map can be represented using a matrix $H(x)$, that is $d^2f(x) = dx_1^T H(x) dx_2$. The matrix $H(x)$ is called the <strong>hessian</strong> and denoted $\nabla^2 f(x)$.</p>
+<p>Then one uses the same formal rules, expanding $d^2 f(x) = d(df(x))$ by first computing $df(x)$ w.r.t. $dx_1$, and then differentiating the resultant expression w.r.t. $dx_2$. Again, let's consider an example $f(x) = \text{det}(I + x x^T)$</p>
+<p>$$
 df(x) = 2\text{det}(I + x x^T) x^T (I + x x^T)^{-1} dx_1
  = 2 f(x) x^T (I + x x^T)^{-1} dx_1
-\]</span></p>
+$$</p>
 <p>Now, keeping in mind that we can move scalars around (as well as transpose them), we get</p>
-<p><span class="math display">\[
+<p>$$
 \begin{align*}
 d^2f(x) &amp;= d(df(x)) \\
 &amp;= 2 \overbrace{df(x)}^{=dx_2^T \nabla f(x)} x^T (I + x x^T)^{-1} dx_1
@@ -131,9 +138,9 @@ d^2f(x) &amp;= d(df(x)) \\
 -f(x) \text{Tr}\left[ (I + x x^T)^{-1} x x^T \right] (I + x x^T)^{-1}
  \Bigr) dx_1 \\
 \end{align*}
-\]</span></p>
+$$</p>
 <p>Thus the Hessian is</p>
-<p><span class="math display">\[
+<p>$$
 \begin{align*}
 \nabla^2 f(x)
 &amp;= 2 (I + x x^T)^{-1} x \left(\nabla f(x)^T - f(x) x^T (I + x x^T)^{-1} \right)
@@ -143,21 +150,23 @@ d^2f(x) &amp;= d(df(x)) \\
 &amp;= (I + x x^T)^{-1} x \nabla f(x)^T - \nabla f(x)^T x (I + x x^T)^{-1} + 2 f(x) (I + x x^T)^{-1} \\
 &amp;= 2f(x) \left((2 - x^T (I + x x^T)^{-1} x) I - (I + x x^T)^{-1}\right) (I + x x^T)^{-1} \\
 \end{align*}
-\]</span></p>
-<p>The funny thing is, <span class="math inline">\(f(x) = \text{det}(I + x x^T)\)</span> can be simplified using the <a href="https://en.wikipedia.org/wiki/Matrix_determinant_lemma">determinant lemma</a> as <span class="math inline">\(f(x) = 1 + x^T x\)</span>. Now this is a very simple function, whose gradient is just <span class="math inline">\(2x\)</span> and the Hessian is constant <span class="math inline">\(2I\)</span>. And actually, the expression above can be simplified into <span class="math inline">\(2I\)</span>. Sometimes it’s beneficial to simplify the function first (-:</p>
-<h3 id="conclusion">Conclusion</h3>
+$$</p>
+<p>The funny thing is, $f(x) = \text{det}(I + x x^T)$ can be simplified using the <a href="https://en.wikipedia.org/wiki/Matrix_determinant_lemma">determinant lemma</a> as $f(x) = 1 + x^T x$. Now this is a very simple function, whose gradient is just $2x$ and the Hessian is constant $2I$. And actually, the expression above can be simplified into $2I$. Sometimes it's beneficial to simplify the function first (-:</p>
+<h3>Conclusion</h3>
 <p>In this post I showed how one can derive gradients and hessians using formal algebraic manipulations with differentials. The same technique is, of course, applicable to infinite-dimensional spaces (calculus of variations) and vector-valued functions (where linear map is described using the Jacobi matrix).</p>
-<h3 id="addendum-on-the-dual-numbers">Addendum on the Dual Numbers</h3>
-<p>The set of formal rules described above is not only helpful when calculating gradients by hand, but can also be used to automatically differentiate a function as you evaluate it. Indeed, suppose you need to differentiate some big and complex function <span class="math inline">\(f(x)\)</span>. In the above I shoved how one can use formal rules to compute <span class="math inline">\(d f(x)\)</span>, rearrange the result into the form of <span class="math inline">\(\langle g(x), dx\rangle\)</span>, and use <span class="math inline">\(g(x)\)</span> as the gradient. Note that if we use Taylor expansion of <span class="math inline">\(f(x+dx)\)</span> at <span class="math inline">\(x\)</span> we get <span class="math inline">\(f(x+dx) = f(x) + \langle \nabla f(x), dx \rangle + O(\|dx\|^2)\)</span> and neither <span class="math inline">\(f(x)\)</span> nor <span class="math inline">\(\nabla f(x)\)</span> contain (or depend on) <span class="math inline">\(dx\)</span>. This means that if we extend our set of numbers by a symbol <span class="math inline">\(dx\)</span> with a property <span class="math inline">\(\|dx\|^2 = 0\)</span> (much like we have obtained complex numbers by adding a symbol <span class="math inline">\(i\)</span> to the real numbers with a special property <span class="math inline">\(i^2 = -1\)</span>), and evaluate <span class="math inline">\(f(x+dx)\)</span> in this expanded algebra, we will obtain an expression of the form <span class="math inline">\(a + \langle b, dx \rangle\)</span> with <span class="math inline">\(a = f(x)\)</span> and <span class="math inline">\(b = \nabla f(x)\)</span>. And this is a well-known extension of the real numbers called <a href="https://en.wikipedia.org/wiki/Dual_number">dual numbers</a>.</p>
-<div class="footnotes">
-<hr />
+<h3>Addendum on the Dual Numbers</h3>
+<p>The set of formal rules described above is not only helpful when calculating gradients by hand, but can also be used to automatically differentiate a function as you evaluate it. Indeed, suppose you need to differentiate some big and complex function $f(x)$. In the above I shoved how one can use formal rules to compute $d f(x)$, rearrange the result into the form of $\langle g(x), dx\rangle$, and use $g(x)$ as the gradient. Note that if we use Taylor expansion of $f(x+dx)$ at $x$ we get $f(x+dx) = f(x) + \langle \nabla f(x), dx \rangle + O(\|dx\|^2)$ and neither $f(x)$ nor $\nabla f(x)$ contain (or depend on) $dx$. This means that if we extend our set of numbers by a symbol $dx$ with a property $\|dx\|^2 = 0$ (much like we have obtained complex numbers by adding a symbol $i$ to the real numbers with a special property $i^2 = -1$), and evaluate $f(x+dx)$ in this expanded algebra, we will obtain an expression of the form $a + \langle b, dx \rangle$ with $a = f(x)$ and $b = \nabla f(x)$. And this is a well-known extension of the real numbers called <a href="https://en.wikipedia.org/wiki/Dual_number">dual numbers</a>.</p>
+<div class="footnote">
+<hr>
 <ol>
-<li id="fn1"><p>If you’re wondering about the particular way of combining the gradient <span class="math inline">\(\nabla f(x)\)</span> and <span class="math inline">\(dx\)</span>, here’s the explanation. Recall, that the first-order term is the linearization of a function, that is, it’s linear transformation <span class="math inline">\(L_x\)</span> of <span class="math inline">\(dx\)</span>. Because of the <a href="https://en.wikipedia.org/wiki/Riesz_representation_theorem">Riesz representation theorem</a> this linear transformation <span class="math inline">\(L_x\)</span> can be represented as a scalar product with some element of <span class="math inline">\(\mathcal{X}\)</span> (the gradient, in our case): <span class="math inline">\(L_x(dx) = \langle \nabla f(x), dx \rangle\)</span>. Of course, this logic generalizes to non-scalar-valued functions (like <span class="math inline">\(f : \mathbb{R}^n \to \mathbb{R}^m\)</span>): the gradient is used to define a linear map.<a href="#fnref1">↩</a></p></li>
+<li id="fn:1">
+<p>If you're wondering about the particular way of combining the gradient $\nabla f(x)$ and $dx$, here's the explanation. Recall, that the first-order term is the linearization of a function, that is, it's linear transformation $L_x$ of $dx$. Because of the <a href="https://en.wikipedia.org/wiki/Riesz_representation_theorem">Riesz representation theorem</a> this linear transformation $L_x$ can be represented as a scalar product with some element of $\mathcal{X}$ (the gradient, in our case): $L_x(dx) = \langle \nabla f(x), dx \rangle$. Of course, this logic generalizes to non-scalar-valued functions (like $f : \mathbb{R}^n \to \mathbb{R}^m$): the gradient is used to define a linear map.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
 </ol>
 </div>
 </section>
 
-<div class="tags-pane">Tagged as <a href="../tags/math.html">math</a></div>
+<div class="tags-pane">Tagged as <a href="/tags/math.html">math</a></div>
 </article>
 
 <section class="post-comments">
@@ -176,10 +185,9 @@ d^2f(x) &amp;= d(df(x)) \\
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 </section>
-
     </section>
     <footer>
-        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+        Generated with Pelican 
     </footer>
 
 <script type="text/javascript">

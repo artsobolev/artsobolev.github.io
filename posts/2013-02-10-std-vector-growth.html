@@ -1,91 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Resizing Policy of std::vector - B.log</title>
+  <title>Resizing Policy of std::vector – B.log</title>
   <meta charset="utf-8" />
 
-  <meta name="twitter:card" content="summary" />
+  <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
-  <meta name="twitter:title" content="Resizing Policy of std::vector" />
-  <meta name="twitter:description" content="Sometime ago when Facebook opensourced their Folly library I was reading their docs and found something interesting. In section “Memory Handling” they state
+  <meta property="og:title" content="Resizing Policy of std::vector – B.log" />
+  <meta property="og:description" content="Sometime ago when Facebook opensourced their Folly library I was reading their docs and found something interesting. In section "Memory Handling" they state In fact it can be mathematically proven that a growth factor of 2 is rigorously the worst..." />
 
-In fact it can be mathematically proven that a growth factor of 2 is rigorously the worst possible because it never allows the vector to reuse any of its previously-allocated memory
+  <link rel="shortcut icon" href="/favicon.ico"/>
 
-I haven’t got it first time. Recently I recalled that article and decided to deal with it. So after reading and googling for a while I finally understood the idea, so I’d like to say a few words about it.
-" /> 
-
-  <link rel="shortcut icon" href="../favicon.ico" />
-
-  <link rel="stylesheet" type="text/css" href="../css/default.css" />
-  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/default.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/syntax.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:,b" />
-  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
-      MathJax.InputJax.TeX.Definitions.Add({
-          macros: {
-              E: ["Macro", "\\mathop{\\mathbb{E}}"]
-          }
-      });
-  });
+  <script type="text/javascript">
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        macros: {
+	  E: '\\mathop{\\mathbb{E}}'
+	}
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
   </script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <header>
       <hgroup>
-        <h1><a href="../">B.log</a></h1>
+        <h1><a href="/">B.log</a></h1>
         <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
         <menu>
-          <a href="../">Home</a>
-          <a href="../pages/about.html">About me</a>
+          <a href="/">Home</a>
+          <a href="/pages/about.html">About me</a>
           <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
         </menu>
     </nav>
     <section>
-        <article>
+<article>
 <header>
 	<h1>Resizing Policy of std::vector</h1>
 	<time>February 10, 2013</time>
 </header>
 
 <section class="post-body">
-Sometime ago when Facebook opensourced their <a title="Folly is an open-source C++ library developed and used at Facebook" href="https://github.com/facebook/folly">Folly library</a> I was reading their docs and found <a title="folly/FBvector.h documentation" href="https://github.com/facebook/folly/blob/master/folly/docs/FBVector.md">something interesting</a>. In section “Memory Handling” they state
-<blockquote>
-In fact it can be mathematically proven that a growth factor of 2 is rigorously the worst possible because it never allows the vector to reuse any of its previously-allocated memory
-</blockquote>
-<p>I haven’t got it first time. Recently I recalled that article and decided to deal with it. So after reading and googling for a while I finally understood the idea, so I’d like to say a few words about it.</p>
+    <p>Sometime ago when Facebook opensourced their <a title="Folly is an open-source C++ library developed and used at Facebook" href="https://github.com/facebook/folly">Folly library</a> I was reading their docs and found <a title="folly/FBvector.h documentation" href="https://github.com/facebook/folly/blob/master/folly/docs/FBVector.md">something interesting</a>. In section "Memory Handling" they state <blockquote>In fact it can be mathematically proven that a growth factor of 2 is rigorously the worst possible because it never allows the vector to reuse any of its previously-allocated memory</blockquote>I haven't got it first time. Recently I recalled that article and decided to deal with it. So after reading and googling for a while I finally understood the idea, so I'd like to say a few words about it.</p>
 <!--more-->
-<p>The problem is as follows: when a vector (or a similar structure with autoresize) gets filled, it should resize. It’s well known that it should grow exponentially in order to preserve constant amortized complexity of insertions, but what growth factor to choose? At first glance, 2 seems to be ok — it’s not so big and 2 is common for computer science :-). But it turns out that 2 is not so good. Let’s take a closer look by example:</p>
-<p><a href="../files/vector-resize-scheme.png"><img src="../files/vector-resize-scheme.png" alt="Vector resize scheme" width="495" height="350" class="size-full" /></a></p>
-<p>Suppose we’ve a vector of initial size <span class="math inline">\(C\)</span>. When it gets filled, we increase its size twice. We allocate memory for a vector of size <span class="math inline">\(2C\)</span> right after our original vector. So now we have vector of size <span class="math inline">\(2C\)</span> and <span class="math inline">\(C\)</span> bytes before it, where it was when it was small. Then expand it again and again and agian and so on. After <span class="math inline">\(n\)</span> expansions we’ll get a vector of size <span class="math inline">\(2^n C\)</span> preceded by <span class="math inline">\(C + 2C + 2^2 C + \dots 2^{n-1} C\)</span> bytes that were occupied by this vector before.</p>
-<p>So what’s the problem? The problem is that after every increasing your vector is too big to fit previously allocated memory. How much is it bigger? Well, as we know <span class="math inline">\(2^n - 1 = 1 + 2 + 4 + \dots + 2^{n-1}\)</span>, thus <span class="math inline">\(2^n C - C - 2C - 2^2 C - \dots - 2^{n-1}C = C\)</span>. Therefore you have permanent lack of <span class="math inline">\(C\)</span> bytes to fit your vector in previously allocated space.</p>
-<p>Okay, let’s now solve this problem. First, let’s formalize it.</p>
-<p>Every time we increase vector of size <span class="math inline">\(C\)</span> with growing factor <span class="math inline">\(k\)</span> we do these steps:</p>
+
+<p>The problem is as follows: when a vector (or a similar structure with autoresize) gets filled, it should resize. It's well known that it should grow exponentially in order to preserve constant amortized complexity of insertions, but what growth factor to choose? At first glance, 2 seems to be ok — it's not so big and 2 is common for computer science :-). But it turns out that 2 is not so good. Let's take a closer look by example:</p>
+<p><a href="/files/vector-resize-scheme.png"><img src="/files/vector-resize-scheme.png" alt="Vector resize scheme" width="495" height="350" class="size-full" /></a></p>
+<p>Suppose we've a vector of initial size $C$. When it gets filled, we increase its size twice. We allocate memory for a vector of size $2C$ right after our original vector. So now we have vector of size $2C$ and $C$ bytes before it, where it was when it was small. Then expand it again and again and agian and so on. After $n$ expansions we'll get a vector of size $2^n C$ preceded by $C + 2C + 2^2 C + \dots 2^{n-1} C$ bytes that were occupied by this vector before.</p>
+<p>So what's the problem? The problem is that after every increasing your vector is too big to fit previously allocated memory. How much is it bigger? Well, as we know $2^n - 1 = 1 + 2 + 4 + \dots + 2^{n-1}$, thus $2^n C - C - 2C - 2^2 C - \dots - 2^{n-1}C = C$. Therefore you have permanent lack of $C$ bytes to fit your vector in previously allocated space.</p>
+<p>Okay, let's now solve this problem. First, let's formalize it.</p>
+<p>Every time we increase vector of size $C$ with growing factor $k$ we do these steps:</p>
 <ol>
-<li>
-Allocate <span class="math inline">\(k C\)</span> bytes
-</li>
-<li>
-Create a new vector here and copy current vector’s content to the new one
-</li>
-<li>
-Remove the current vector, set the new one as the current
-</li>
+<li>Allocate $k C$ bytes</li>
+<li>Create a new vector here and copy current vector's content to the new one</li>
+<li>Remove the current vector, set the new one as the current</li>
 </ol>
-<p>So as you can see, formula for 2 is sort of upperbound: you can not use all of previously allocated <span class="math inline">\(n-1\)</span> chunks when allocating nth, since you need to copy values from (n-1)th (though you can copy them in some temporary buffer, but it requires extra memory) chunk. So when we allocate nth chunk, we need it to be less than total free space from <span class="math inline">\(n-2\)</span> allocations: <span class="math display">\[ k^n C \le k^{n-2}C + k^{n-3}C + \dots + kC + C \]</span></p>
-<p>As you can see, we can get rid of C since it’s definetly positive. <span class="math display">\[ k^n \le k^{n-2} + k^{n-3} + \dots + k + 1 \]</span></p>
-<p>Okay, time to solve some equations! We see something like a sum of a geometric progression, and we can use a formula for it. But I don’t retain it in my head, so I’ll use a little trick here. Let’s multiply both sides by <span class="math inline">\(k-1\)</span>. We assume that <span class="math inline">\(k &gt; 1\)</span> (it’s very strange to use values greater than 1 as <em>growth</em> factor) <span class="math display">\[ (k-1) k^n \le (k-1) (k^{n-2} + k^{n-3} + \dots + k + 1) \]</span></p>
-<p>Now we can notice that in the right side we have an expansion of <span class="math inline">\(k^{n-1}-1\)</span> (well, maybe to remember this observation is harder than remembering a formula for sum of a geometric progression…)</p>
-<p><span class="math display">\[ (k-1) k^n \le k^{n-1}-1 \]</span> <span class="math display">\[ k^{n+1} - k^n \le k^{n-1}-1 \]</span> <span class="math display">\[ k^{n+1} \le k^n + k^{n-1} - 1 \]</span></p>
-<p>Oh, this obstructing 1… It would be so nice if we could throw it away! Wait, but we can! If we add 1 to the right side, we will merely increase its value, so it will still suit for an upper bound (or an approximation since 1 is a constant and is very small compared to <span class="math inline">\(k^n\)</span>).</p>
-<p><span class="math display">\[ k^{n+1} \le k^n + k^{n-1} - 1 &lt; k^n + k^{n-1} \]</span> <span class="math display">\[ k^2 &lt; k + 1 \]</span> <span class="math display">\[ k^2 - k - 1 &lt; 0 \]</span></p>
-<p>Solving this simple quadratic equation, we get <span class="math display">\[ k &lt; \frac{1+\sqrt{5}}{2} \approx 1.61 \]</span></p>
-<p>So that’s why growth factor in many dynamic arrays is 1.5: it is pretty big to not cause reallocations too frequently and is small enough to not use memory too extensively.</p>
+
+<p>So as you can see, formula for 2 is sort of upperbound: you can not use all of previously allocated $n-1$ chunks when allocating nth, since you need to copy values from (n-1)th (though you can copy them in some temporary buffer, but it requires extra memory) chunk. So when we allocate nth chunk, we need it to be less than total free space from $n-2$ allocations:
+$$ k^n C \le k^{n-2}C + k^{n-3}C + \dots + kC + C $$</p>
+<p>As you can see, we can get rid of C since it's definetly positive.
+$$ k^n \le k^{n-2} + k^{n-3} + \dots + k + 1 $$</p>
+<p>Okay, time to solve some equations! We see something like a sum of a geometric progression, and we can use a formula for it. But I don't retain it in my head, so I'll use a little trick here. Let's multiply both sides by $k-1$. We assume that $k &gt; 1$ (it's very strange to use values greater than 1 as <em>growth</em> factor)
+$$ (k-1) k^n \le (k-1) (k^{n-2} + k^{n-3} + \dots + k + 1) $$</p>
+<p>Now we can notice that in the right side we have an expansion of $k^{n-1}-1$ (well, maybe to remember this observation is harder than remembering a formula for sum of a geometric progression…)</p>
+<p>$$ (k-1) k^n \le k^{n-1}-1 $$ $$ k^{n+1} - k^n \le k^{n-1}-1 $$ $$ k^{n+1} \le k^n + k^{n-1} - 1 $$</p>
+<p>Oh, this obstructing 1… It would be so nice if we could throw it away! Wait, but we can! If we add 1 to the right side, we will merely increase its value, so it will still suit for an upper bound (or an approximation since 1 is a constant and is very small compared to $k^n$).</p>
+<p>$$ k^{n+1} \le k^n + k^{n-1} - 1 &lt; k^n + k^{n-1} $$ $$ k^2 &lt; k + 1 $$ $$ k^2 - k - 1 &lt; 0 $$</p>
+<p>Solving this simple quadratic equation, we get $$ k &lt; \frac{1+\sqrt{5}}{2} \approx 1.61 $$</p>
+<p>So that's why growth factor in many dynamic arrays is 1.5: it is pretty big to not cause reallocations too frequently and is small enough to not use memory too extensively.</p>
 </section>
 
-<div class="tags-pane">Tagged as <a href="../tags/C%2B%2B.html">C++</a>, <a href="../tags/math.html">math</a></div>
+<div class="tags-pane">Tagged as <a href="/tags/c.html">C++</a>, <a href="/tags/math.html">math</a></div>
 </article>
 
 <section class="post-comments">
@@ -104,10 +100,9 @@ Remove the current vector, set the new one as the current
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 </section>
-
     </section>
     <footer>
-        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+        Generated with Pelican 
     </footer>
 
 <script type="text/javascript">

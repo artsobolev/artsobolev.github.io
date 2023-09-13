@@ -45,19 +45,7 @@
         </menu>
     </nav>
     <section>
-<h2 class="tags-pane">Articles tagged <a href="/tags/reinforce.html">REINFORCE</a></h2>
-
-    <article>
-        <header>
-            <h3><a href="/posts/2020-11-29-reinforce-is-not-rl.html">Not every REINFORCE should be called Reinforcement Learning</a></h3>
-            <time>November 29, 2020</time>
-        </header>
-
-        <section><p>Deep RL is hot these days. It's one of the most popular topics in the submissions at NeurIPS / ICLR / ICML and other ML conferences. And while the definition of RL is pretty general, in this note I'd argue that the famous REINFORCE algorithm <em>alone</em> is not enough to label your method as a Reinforcement Learning one.</p>
-</section>
-    </article>
-
-    <hr/>
+<h2 class="tags-pane">Articles tagged <a href="/tags/stochastic-computation-graphs-series.html">stochastic computation graphs series</a></h2>
 
     <article>
         <header>
@@ -67,6 +55,20 @@
 
         <section><p>This is the final post of the <a href="/tags/stochastic%20computation%20graphs%20series.html">stochastic computation graphs series</a>. Last time we discussed models with <a href="/posts/2017-10-28-stochastic-computation-graphs-discrete-relaxations.html">discrete relaxations of stochastic nodes</a>, which allowed us to employ the power of reparametrization.</p>
 <p>These methods, however, posses one flaw: they consider different models, thus introducing inherent bias – your test time discrete model will be doing something different from what your training time model did. Therefore in this post we'll get back to the REINFORCE aka Score Function estimator, and see if we can fix its problems.</p>
+</section>
+    </article>
+
+    <hr/>
+
+    <article>
+        <header>
+            <h3><a href="/posts/2017-10-28-stochastic-computation-graphs-discrete-relaxations.html">Stochastic Computation Graphs: Discrete Relaxations</a></h3>
+            <time>October 28, 2017</time>
+        </header>
+
+        <section><p>This is the second post of the <a href="/tags/stochastic%20computation%20graphs%20series.html">stochastic computation graphs series</a>. Last time we discussed models with <a href="/posts/2017-09-10-stochastic-computation-graphs-continuous-case.html">continuous stochastic nodes</a>, for which there are powerful reparametrization technics.</p>
+<p>Unfortunately, these methods don't work for discrete random variables. Moreover, it looks like there's no way to backpropagate through discrete stochastic nodes, as there's no infinitesimal change of random values when you infinitesimally perturb their parameters.</p>
+<p>In this post I'll talk about continuous relaxations of discrete random variables.</p>
 </section>
     </article>
 

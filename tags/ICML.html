@@ -1,61 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Posts tagged ICML - B.log</title>
+  <title>Index – B.log</title>
   <meta charset="utf-8" />
 
-  <meta name="twitter:card" content="summary" />
+  <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
-  <meta name="twitter:title" content="Posts tagged ICML" />
-  <meta name="twitter:description" content /> 
+  <meta property="og:title" content="Index – B.log" />
+  <meta property="og:description" content="" />
 
-  <link rel="shortcut icon" href="../favicon.ico" />
+  <link rel="shortcut icon" href="/favicon.ico"/>
 
-  <link rel="stylesheet" type="text/css" href="../css/default.css" />
-  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/default.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/syntax.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:,b" />
-  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
-      MathJax.InputJax.TeX.Definitions.Add({
-          macros: {
-              E: ["Macro", "\\mathop{\\mathbb{E}}"]
-          }
-      });
-  });
+  <script type="text/javascript">
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        macros: {
+	  E: '\\mathop{\\mathbb{E}}'
+	}
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
   </script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <header>
       <hgroup>
-        <h1><a href="../">B.log</a></h1>
+        <h1><a href="/">B.log</a></h1>
         <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
         <menu>
-          <a href="../">Home</a>
-          <a href="../pages/about.html">About me</a>
+          <a href="/">Home</a>
+          <a href="/pages/about.html">About me</a>
           <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
         </menu>
     </nav>
     <section>
-        <article>
-	<header>
-		<h3><a href="../posts/2017-08-14-icml-2017.html">ICML 2017 Summaries</a></h3>
-		<time>August 14, 2017</time>
-	</header>
+<h2 class="tags-pane">Articles tagged <a href="/tags/icml.html">ICML</a></h2>
 
-	<section>
-		<p>Just like with <a href="../posts/2016-12-31-nips-2016-summaries.html">NIPS last year</a>, here’s a list of ICML’17 summaries (updated as I stumble upon new ones)</p>
+    <article>
+        <header>
+            <h3><a href="/posts/2017-08-14-icml-2017.html">ICML 2017 Summaries</a></h3>
+            <time>August 14, 2017</time>
+        </header>
 
-	</section>
-</article>
+        <section><p>Just like with <a href="/posts/2016-12-31-nips-2016-summaries.html">NIPS last year</a>, here's a list of ICML'17 summaries (updated as I stumble upon new ones)</p>
+</section>
+    </article>
 
-<hr />
+    <hr/>
+
+<!-- /#posts-list -->
 
     </section>
     <footer>
-        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+        Generated with Pelican 
     </footer>
 
 <script type="text/javascript">

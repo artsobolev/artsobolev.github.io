@@ -1,111 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Neural Variational Inference: Variational Autoencoders and Helmholtz machines - B.log</title>
+  <title>Neural Variational Inference: Variational Autoencoders and Helmholtz machines – B.log</title>
   <meta charset="utf-8" />
 
-  <meta name="twitter:card" content="summary" />
+  <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
-  <meta name="twitter:title" content="Neural Variational Inference: Variational Autoencoders and Helmholtz machines" />
-  <meta name="twitter:description" content="So far we had a little of “neural” in our VI methods. Now it’s time to fix it, as we’re going to consider Variational Autoencoders (VAE), a paper by D. Kingma and M. Welling, which made a lot of buzz in ML community. It has 2 main contributions: a new approach (AEVB) to large-scale inference in non-conjugate models with continuous latent variables, and a probabilistic model of autoencoders as an example of this approach. We then discuss connections to Helmholtz machines — a predecessor of VAEs.
-" /> 
+  <meta property="og:title" content="Neural Variational Inference: Variational Autoencoders and Helmholtz machines – B.log" />
+  <meta property="og:description" content="So far we had a little of "neural" in our VI methods. Now it's time to fix it, as we're going to consider Variational Autoencoders (VAE), a paper by D. Kingma and M. Welling, which made a lot of buzz in ML community. It has 2 main contributions: a new …" />
 
-  <link rel="shortcut icon" href="../favicon.ico" />
+  <link rel="shortcut icon" href="/favicon.ico"/>
 
-  <link rel="stylesheet" type="text/css" href="../css/default.css" />
-  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/default.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/syntax.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:,b" />
-  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
-      MathJax.InputJax.TeX.Definitions.Add({
-          macros: {
-              E: ["Macro", "\\mathop{\\mathbb{E}}"]
-          }
-      });
-  });
+  <script type="text/javascript">
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        macros: {
+	  E: '\\mathop{\\mathbb{E}}'
+	}
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
   </script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <header>
       <hgroup>
-        <h1><a href="../">B.log</a></h1>
+        <h1><a href="/">B.log</a></h1>
         <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
         <menu>
-          <a href="../">Home</a>
-          <a href="../pages/about.html">About me</a>
+          <a href="/">Home</a>
+          <a href="/pages/about.html">About me</a>
           <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
         </menu>
     </nav>
     <section>
-        <article>
+<article>
 <header>
 	<h1>Neural Variational Inference: Variational Autoencoders and Helmholtz machines</h1>
 	<time>July 11, 2016</time>
 </header>
 
 <section class="post-body">
-<p>So far we had a little of “neural” in our VI methods. Now it’s time to fix it, as we’re going to consider <a href="https://arxiv.org/abs/1312.6114">Variational Autoencoders</a> (VAE), a paper by D. Kingma and M. Welling, which made a lot of buzz in ML community. It has 2 main contributions: a new approach (AEVB) to large-scale inference in non-conjugate models with continuous latent variables, and a probabilistic model of autoencoders as an example of this approach. We then discuss connections to <a href="https://en.wikipedia.org/wiki/Helmholtz_machine">Helmholtz machines</a> — a predecessor of VAEs.</p>
+    <p>So far we had a little of "neural" in our VI methods. Now it's time to fix it, as we're going to consider <a href="https://arxiv.org/abs/1312.6114">Variational Autoencoders</a> (VAE), a paper by D. Kingma and M. Welling, which made a lot of buzz in ML community. It has 2 main contributions: a new approach (AEVB) to large-scale inference in non-conjugate models with continuous latent variables, and a probabilistic model of autoencoders as an example of this approach. We then discuss connections to <a href="https://en.wikipedia.org/wiki/Helmholtz_machine">Helmholtz machines</a> — a predecessor of VAEs.</p>
 <!--more-->
-<h3 id="auto-encoding-variational-bayes">Auto-Encoding Variational Bayes</h3>
-<p>As noted in the introduction of the post, this approach, called Auto-Encoding Variational Bayes (AEVB) works only for some models with continuous latent variables. Recall from our discussion of <a href="../posts/2016-07-05-neural-variational-inference-blackbox.html">Blackbox VI</a> and <a href="../posts/2016-07-04-neural-variational-inference-stochastic-variational-inference.html">Stochastic VI</a>, we’re interested in maximizing the ELBO <span class="math inline">\(\mathcal{L}(\Theta, \Lambda)\)</span>:</p>
-<p><span class="math display">\[
+
+<h3>Auto-Encoding Variational Bayes</h3>
+<p>As noted in the introduction of the post, this approach, called Auto-Encoding Variational Bayes (AEVB) works only for some models with continuous latent variables. Recall from our discussion of <a href="/posts/2016-07-05-neural-variational-inference-blackbox.html">Blackbox VI</a> and <a href="/posts/2016-07-04-neural-variational-inference-stochastic-variational-inference.html">Stochastic VI</a>, we're interested in maximizing the ELBO $\mathcal{L}(\Theta, \Lambda)$:</p>
+<p>$$
 \mathcal{L}(\Theta, \Lambda) = \mathbb{E}_{q(z\mid x, \Lambda)} \log \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)}
-\]</span></p>
-<p>It’s not a problem to compute an estimate of the gradient of the ELBO w.r.t. model parameters <span class="math inline">\(\Theta\)</span>, but estimating the gradient w.r.t. approximation parameters <span class="math inline">\(\Lambda\)</span> is tricky as these parameters influence the distribution the expectation is taken over, and as we know from the post on <a href="../posts/2016-07-05-neural-variational-inference-blackbox.html">Blackbox VI</a>, naive gradient estimator based on score function exhibits high variance.</p>
-<p>Turns out, for some distributions we can make change of variables, that is, for some distributions a sample <span class="math inline">\(z \sim q(z \mid x, \Lambda)\)</span> can be represented as a (differentiable) transformation <span class="math inline">\(g(\varepsilon; \Lambda, x)\)</span> of some auxiliary random variable <span class="math inline">\(\varepsilon\)</span> whose distribution does not depend on <span class="math inline">\(\Lambda\)</span>. A well-known example of such reparametrization is Gaussian distribution: if <span class="math inline">\(z \sim \mathcal{N}(\mu, \Sigma)\)</span> then <span class="math inline">\(z\)</span> can be represented as <span class="math inline">\(z = g(\varepsilon; \mu, \Sigma) := \mu + \Sigma^{1/2} \varepsilon\)</span> for <span class="math inline">\(\varepsilon \sim \mathcal{N}(0, I)\)</span>. This transformation is called the <strong>reparametrization trick</strong>. After the reparametrization the ELBO becomes</p>
-<p><span class="math display">\[
-\begin{align}
-\mathcal{L}(\Theta, \Lambda)
-&amp;= \mathbb{E}_{\varepsilon \sim \mathcal{N}(0, I)}  \log \frac{p(x, g(\varepsilon; \Lambda, x)\mid \Theta)}{q(g(\varepsilon; \Lambda, x) \mid \Lambda, x)} \\
-&amp;\approx \frac{1}{L} \sum_{l=1}^L  \log \frac{p(x, g(\varepsilon^{(l)}; \Lambda, x)\mid \Theta)}{q(g(\varepsilon^{(l)}; \Lambda, x) \mid \Lambda, x)} \quad \quad \text{where $\varepsilon^{(l)} \sim \mathcal{N}(0, I)$}
+$$</p>
+<p>It's not a problem to compute an estimate of the gradient of the ELBO w.r.t. model parameters $\Theta$, but estimating the gradient w.r.t. approximation parameters $\Lambda$  is tricky as these parameters influence the distribution the expectation is taken over, and as we know from the post on <a href="/posts/2016-07-05-neural-variational-inference-blackbox.html">Blackbox VI</a>, naive gradient estimator based on score function exhibits high variance.</p>
+<p>Turns out, for some distributions we can make change of variables, that is, for some distributions a sample $z \sim q(z \mid x, \Lambda)$ can be represented as a (differentiable) transformation $g(\varepsilon; \Lambda, x)$ of some auxiliary random variable $\varepsilon$ whose distribution does not depend on $\Lambda$. A well-known example of such reparametrization is Gaussian distribution: if $z \sim \mathcal{N}(\mu, \Sigma)$ then $z$ can be represented as $z = g(\varepsilon; \mu, \Sigma) := \mu + \Sigma^{1/2} \varepsilon$ for $\varepsilon \sim \mathcal{N}(0, I)$. This transformation is called the <strong>reparametrization trick</strong>. After the reparametrization the ELBO becomes</p>
+<p>$klzzwxh:0023\varepsilon^{(l)} \sim \mathcal{N}(0, I)$}
 \end{align}
-\]</span></p>
-<p>This objective is a much better one as we don’t need to differentiate w.r.t. expectation’s distribution, essentially putting the variational parameters <span class="math inline">\(\Lambda\)</span> to the same regime as the model parameters <span class="math inline">\(\Theta\)</span>. It’s sufficient now to just take gradients of the ELBO’s estimate, and run any optimization algorithm like <a href="https://arxiv.org/abs/1412.6980">Adam</a>.</p>
-<p>Oh, and if you wonder what Auto-Encoding in Auto-Encoding Variational Bayes means, there’s an interesting interpretation of the ELBO in terms of autoencoding:</p>
-<p><span class="math display">\[
+$$</p>
+<p>This objective is a much better one as we don't need to differentiate w.r.t. expectation's distribution, essentially putting the variational parameters $\Lambda$ to the same regime as the model parameters $\Theta$. It's sufficient now to just take gradients of the ELBO's estimate, and run any optimization algorithm like <a href="https://arxiv.org/abs/1412.6980">Adam</a>.</p>
+<p>Oh, and if you wonder what Auto-Encoding in Auto-Encoding Variational Bayes means, there's an interesting interpretation of the ELBO in terms of autoencoding:</p>
+<p>$$
 \begin{align}
 \mathcal{L}(\Theta, \Lambda)
 &amp; = \mathbb{E}_{q(z\mid x, \Lambda)} \log \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)}
  = \mathbb{E}_{q(z\mid x, \Lambda)} \log \frac{p(x \mid z, \Theta) p(z \mid \Theta)}{q(z \mid x, \Lambda)} \\
 &amp; = \mathbb{E}_{q(z\mid x, \Lambda)} \log p(x \mid z, \Theta) - D_{KL}(q(z \mid \Lambda, x) \mid\mid p(z \mid \Theta)) \\
 \end{align}
-\]</span></p>
-<p>Here the first term can be treated as expected reconstruction (<span class="math inline">\(x\)</span> from the code <span class="math inline">\(z\)</span>) error, while the second one is just a regularizer.</p>
-<h3 id="variational-autoencoder">Variational Autoencoder</h3>
-<p>One particular application of AEVB framework comes from using neural networks as the model <span class="math inline">\(p(x \mid z, \Theta)\)</span> (called <strong>generative network</strong>) and the approximation <span class="math inline">\(q(z \mid x, \Lambda)\)</span> (called <strong>inference network</strong> or <strong>recognition network</strong>). The model has no requirements, and <span class="math inline">\(x\)</span> can be discrete or continuous (or mixed). <span class="math inline">\(z\)</span>, however, has to be continuous. Moreover, we need to be able to apply the reparametrization trick. Therefore in many practical applications <span class="math inline">\(q(z \mid x, \Lambda)\)</span> is set to be Gaussian distribution <span class="math inline">\(q(z \mid \Lambda, x) = \mathcal{N}(z \mid \mu(x; \Lambda), \Sigma(x; \Lambda))\)</span> where <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\Sigma\)</span> are outputs of a neural network taking <span class="math inline">\(x\)</span> as input, and <span class="math inline">\(\Lambda\)</span> denotes a set of neural network’s weights — the parameters we optimize the ELBO with respect to (the same applies to <span class="math inline">\(\Theta\)</span>). In order to make the reparametrization trick practical, one would like to be able to compute <span class="math inline">\(\Sigma^{1/2}\)</span> quick. We don’t want to actually compute this quantity directly as it’d be too computationally expensive. Instead you might want to predict <span class="math inline">\(\Sigma^{1/2}\)</span> by the neural network in the first place, or consider only diagonal covariance matrices (as it’s done in the paper).</p>
-<p>In case of the Gaussian inference network <span class="math inline">\(q(z \mid x, \Lambda)\)</span> and a Gaussian prior <span class="math inline">\(p(z \mid \Theta)\)</span> we can compute KL-divergence <span class="math inline">\(D_{KL}(q(z \mid \Lambda, x) \mid\mid p(z \mid \Theta))\)</span> analytically, see the formula at <a href="http://stats.stackexchange.com/a/60699/62549">stats.stackexchange</a>. This slightly reduces the variance of the gradient estimator, though one can still train a VAE estimating KL-divergence using Monte Carlo, just like the reconstruction error.</p>
-<p>We optimize both generative and inference networks by gradient ascent. This joint optimization pushes both the approximation towards the model, and the model towards the approximation. As a result, the generative network is encouraged to learn latent representations <span class="math inline">\(z\)</span> that exhibit the same independence pattern as the inference network. For example, if the inference network is Gaussian and has diagonal covariance matrices, then the generative model will try to learn representations with independent components.</p>
-<p>VAEs have become popular because one can use it as a generative model. Essentially VAE is an easy to train autoencoder with a natural sampling procedure <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>: suppose you’ve trained the model, and now want to sample new samples similar to those you used in the training set. To do so you first sample <span class="math inline">\(z\)</span> from the prior <span class="math inline">\(p(z)\)</span>, and then generate <span class="math inline">\(x\)</span> using the model <span class="math inline">\(p(x \mid z, \Theta)\)</span>. Both operations are easy: the first one is sampling from some standard distribution (like Gaussian, for example), and the second one is just one feed-forward pass followed by sampling from another standard distribution (Bernoulli, for example, in case <span class="math inline">\(x\)</span> is a binary image).</p>
-<p>If you want to read more on Variational Auto-Encoders, I refer you to a great <a href="https://arxiv.org/abs/1606.05908">tutorial by Carl Doersch</a>. Also take a look at Dustin Tran’s post <a href="http://dustintran.com/blog/variational-auto-encoders-do-not-train-complex-generative-models/">Variational auto-encoders do not train complex generative models</a> (and see the <a href="https://www.reddit.com/r/MachineLearning/comments/4ph8cq/variational_autoencoders_do_not_train_complex/">reddit discussion</a> also!).</p>
-<h3 id="helmholtz-machines">Helmholtz Machines</h3>
-<p>In the end I’d like to add a historical perspective. The idea of two networks, one “encoding” an observation <span class="math inline">\(x\)</span> to some latent representation (code) <span class="math inline">\(z\)</span>, and another “decoding” it back is definitely not new. In fact, the whole idea is a special case of the <a href="https://en.wikipedia.org/wiki/Helmholtz_machine">Helmholtz Machines</a> introduced by Geoffrey Hinton 20 years ago.</p>
-<p>Helmholtz machine can be thought of as a neural network of stochastic hidden layers. Namely, we now have <span class="math inline">\(M\)</span> stochastic hidden layers (latent variables) <span class="math inline">\(h_1, \dots, h_M\)</span> (with deterministic <span class="math inline">\(h_0 = x\)</span>) where the layer <span class="math inline">\(h_{m-1}\)</span> is stochastically produced by the layer <span class="math inline">\(h_{m}\)</span>, that is, it is samples from some distribution <span class="math inline">\(p(h_{m-1} \mid h_m)\)</span>, which as you might have guessed already is parametrized in the same way as in usual VAEs. Actually, VAEs is a special case of a Helmholtz machine with just one stochastic layer (but each stochastic layer contains a neural network of arbitrarily many deterministic layers inside of it).</p>
+$$</p>
+<p>Here the first term can be treated as expected reconstruction ($x$ from the code $z$) error, while the second one is just a regularizer.</p>
+<h3>Variational Autoencoder</h3>
+<p>One particular application of AEVB framework comes from using neural networks as the model $p(x \mid z, \Theta)$ (called <strong>generative network</strong>) and the approximation $q(z \mid x, \Lambda)$ (called <strong>inference network</strong> or <strong>recognition network</strong>). The model has no requirements, and $x$ can be discrete or continuous (or mixed). $z$, however, has to be continuous. Moreover, we need to be able to apply the reparametrization trick. Therefore in many practical applications $q(z \mid x, \Lambda)$ is set to be Gaussian distribution $q(z \mid \Lambda, x) = \mathcal{N}(z \mid \mu(x; \Lambda), \Sigma(x; \Lambda))$ where $\mu$ and $\Sigma$ are outputs of a neural network taking $x$ as input, and $\Lambda$ denotes a set of neural network's weights — the parameters we optimize the ELBO with respect to (the same applies to $\Theta$). In order to make the reparametrization trick practical, one would like to be able to compute $\Sigma^{1/2}$ quick. We don't want to actually compute this quantity directly as it'd be too computationally expensive. Instead you might want to predict $\Sigma^{1/2}$ by the neural network in the first place, or consider only diagonal covariance matrices (as it's done in the paper).</p>
+<p>In case of the Gaussian inference network $q(z \mid x, \Lambda)$ and a Gaussian prior $p(z \mid \Theta)$ we can compute KL-divergence $D_{KL}(q(z \mid \Lambda, x) \mid\mid p(z \mid \Theta))$ analytically, see the formula at <a href="http://stats.stackexchange.com/a/60699/62549">stats.stackexchange</a>. This slightly reduces the variance of the gradient estimator, though one can still train a VAE estimating KL-divergence using Monte Carlo, just like the reconstruction error.</p>
+<p>We optimize both generative and inference networks by gradient ascent. This joint optimization pushes both the approximation towards the model, and the model towards the approximation. As a result, the generative network is encouraged to learn latent representations $z$ that exhibit the same independence pattern as the inference network. For example, if the inference network is Gaussian and has diagonal covariance matrices, then the generative model will try to learn representations with independent components.</p>
+<p>VAEs have become popular because one can use it as a generative model. Essentially VAE is an easy to train autoencoder with a natural sampling procedure <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>: suppose you've trained the model, and now want to sample new samples similar to those you used in the training set. To do so you first sample $z$ from the prior $p(z)$, and then generate $x$ using the model $p(x \mid z, \Theta)$. Both operations are easy: the first one is sampling from some standard distribution (like Gaussian, for example), and the second one is just one feed-forward pass followed by sampling from another standard distribution (Bernoulli, for example, in case $x$ is a binary image).</p>
+<p>If you want to read more on Variational Auto-Encoders, I refer you to a great <a href="https://arxiv.org/abs/1606.05908">tutorial by Carl Doersch</a>. Also take a look at Dustin Tran's post <a href="http://dustintran.com/blog/variational-auto-encoders-do-not-train-complex-generative-models/">Variational auto-encoders do not train complex generative models</a> (and see the <a href="https://www.reddit.com/r/MachineLearning/comments/4ph8cq/variational_autoencoders_do_not_train_complex/">reddit discussion</a> also!).</p>
+<h3>Helmholtz Machines</h3>
+<p>In the end I'd like to add a historical perspective. The idea of two networks, one "encoding" an observation $x$ to some latent representation (code) $z$, and another "decoding" it back is definitely not new. In fact, the whole idea is a special case of the <a href="https://en.wikipedia.org/wiki/Helmholtz_machine">Helmholtz Machines</a> introduced by Geoffrey Hinton 20 years ago.</p>
+<p>Helmholtz machine can be thought of as a neural network of stochastic hidden layers. Namely, we now have $M$ stochastic hidden layers (latent variables) $h_1, \dots, h_M$ (with deterministic $h_0 = x$) where the layer $h_{m-1}$ is stochastically produced by the layer $h_{m}$, that is, it is samples from some distribution $p(h_{m-1} \mid h_m)$, which as you might have guessed already is parametrized in the same way as in usual VAEs. Actually, VAEs is a special case of a Helmholtz machine with just one stochastic layer (but each stochastic layer contains a neural network of arbitrarily many deterministic layers inside of it).</p>
 <div style="text-align: center">
-<p><img src="../files/Helmholtz-machine.png" style="width: 400px" /></p>
+<img src="/files/Helmholtz-machine.png" style="width: 400px" />
 </div>
 <p>This image shows an instance of a Helmholtz machine with 2 stochastic layers (blue cloudy nodes), and each stochastic layer having 2 deterministic hidden layers (white rectangles).</p>
 <p>The joint model distribution is</p>
-<p><span class="math display">\[
+<p>$$
 p(x, h_1, \dots, h_M \mid \Theta) = p(h_M \mid \Theta) \prod_{m=0}^{M-1} p(h_m \mid h_{m+1}, \Theta)
-\]</span></p>
+$$</p>
 <p>And the approximate posterior is the same, but in inverse order:</p>
-<p><span class="math display">\[
+<p>$$
 q(h_1, \dots, h_M \mid x, \Lambda) = \prod_{m=1}^{M} p(h_{m} \mid h_{m-1}, \Theta)
-\]</span></p>
-<p>The <span class="math inline">\(p(x, h_1, \dots, h_{M-1} \mid h_M)\)</span> distribution is usually called a <strong>generative network</strong> (or model) as it allows one to generate samples from latent representation(s). The approximate posterior <span class="math inline">\(q(h_1, \dots, h_M \mid x, \Lambda)\)</span> in this framework is called a <strong>recognition network</strong> (or model). Presumably, the name reflects the purpose of the network to recognize the hidden structure of observations.</p>
-<p>So, if the VAE is a special case of Helmholtz machines, what’s new then? The standard algorithm for learning Helmholtz machines, the <a href="https://en.wikipedia.org/wiki/Wake-sleep_algorithm">Wake-Sleep algorithm</a>, turns out to be optimizing a different objective. Thus, one of significant contributions of Kingma and Welling is application of the reparametrization trick to make optimization of the ELBO w.r.t. <span class="math inline">\(\Lambda\)</span> tractable.</p>
-<div class="footnotes">
-<hr />
+$$</p>
+<p>The $p(x, h_1, \dots, h_{M-1} \mid h_M)$ distribution is usually called a <strong>generative network</strong> (or model) as it allows one to generate samples from latent representation(s). The approximate posterior $q(h_1, \dots, h_M \mid x, \Lambda)$ in this framework is called a <strong>recognition network</strong> (or model). Presumably, the name reflects the purpose of the network to recognize the hidden structure of observations.</p>
+<p>So, if the VAE is a special case of Helmholtz machines, what's new then? The standard algorithm for learning Helmholtz machines, the <a href="https://en.wikipedia.org/wiki/Wake-sleep_algorithm">Wake-Sleep algorithm</a>, turns out to be optimizing a different objective. Thus, one of significant contributions of Kingma and Welling is application of the reparametrization trick to make optimization of the ELBO w.r.t. $\Lambda$ tractable.</p>
+<div class="footnote">
+<hr>
 <ol>
-<li id="fn1"><p>This is not true for other popular autoencoding architectures. Boltzman Machines are too hard to train properly, while tranditional autoencoders (contractive, denoising) are hard to sample from (special procedures involving MCMC are required).<a href="#fnref1">↩</a></p></li>
+<li id="fn:1">
+<p>This is not true for other popular autoencoding architectures. Boltzman Machines are too hard to train properly, while tranditional autoencoders (contractive, denoising) are hard to sample from (special procedures involving MCMC are required).&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
 </ol>
 </div>
 </section>
 
-<div class="tags-pane">Tagged as <a href="../tags/machine%20learning.html">machine learning</a>, <a href="../tags/deep%20learning.html">deep learning</a>, <a href="../tags/variational%20inference.html">variational inference</a>, <a href="../tags/modern%20variational%20inference%20series.html">modern variational inference series</a></div>
+<div class="tags-pane">Tagged as <a href="/tags/machine-learning.html">machine learning</a>, <a href="/tags/deep-learning.html">deep learning</a>, <a href="/tags/variational-inference.html">variational inference</a>, <a href="/tags/modern-variational-inference-series.html">modern variational inference series</a></div>
 </article>
 
 <section class="post-comments">
@@ -124,10 +128,9 @@ q(h_1, \dots, h_M \mid x, \Lambda) = \prod_{m=1}^{M} p(h_{m} \mid h_{m-1}, \Thet
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 </section>
-
     </section>
     <footer>
-        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+        Generated with Pelican 
     </footer>
 
 <script type="text/javascript">

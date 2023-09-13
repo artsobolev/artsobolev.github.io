@@ -1,72 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>ICML 2017 Summaries - B.log</title>
+  <title>ICML 2017 Summaries – B.log</title>
   <meta charset="utf-8" />
 
-  <meta name="twitter:card" content="summary" />
+  <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
-  <meta name="twitter:title" content="ICML 2017 Summaries" />
-  <meta name="twitter:description" content="Just like with NIPS last year, here’s a list of ICML’17 summaries (updated as I stumble upon new ones)
-" /> 
+  <meta property="og:title" content="ICML 2017 Summaries – B.log" />
+  <meta property="og:description" content="Just like with NIPS last year, here's a list of ICML'17 summaries (updated as I stumble upon new ones) Random ML&Datascience musing by Olga Liakhovich ICML and my notes on day 1 Brain endurance or Day 2 at ICML 2017 Day 3 at ICML 2017 — musical RNNs Day 4 …" />
 
-  <link rel="shortcut icon" href="../favicon.ico" />
+  <link rel="shortcut icon" href="/favicon.ico"/>
 
-  <link rel="stylesheet" type="text/css" href="../css/default.css" />
-  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/default.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/syntax.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:,b" />
-  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
-      MathJax.InputJax.TeX.Definitions.Add({
-          macros: {
-              E: ["Macro", "\\mathop{\\mathbb{E}}"]
-          }
-      });
-  });
+  <script type="text/javascript">
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        macros: {
+	  E: '\\mathop{\\mathbb{E}}'
+	}
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
   </script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <header>
       <hgroup>
-        <h1><a href="../">B.log</a></h1>
+        <h1><a href="/">B.log</a></h1>
         <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
         <menu>
-          <a href="../">Home</a>
-          <a href="../pages/about.html">About me</a>
+          <a href="/">Home</a>
+          <a href="/pages/about.html">About me</a>
           <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
         </menu>
     </nav>
     <section>
-        <article>
+<article>
 <header>
 	<h1>ICML 2017 Summaries</h1>
 	<time>August 14, 2017</time>
 </header>
 
 <section class="post-body">
-<p>Just like with <a href="../posts/2016-12-31-nips-2016-summaries.html">NIPS last year</a>, here’s a list of ICML’17 summaries (updated as I stumble upon new ones)</p>
+    <p>Just like with <a href="/posts/2016-12-31-nips-2016-summaries.html">NIPS last year</a>, here's a list of ICML'17 summaries (updated as I stumble upon new ones)</p>
 <!--more-->
+
 <ul>
-<li><a href="https://olgalitech.wordpress.com/tag/icml2017/">Random ML&amp;Datascience musing</a> by <a href="https://twitter.com/OlgaLiakhovich">Olga Liakhovich</a>
-<ul>
+<li><a href="https://olgalitech.wordpress.com/tag/icml2017/">Random ML&amp;Datascience musing</a> by <a href="https://twitter.com/OlgaLiakhovich">Olga Liakhovich</a><ul>
 <li><a href="https://olgalitech.wordpress.com/2017/08/07/icml-and-my-notes-on-day-1/">ICML and my notes on day 1</a></li>
 <li><a href="https://olgalitech.wordpress.com/2017/08/07/brain-endurance-or-day-2-at-icml-2017/">Brain endurance or Day 2 at ICML 2017</a></li>
 <li><a href="https://olgalitech.wordpress.com/2017/08/11/day-3-at-icml-2017-musical-rnns/">Day 3 at ICML 2017 — musical RNNs</a></li>
 <li><a href="https://olgalitech.wordpress.com/2017/08/11/day-4-at-icml-2017-more-adversarial-nns/">Day 4 at ICML 2017 — more Adversarial NNs</a></li>
 <li><a href="https://olgalitech.wordpress.com/2017/08/11/day-5-6-at-icml-all-done/">Day 5 &amp; 6 at ICML. All done.</a></li>
-</ul></li>
+</ul>
+</li>
 <li><a href="https://keunwoochoi.wordpress.com/2017/08/14/machine-learning-for-music-discovery-workshop-icml2017-sydney/">Machine learning for music discovery (workshop)</a> by <a href="https://twitter.com/keunwoochoi">Keunwoo Choi</a></li>
-<li><a href="https://gmarti.gitlab.io/ml/2017/08/11/ICML-2017-field-reports.html">Field reports from ICML 2017 in Sydney</a> by <a href="https://twitter.com/GautierMarti1">Gautier Marti’s Wander</a></li>
+<li><a href="https://gmarti.gitlab.io/ml/2017/08/11/ICML-2017-field-reports.html">Field reports from ICML 2017 in Sydney</a> by <a href="https://twitter.com/GautierMarti1">Gautier Marti's Wander</a></li>
 <li><a href="http://www.machinedlearnings.com/2017/08/icml-2017-thoughts.html">ICML 2017 Thoughts</a> by <a href="https://twitter.com/PaulMineiro">Paul Mineiro</a></li>
 <li><a href="http://mattdickenson.com/2017/08/17/icml-2017-recap/">ICML 2017 Recap</a> by <a href="https://twitter.com/mcdickenson">Matt Dickenson</a></li>
 <li><a href="https://www.bulletproof.net.au/international-conference-machine-learning-2017-part-one/">International Conference for Machine Learning 2017 – Part One</a> + <a href="https://www.bulletproof.net.au/international-conference-machine-learning-2017-part-two/">International Conference for Machine Learning 2017 – Part Two</a></li>
 </ul>
 </section>
 
-<div class="tags-pane">Tagged as <a href="../tags/machine%20learning.html">machine learning</a>, <a href="../tags/ICML.html">ICML</a>, <a href="../tags/conference.html">conference</a></div>
+<div class="tags-pane">Tagged as <a href="/tags/machine-learning.html">machine learning</a>, <a href="/tags/icml.html">ICML</a>, <a href="/tags/conference.html">conference</a></div>
 </article>
 
 <section class="post-comments">
@@ -85,10 +91,9 @@
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 </section>
-
     </section>
     <footer>
-        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+        Generated with Pelican 
     </footer>
 
 <script type="text/javascript">

@@ -1,88 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Exploiting Multiple Machines for Embarrassingly Parallel Applications - B.log</title>
+  <title>Exploiting Multiple Machines for Embarrassingly Parallel Applications – B.log</title>
   <meta charset="utf-8" />
 
-  <meta name="twitter:card" content="summary" />
+  <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
-  <meta name="twitter:title" content="Exploiting Multiple Machines for Embarrassingly Parallel Applications" />
-  <meta name="twitter:description" content="During work on my machine learning project I was needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would just slow down overall running time because of increased amount of context switches. Yet running 4 (=number of cores in my CPU) of them at a time (actually, 3 since other applications need CPU, too) should speed it up.
-Fortunately, I have an old laptop with 2 cores as well as an access to somewhat more modern machine with 4 cores. That results in 10 cores spread across 3 machines (all of`em have some version of GNU Linux installed). The question was how to exploit such a treasury.
-" /> 
+  <meta property="og:title" content="Exploiting Multiple Machines for Embarrassingly Parallel Applications – B.log" />
+  <meta property="og:description" content="During work on my machine learning project I was needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would..." />
 
-  <link rel="shortcut icon" href="../favicon.ico" />
+  <link rel="shortcut icon" href="/favicon.ico"/>
 
-  <link rel="stylesheet" type="text/css" href="../css/default.css" />
-  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/default.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/syntax.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:,b" />
-  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
-      MathJax.InputJax.TeX.Definitions.Add({
-          macros: {
-              E: ["Macro", "\\mathop{\\mathbb{E}}"]
-          }
-      });
-  });
+  <script type="text/javascript">
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        macros: {
+	  E: '\\mathop{\\mathbb{E}}'
+	}
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
   </script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <header>
       <hgroup>
-        <h1><a href="../">B.log</a></h1>
+        <h1><a href="/">B.log</a></h1>
         <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
         <menu>
-          <a href="../">Home</a>
-          <a href="../pages/about.html">About me</a>
+          <a href="/">Home</a>
+          <a href="/pages/about.html">About me</a>
           <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
         </menu>
     </nav>
     <section>
-        <article>
+<article>
 <header>
 	<h1>Exploiting Multiple Machines for Embarrassingly Parallel Applications</h1>
-	<time>August  1, 2014</time>
+	<time>August 1, 2014</time>
 </header>
 
 <section class="post-body">
-<p>During work on my machine learning project I was needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would just slow down overall running time because of increased amount of context switches. Yet running 4 (=number of cores in my CPU) of them at a time (actually, 3 since other applications need CPU, too) should speed it up.</p>
+    <p>During work on my machine learning project I was needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would just slow down overall running time because of increased amount of context switches. Yet running 4 (=number of cores in my CPU) of them at a time (actually, 3 since other applications need CPU, too) should speed it up.</p>
 <p>Fortunately, I have an old laptop with 2 cores as well as an access to somewhat more modern machine with 4 cores. That results in 10 cores spread across 3 machines (all of`em have some version of GNU Linux installed). The question was how to exploit such a treasury.</p>
 <!--more-->
+
 <p>And the answer is GNU Parallel with some additional bells and whistles. GNU Parallel allows one to execute some commands in parallel and even in a distributed way.</p>
 <p>The command was as following</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">parallel</span> -u --wd ... -S :,host1,host2 --trc <span class="dt">{}</span>.emb <span class="st">&quot;sh {}&quot;</span></code></pre></div>
-Here we have:
+<div class="highlight"><pre><span></span><code>parallel<span class="w"> </span>-u<span class="w"> </span>--wd<span class="w"> </span>...<span class="w"> </span>-S<span class="w"> </span>:,host1,host2<span class="w"> </span>--trc<span class="w"> </span><span class="o">{}</span>.emb<span class="w"> </span><span class="s2">&quot;sh {}&quot;</span>
+</code></pre></div>
+
+<p>Here we have:</p>
 <ul>
-<li>
-<strong>wd</strong> stands for working directory. Three-dots means <code>parallel</code>’s temporary folder
-</li>
-<li>
-<strong>S</strong> contains list of hosts with : being a localhost
-</li>
-<li>
-<strong>trc</strong> stands for “Transfer, Return, Cleanup” and means that we’d like to transfer an executable file to target host, return specified file and do a cleanup
-</li>
+<li>**wd** stands for working directory. Three-dots means <code>parallel</code>'s temporary folder</li>
+<li>**S** contains list of hosts with : being a localhost</li>
+<li>**trc** stands for "Transfer, Return, Cleanup" and means that we'd like to transfer an executable file to target host, return specified file and do a cleanup</li>
 </ul>
+
 <p><code>parallel</code> accepts list command arguments (file names) in standard input and executes a command (<code>sh</code> in my case) for each of them.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">ls</span> -1 jobs/* <span class="kw">|</span> <span class="ex">parallel</span> -u --wd ... -S :,host1,host2 --trc <span class="dt">{}</span>.emb <span class="st">&quot;sh {}&quot;</span></code></pre></div>
-<p>There’s a problem: we usually need more than one file to do usefull stuff. There are several solutions to that problem</p>
+<div class="highlight"><pre><span></span><code>ls<span class="w"> </span>-1<span class="w"> </span>jobs/*<span class="w"> </span><span class="p">|</span><span class="w"> </span>parallel<span class="w"> </span>-u<span class="w"> </span>--wd<span class="w"> </span>...<span class="w"> </span>-S<span class="w"> </span>:,host1,host2<span class="w"> </span>--trc<span class="w"> </span><span class="o">{}</span>.emb<span class="w"> </span><span class="s2">&quot;sh {}&quot;</span>
+</code></pre></div>
+
+<p>There's a problem: we usually need more than one file to do usefull stuff. There are several solutions to that problem</p>
 <ul>
-<li>
-<strong>Bring all files manually</strong><br /> It’s a solution, but somewhat tedious one: setting computing environment on a several machines is dull
+<li>**Bring all files manually**<br/>
+It's a solution, but somewhat tedious one: setting computing environment on a several machines is dull
 </li>
-<li>
-<strong>tar it and do all the stuff in a command</strong><br /> Looks better, but some shell kung-fu is required
+<li>**tar it and do all the stuff in a command**<br/>
+Looks better, but some shell kung-fu is required
 </li>
-<li>
-<strong>Use <a href="http://en.wikipedia.org/wiki/Shar">shar</a></strong><br /> Basically it’s a tar archive with some shell commands for (self-)extracting. I chose this way and glued in some my code.
+<li>**Use <a href="http://en.wikipedia.org/wiki/Shar">shar</a>**<br/>
+Basically it's a tar archive with some shell commands for (self-)extracting. I chose this way and glued in some my code.
 </li>
 </ul>
 </section>
 
-<div class="tags-pane">Tagged as <a href="../tags/gnu%20parallel.html">gnu parallel</a>, <a href="../tags/linux.html">linux</a></div>
+<div class="tags-pane">Tagged as <a href="/tags/gnu-parallel.html">gnu parallel</a>, <a href="/tags/linux.html">linux</a></div>
 </article>
 
 <section class="post-comments">
@@ -101,10 +105,9 @@ Here we have:
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 </section>
-
     </section>
     <footer>
-        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+        Generated with Pelican 
     </footer>
 
 <script type="text/javascript">

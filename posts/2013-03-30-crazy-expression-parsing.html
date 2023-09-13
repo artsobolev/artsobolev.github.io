@@ -1,66 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Crazy Expression Parsing - B.log</title>
+  <title>Crazy Expression Parsing – B.log</title>
   <meta charset="utf-8" />
 
-  <meta name="twitter:card" content="summary" />
+  <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
-  <meta name="twitter:title" content="Crazy Expression Parsing" />
-  <meta name="twitter:description" content="Suppose we have an expression like (5+5 * (x^x-5 | y &amp;&amp; 3)) and we’d like to get some computer-understandable representation of that expression, like:
-ADD Token[5] (MUL Token[5] (AND (BIT_OR (XOR Token[x] (SUB Token[x] Token[5])) Token[y]) Token[3])
-In case if you don’t know how to do that or are looking for the solutin right now, you should know that I’m not going to present a correct solution. This post is just a joke. You should use either a Shunting-yard algorithm or a recursive descent parser.
-So if you’re ready for madness… Let’s go! " /> 
+  <meta property="og:title" content="Crazy Expression Parsing – B.log" />
+  <meta property="og:description" content="Suppose we have an expression like (5+5 * (x^x-5 | y && 3)) and we'd like to get some computer-understandable representation of that expression, like: ADD Token[5] (MUL Token[5] (AND (BIT_OR (XOR Token[x] (SUB Token[x] Token[5])) Token[y]) Token[3])..." />
 
-  <link rel="shortcut icon" href="../favicon.ico" />
+  <link rel="shortcut icon" href="/favicon.ico"/>
 
-  <link rel="stylesheet" type="text/css" href="../css/default.css" />
-  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/default.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/syntax.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:,b" />
-  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
-      MathJax.InputJax.TeX.Definitions.Add({
-          macros: {
-              E: ["Macro", "\\mathop{\\mathbb{E}}"]
-          }
-      });
-  });
+  <script type="text/javascript">
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        macros: {
+	  E: '\\mathop{\\mathbb{E}}'
+	}
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
   </script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <header>
       <hgroup>
-        <h1><a href="../">B.log</a></h1>
+        <h1><a href="/">B.log</a></h1>
         <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
         <menu>
-          <a href="../">Home</a>
-          <a href="../pages/about.html">About me</a>
+          <a href="/">Home</a>
+          <a href="/pages/about.html">About me</a>
           <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
         </menu>
     </nav>
     <section>
-        <article>
+<article>
 <header>
 	<h1>Crazy Expression Parsing</h1>
 	<time>March 30, 2013</time>
 </header>
 
 <section class="post-body">
-<p>Suppose we have an expression like <code>(5+5 * (x^x-5 | y &amp;&amp; 3))</code> and we’d like to get some computer-understandable representation of that expression, like:</p>
+    <p>Suppose we have an expression like <code>(5+5 * (x^x-5 | y &amp;&amp; 3))</code> and we'd like to get some computer-understandable representation of that expression, like:</p>
 <p><code>ADD Token[5] (MUL Token[5] (AND (BIT_OR (XOR Token[x] (SUB Token[x] Token[5])) Token[y]) Token[3])</code></p>
-<p>In case if you don’t know how to do that or are looking for the solutin right now, you should know that I’m not going to present a correct solution. This post is just a joke. You should use either a <a href="http://en.wikipedia.org/wiki/Shunting-yard_algorithm" title="Shunting-yard algorithm — Wikipedia">Shunting-yard algorithm</a> or a <a href="http://en.wikipedia.org/wiki/Recursive_descent_parser">recursive descent parser</a>.</p>
-<p>So if you’re ready for madness… Let’s go! <!--more--></p>
-<p>Let’s take <a href="http://en.wikipedia.org/wiki/Don%27t_repeat_yourself">Don’t repeat yourself</a> principle as a justification. Moreover, let’s take it to extreme “Don’t repeat”. Indeed, why do we need to repeat what compiler’s developers already did?</p>
-Here we go
+<p>In case if you don't know how to do that or are looking for the solutin right now, you should know that I'm not going to present a correct solution. This post is just a joke. You should use either a <a href="http://en.wikipedia.org/wiki/Shunting-yard_algorithm" title="Shunting-yard algorithm — Wikipedia">Shunting-yard algorithm</a> or a <a href="http://en.wikipedia.org/wiki/Recursive_descent_parser">recursive descent parser</a>.</p>
+<p>So if you're ready for madness... Let's go!</p>
+<!--more-->
+
+<p>Let's take <a href="http://en.wikipedia.org/wiki/Don%27t_repeat_yourself">Don't repeat yourself</a> principle as a justification. Moreover, let's take it to extreme "Don't repeat". Indeed, why do we need to repeat what compiler's developers already did?</p>
+<p>Here we go</p>
 <script src="https://gist.github.com/artsobolev/5273716.js"></script>
-<p>In case you’re wondering what the heck is going on: all constants are converted to instances of <code>Token</code> class, for which I overloaded all the operators. Overloading is done in a way to preserve structure of an expression. The only thing we have to do then is to extract that information. In case you’re not familiar with C++, I recommend you to read something about operator overloading.</p>
-<p>As you can see, g++ and python are required for that “parser”. Unfortunatelly, priority of a bitwise xor is too low to serve as a power operator.</p>
+
+<p>In case you're wondering what the heck is going on: all constants are converted to instances of <code>Token</code> class, for which I overloaded all the operators. Overloading is done in a way to preserve structure of an expression. The only thing we have to do then is to extract that information.
+In case you're not familiar with C++, I recommend you to read something about operator overloading.</p>
+<p>As you can see, g++ and python are required for that "parser". Unfortunatelly, priority of a bitwise xor is too low to serve as a power operator.</p>
 </section>
 
-<div class="tags-pane">Tagged as <a href="../tags/python.html">python</a>, <a href="../tags/madness.html">madness</a></div>
+<div class="tags-pane">Tagged as <a href="/tags/python.html">python</a>, <a href="/tags/madness.html">madness</a></div>
 </article>
 
 <section class="post-comments">
@@ -79,10 +86,9 @@ Here we go
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 </section>
-
     </section>
     <footer>
-        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+        Generated with Pelican 
     </footer>
 
 <script type="text/javascript">

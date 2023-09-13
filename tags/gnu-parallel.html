@@ -45,15 +45,16 @@
         </menu>
     </nav>
     <section>
-<h2 class="tags-pane">Articles tagged <a href="/tags/gan.html">gan</a></h2>
+<h2 class="tags-pane">Articles tagged <a href="/tags/gnu-parallel.html">gnu parallel</a></h2>
 
     <article>
         <header>
-            <h3><a href="/posts/2019-12-01-a-simpler-derivation-of-f-gans.html">A simpler derivation of f-GANs</a></h3>
-            <time>December 1, 2019</time>
+            <h3><a href="/posts/2014-08-01-gnu-parallel.html">Exploiting Multiple Machines for Embarrassingly Parallel Applications</a></h3>
+            <time>August 1, 2014</time>
         </header>
 
-        <section><p>I have been looking at $f$-GANs derivation doing some of my research, and found an easier way to derive its lower bound, without invoking convex conjugate functions.</p>
+        <section><p>During work on my machine learning project I was needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would just slow down overall running time because of increased amount of context switches. Yet running 4 (=number of cores in my CPU) of them at a time (actually, 3 since other applications need CPU, too) should speed it up.</p>
+<p>Fortunately, I have an old laptop with 2 cores as well as an access to somewhat more modern machine with 4 cores. That results in 10 cores spread across 3 machines (all of`em have some version of GNU Linux installed). The question was how to exploit such a treasury.</p>
 </section>
     </article>
 

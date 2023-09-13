@@ -1,97 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Posts tagged math - B.log</title>
+  <title>Index – B.log</title>
   <meta charset="utf-8" />
 
-  <meta name="twitter:card" content="summary" />
+  <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
-  <meta name="twitter:title" content="Posts tagged math" />
-  <meta name="twitter:description" content /> 
+  <meta property="og:title" content="Index – B.log" />
+  <meta property="og:description" content="" />
 
-  <link rel="shortcut icon" href="../favicon.ico" />
+  <link rel="shortcut icon" href="/favicon.ico"/>
 
-  <link rel="stylesheet" type="text/css" href="../css/default.css" />
-  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/default.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/syntax.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:,b" />
-  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
-      MathJax.InputJax.TeX.Definitions.Add({
-          macros: {
-              E: ["Macro", "\\mathop{\\mathbb{E}}"]
-          }
-      });
-  });
+  <script type="text/javascript">
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        macros: {
+	  E: '\\mathop{\\mathbb{E}}'
+	}
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
   </script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <header>
       <hgroup>
-        <h1><a href="../">B.log</a></h1>
+        <h1><a href="/">B.log</a></h1>
         <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
         <menu>
-          <a href="../">Home</a>
-          <a href="../pages/about.html">About me</a>
+          <a href="/">Home</a>
+          <a href="/pages/about.html">About me</a>
           <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
         </menu>
     </nav>
     <section>
-        <article>
-	<header>
-		<h3><a href="../posts/2021-05-02-reciprocal-convexity-to-reverse-the-jensen-inequality.html">Reciprocal Convexity to reverse the Jensen Inequality</a></h3>
-		<time>May  2, 2021</time>
-	</header>
+<h2 class="tags-pane">Articles tagged <a href="/tags/math.html">math</a></h2>
 
-	<section>
-		<p><a href="https://en.wikipedia.org/wiki/Jensen%27s_inequality">Jensen’s inequality</a> is a powerful tool often used in mathematical derivations and analyses. It states that for a convex function <span class="math inline">\(f(x)\)</span> and an arbitrary random variable <span class="math inline">\(X\)</span> we have the following <em>upper</em> bound: <span class="math display">\[
+    <article>
+        <header>
+            <h3><a href="/posts/2021-05-02-reciprocal-convexity-to-reverse-the-jensen-inequality.html">Reciprocal Convexity to reverse the Jensen Inequality</a></h3>
+            <time>May 2, 2021</time>
+        </header>
+
+        <section><p><a href="https://en.wikipedia.org/wiki/Jensen%27s_inequality">Jensen's inequality</a> is a powerful tool often used in mathematical derivations and analyses. It states that for a convex function $f(x)$ and an arbitrary random variable $X$ we have the following <em>upper</em> bound:
+$$
 f\left(\E X\right)
 \le
 \E f\left(X\right)
-\]</span></p>
-<p>However, oftentimes we want the inequality to work in the other direction, to give a <em>lower</em> bound. In this post I’ll outline one possible approach to this.</p>
+$$</p>
+<p>However, oftentimes we want the inequality to work in the other direction, to give a <em>lower</em> bound. In this post I'll outline one possible approach to this.</p>
+</section>
+    </article>
 
-	</section>
-</article>
+    <hr/>
 
-<hr />
-<article>
-	<header>
-		<h3><a href="../posts/2017-01-29-matrix-and-vector-calculus-via-differentials.html">Matrix and Vector Calculus via Differentials</a></h3>
-		<time>January 29, 2017</time>
-	</header>
+    <article>
+        <header>
+            <h3><a href="/posts/2017-01-29-matrix-and-vector-calculus-via-differentials.html">Matrix and Vector Calculus via Differentials</a></h3>
+            <time>January 29, 2017</time>
+        </header>
 
-	<section>
-		<p>Many tasks of machine learning can be posed as optimization problems. One comes up with a parametric model, defines a loss function, and then minimizes it in order to learn optimal parameters. One very powerful tool of optimization theory is the use of smooth (differentiable) functions: those that can be locally approximated with a linear functions. We all surely know how to differentiate a function, but often it’s more convenient to perform all the derivations in matrix form, since many computational packages like numpy or matlab are optimized for vectorized expressions.</p>
+        <section><p>Many tasks of machine learning can be posed as optimization problems. One comes up with a parametric model, defines a loss function, and then minimizes it in order to learn optimal parameters. One very powerful tool of optimization theory is the use of smooth (differentiable) functions: those that can be locally approximated with a linear functions.
+We all surely know how to differentiate a function, but often it's more convenient to perform all the derivations in matrix form, since many computational packages like numpy or matlab are optimized for vectorized expressions.</p>
 <p>In this post I want to outline the general idea of how one can calculate derivatives in vector and matrix spaces (but the idea is general enough to be applied to other algebraic structures).</p>
+</section>
+    </article>
 
-	</section>
-</article>
+    <hr/>
 
-<hr />
-<article>
-	<header>
-		<h3><a href="../posts/2013-02-10-std-vector-growth.html">Resizing Policy of std::vector</a></h3>
-		<time>February 10, 2013</time>
-	</header>
+    <article>
+        <header>
+            <h3><a href="/posts/2013-02-10-std-vector-growth.html">Resizing Policy of std::vector</a></h3>
+            <time>February 10, 2013</time>
+        </header>
 
-	<section>
-		Sometime ago when Facebook opensourced their <a title="Folly is an open-source C++ library developed and used at Facebook" href="https://github.com/facebook/folly">Folly library</a> I was reading their docs and found <a title="folly/FBvector.h documentation" href="https://github.com/facebook/folly/blob/master/folly/docs/FBVector.md">something interesting</a>. In section “Memory Handling” they state
-<blockquote>
-In fact it can be mathematically proven that a growth factor of 2 is rigorously the worst possible because it never allows the vector to reuse any of its previously-allocated memory
-</blockquote>
-<p>I haven’t got it first time. Recently I recalled that article and decided to deal with it. So after reading and googling for a while I finally understood the idea, so I’d like to say a few words about it.</p>
+        <section><p>Sometime ago when Facebook opensourced their <a title="Folly is an open-source C++ library developed and used at Facebook" href="https://github.com/facebook/folly">Folly library</a> I was reading their docs and found <a title="folly/FBvector.h documentation" href="https://github.com/facebook/folly/blob/master/folly/docs/FBVector.md">something interesting</a>. In section "Memory Handling" they state <blockquote>In fact it can be mathematically proven that a growth factor of 2 is rigorously the worst possible because it never allows the vector to reuse any of its previously-allocated memory</blockquote>I haven't got it first time. Recently I recalled that article and decided to deal with it. So after reading and googling for a while I finally understood the idea, so I'd like to say a few words about it.</p>
+</section>
+    </article>
 
-	</section>
-</article>
+    <hr/>
 
-<hr />
+<!-- /#posts-list -->
 
     </section>
     <footer>
-        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+        Generated with Pelican 
     </footer>
 
 <script type="text/javascript">

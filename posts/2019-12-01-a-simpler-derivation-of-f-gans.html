@@ -1,70 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>A simpler derivation of f-GANs - B.log</title>
+  <title>A simpler derivation of f-GANs – B.log</title>
   <meta charset="utf-8" />
 
-  <meta name="twitter:card" content="summary" />
+  <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
-  <meta name="twitter:title" content="A simpler derivation of f-GANs" />
-  <meta name="twitter:description" content="I have been looking at \(f\)-GANs derivation doing some of my research, and found an easier way to derive its lower bound, without invoking convex conjugate functions.
-" /> 
+  <meta property="og:title" content="A simpler derivation of f-GANs – B.log" />
+  <meta property="og:description" content="I have been looking at $f$-GANs derivation doing some of my research, and found an easier way to derive its lower bound, without invoking convex conjugate functions. $f$-GANs are a generalization of standard GANs to arbitrary $f$-divergence. Given a..." />
 
-  <link rel="shortcut icon" href="../favicon.ico" />
+  <link rel="shortcut icon" href="/favicon.ico"/>
 
-  <link rel="stylesheet" type="text/css" href="../css/default.css" />
-  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/default.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/syntax.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:,b" />
-  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
-      MathJax.InputJax.TeX.Definitions.Add({
-          macros: {
-              E: ["Macro", "\\mathop{\\mathbb{E}}"]
-          }
-      });
-  });
+  <script type="text/javascript">
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        macros: {
+	  E: '\\mathop{\\mathbb{E}}'
+	}
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
   </script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <header>
       <hgroup>
-        <h1><a href="../">B.log</a></h1>
+        <h1><a href="/">B.log</a></h1>
         <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
         <menu>
-          <a href="../">Home</a>
-          <a href="../pages/about.html">About me</a>
+          <a href="/">Home</a>
+          <a href="/pages/about.html">About me</a>
           <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
         </menu>
     </nav>
     <section>
-        <article>
+<article>
 <header>
 	<h1>A simpler derivation of f-GANs</h1>
-	<time>December  1, 2019</time>
+	<time>December 1, 2019</time>
 </header>
 
 <section class="post-body">
-<p>I have been looking at <span class="math inline">\(f\)</span>-GANs derivation doing some of my research, and found an easier way to derive its lower bound, without invoking convex conjugate functions.</p>
+    <p>I have been looking at $f$-GANs derivation doing some of my research, and found an easier way to derive its lower bound, without invoking convex conjugate functions.</p>
 <!--more-->
-<p><a href="https://arxiv.org/abs/1606.00709"><span class="math inline">\(f\)</span>-GANs</a> are a generalization of standard GANs to arbitrary <span class="math inline">\(f\)</span>-divergence. Given a convex function <span class="math inline">\(f\)</span>, <a href="https://en.wikipedia.org/wiki/F-divergence"><span class="math inline">\(f\)</span>-divergence</a>, in turn, can be used to measure “difference” between the data distribution <span class="math inline">\(p_\text{data}(x)\)</span> and our model <span class="math inline">\(q(x)\)</span>:</p>
-<p><span class="math display">\[
+
+<p><a href="https://arxiv.org/abs/1606.00709">$f$-GANs</a> are a generalization of standard GANs to arbitrary $f$-divergence. Given a convex function $f$, <a href="https://en.wikipedia.org/wiki/F-divergence">$f$-divergence</a>, in turn, can be used to measure "difference" between the data distribution $p_\text{data}(x)$ and our model $q(x)$:</p>
+<p>$$
 D_f(p_\text{data}(x) \mid\mid q(x)) = \E_{q(x)} f \left( \frac{p_\text{data}(x)}{q(x)} \right)
-\]</span></p>
-<p>Of course, we don’t know the data-generating distribution <span class="math inline">\(p_\text{data}(x)\)</span>. Moreover, in a typical GAN setting <span class="math inline">\(q(x)\)</span> is an implicit model, and thus its density is not known either <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>. Thus, to make things tractable GANs employ tractable sample-based lower bounds <a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>.</p>
-<h2 id="simple-derivation">Simple Derivation</h2>
-<p>Our derivation is based on the following simple inequality, a very well-known fact for convex functions<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a>, namely that a convex function is always greater than its tangent or is equal to at the point of tangency (denoted <span class="math inline">\(r(x)\)</span>):</p>
-<p><span class="math display">\[
+$$</p>
+<p>Of course, we don't know the data-generating distribution $p_\text{data}(x)$. Moreover, in a typical GAN setting $q(x)$ is an implicit model, and thus its density is not known either <sup id="fnref:implicit-density"><a class="footnote-ref" href="#fn:implicit-density">1</a></sup>. Thus, to make things tractable GANs employ tractable sample-based lower bounds <sup id="fnref:upper-bounds-anyone"><a class="footnote-ref" href="#fn:upper-bounds-anyone">2</a></sup>.</p>
+<h2>Simple Derivation</h2>
+<p>Our derivation is based on the following simple inequality, a very well-known fact for convex functions<sup id="fnref:f-differentiability"><a class="footnote-ref" href="#fn:f-differentiability">3</a></sup>, namely that a convex function is always greater  than its tangent or is equal to at the point of tangency (denoted $r(x)$):</p>
+<p>$$
 f\left( \frac{p_\text{data}(x)}{q(x)} \right)
 \ge
 f\left( r(x) \right)
 +
 f'\left( r(x) \right) \left( \frac{p_\text{data}(x)}{q(x)} - r(x) \right)
-\]</span></p>
-<p>For any non-negative function <span class="math inline">\(r(x)\)</span>. Now we take the expected value</p>
-<p><span class="math display">\[
+$$</p>
+<p>For any non-negative function $r(x)$. Now we take the expected value</p>
+<p>$$
 \begin{align*}
 D_f(p_\text{data}(x) \mid\mid q(x))
 &amp;\ge
@@ -81,60 +87,72 @@ f\left( r(x) \right)
 \E_{p_\text{data}(x)} f'\left( r(x) \right) - \E_{q(x)} f'\left( r(x) \right) r(x)
 \tag{1}
 \end{align*}
-\]</span></p>
+$$</p>
 <p>This bound has several nice properties:</p>
-<ol style="list-style-type: decimal">
+<ol>
 <li>It does not require knowing densities, only having samples.</li>
-<li>By construction, it’s a lower bound for all <span class="math inline">\(r(x)\)</span>.</li>
-<li>Plugging <span class="math inline">\(r^*(x) = \frac{p_\text{data}(x)}{q(x)}\)</span> recovers the <span class="math inline">\(f\)</span>-divergence.</li>
+<li>By construction, it's a lower bound for all $r(x)$.</li>
+<li>Plugging $r^*(x) = \frac{p_\text{data}(x)}{q(x)}$ recovers the $f$-divergence.</li>
 </ol>
-<p>However, this formula looks different from the one in the <span class="math inline">\(f\)</span>-GANs paper. Are they related? We’ll now show they’re exactly the same.</p>
-<h2 id="f-gans-derivation"><span class="math inline">\(f\)</span>-GANs Derivation</h2>
-<p>The original derivation, which probably should be attributed to <a href="http://dept.stat.lsa.umich.edu/~xuanlong/Papers/Nguyen-Wainwright-Jordan-10.pdf">“Estimating divergence functionals and the likelihood ratio by convex risk minimization” by XuanLong Nguyen, Martin J. Wainwright, and Michael I. Jordan (2010)</a> is based on the <a href="https://en.wikipedia.org/wiki/Convex_conjugate">convex conjugate</a> concept. The convex conjugate <span class="math inline">\(f^*\)</span> for a function <span class="math inline">\(f\)</span> is <span class="math display">\[
+<p>However, this formula looks different from the one in the $f$-GANs paper. Are they related? We'll now show they're exactly the same.</p>
+<h2>$f$-GANs Derivation</h2>
+<p>The original derivation, which probably should be attributed to <a href="http://dept.stat.lsa.umich.edu/~xuanlong/Papers/Nguyen-Wainwright-Jordan-10.pdf">"Estimating divergence functionals and the likelihood ratio by convex risk minimization" by XuanLong Nguyen, Martin J. Wainwright, and Michael I. Jordan (2010)</a> is based on the <a href="https://en.wikipedia.org/wiki/Convex_conjugate">convex conjugate</a> concept. The convex conjugate $f^*$ for a function $f$ is
+$$
 f^*(t) = \sup_{u \in \text{dom}(f)} \left[ u t - f(u) \right]
-\]</span></p>
-<p>Nguen et al. have shown the following variational characterization of the <span class="math inline">\(f\)</span>-divergence <a href="#fn4" class="footnoteRef" id="fnref4"><sup>4</sup></a>: <span class="math display">\[
+$$</p>
+<p>Nguen et al. have shown the following variational characterization of the $f$-divergence <sup id="fnref:different-convention"><a class="footnote-ref" href="#fn:different-convention">4</a></sup>:
+$$
 D_f(p(x) \mid\mid q(x)) = \sup_{T(x)} \left[ \E_{p(x)} T(x) - \E_{q(x)} f^*(T(x)) \right]
-\]</span> Where <span class="math inline">\(f^*(t)\)</span> is the aforementioned convex conjugate for <span class="math inline">\(f(t)\)</span>, and the supremum is taken over all functions. However, we’re safe to restrict the range of <span class="math inline">\(T(x)\)</span> to those values where <span class="math inline">\(f^*\)</span> is finite, that is, the set <span class="math inline">\(\mathcal{V} = \{t \in \mathbb{R} \mid f^*(t) &lt; \infty \}\)</span>. Now this form is already amendable to practical applications, just make <span class="math inline">\(T(x)\)</span> a neural network whose activation respects <span class="math inline">\(\mathcal{V}\)</span> and maximize the lower bound w.r.t. its parameters. The question then is how to construct this activation.</p>
-<p>Skipping the more detailed analysis, we note that the optimal <span class="math inline">\(T(x)\)</span> is known to be <span class="math display">\[T^*(x) = f'\left( \frac{p(x)}{q(x)} \right)\]</span> Since we’re only interested in approximating the optimal value, we might as well consider the following parametrization for <span class="math inline">\(T(x)\)</span> (using a non-negative function <span class="math inline">\(r(x)\)</span>): <span class="math display">\[
+$$ Where $f^*(t)$ is the aforementioned convex conjugate for $f(t)$, and the supremum is taken over all functions. However, we're safe to restrict the range of $T(x)$ to those values where $f^*$ is finite, that is, the set $\mathcal{V} = \{t \in \mathbb{R} \mid f^*(t) &lt; \infty \}$. Now this form is already amendable to practical applications, just make $T(x)$ a neural network whose activation respects $\mathcal{V}$ and maximize the lower bound w.r.t. its parameters. The question then is how
+to construct this activation.</p>
+<p>Skipping the more detailed analysis, we note that the optimal $T(x)$ is known to be $$T^*(x) = f'\left( \frac{p(x)}{q(x)} \right)$$ Since we're only interested in approximating the optimal value, we might as well consider the following parametrization for $T(x)$ (using a non-negative function $r(x)$):
+$$
 T(x) = f'(r(x))
-\]</span> Which gives us the following objective</p>
-<p><span class="math display">\[
+$$ Which gives us the following objective</p>
+<p>$$
 D_f(p(x) \mid\mid q(x)) = \sup_{r(x)} \left[ \E_{p(x)} f'(r(x)) - \E_{q(x)} f^*(f'(r(x))) \right]
 \tag{2}
-\]</span></p>
-<p>Finally, we use <a href="https://math.stackexchange.com/a/1428011/463191">an important property of convex conjugate functions</a>: <span class="math display">\[
-\begin{align*}
-f^*(f'(r(x)))
-&amp;= \sup_u \left[ u f'(r(x)) - f(u) \right] \\
-&amp;= \sup_u \left[ u f'(r(x)) - r(x) f'(r(x)) - f(u) \right] + r(x) f'(r(x)) \\
-&amp;= \sup_u \left[ \underbrace{f(r(x)) + f'(r(x)) (u  - r(x)) - f(u)}_\text{$\le 0$ due to convexity of $f$}  \right] + r(x) f'(r(x)) - f(r(x)) \\
-&amp;= r(x) f'(r(x)) - f(r(x)) \\
+$$</p>
+<p>Finally, we use <a href="https://math.stackexchange.com/a/1428011/463191">an important property of convex conjugate functions</a>:
+$klzzwxh:0042\le 0$ due to convexity of $f$}  \right] + r(x) f'(r(x)) - f(r(x)) \
+&amp;= r(x) f'(r(x)) - f(r(x)) \
 \end{align*}
-\]</span> Where in the last line we’ve used the fact that for a convex <span class="math inline">\(f(t)\)</span> its tangent at any point is always a lower bound, and the surpremum of 0 is achieved for <span class="math inline">\(u = r(x)\)</span>.</p>
-<p>Now we plug this equivalent formula into the objective and obtain <span class="math display">\[
+$klzzwxh:0045f(t)$ its tangent at any point is always a lower bound, and the surpremum of 0 is achieved for $u = r(x)$.</p>
+<p>Now we plug this equivalent formula into the objective and obtain
+$$
 \begin{align*}
 D_f(p(x) \mid\mid q(x))
 &amp; = \sup_{r(x)} \left[ \mathbb{E}_{p(x)} f'(r(x)) - \mathbb{E}_{q(x)} \left( r(x) f'(r(x)) - f(r(x)) \right) \right] \\
 &amp; = \sup_{r(x)} \left[ \mathbb{E}_{q(x)} f(r(x)) + \mathbb{E}_{p(x)} f'(r(x)) - \mathbb{E}_{q(x)} r(x) f'(r(x)) \right]
 \end{align*}
-\]</span></p>
-<p>Which <strong>exactly</strong> recovers the formula (1). Moreover, the conjugate identity holds for all realizations of random variables involved, so not only the bounds (1) and (2) are the same, but their stochastic estimates are too<a href="#fn5" class="footnoteRef" id="fnref5"><sup>5</sup></a>.</p>
-<h2 id="conclusion">Conclusion</h2>
-<p>The presented derivation and objective form is interesting for several reasons. First, by design the optimal “discriminator” <span class="math inline">\(r^*(x) = \frac{p_\text{data}(x)}{q(x)}\)</span> is independent of the particular <span class="math inline">\(f\)</span>-divergence used. Second, thinking of <span class="math inline">\(r(x)\)</span> as of importance weights approximation gives an intuitive understanding of different terms in the objective (1): the first term is <span class="math inline">\(f\)</span>-divergence approximation that uses learned density ratio <span class="math inline">\(r(x)\)</span> instead of the actual density ratio. The rest two terms balance the first one to ensure the lower bound guarantee. In particular, the last term uses <span class="math inline">\(r(x)\)</span> as an importance weight to “approximate” the second one so that they cancel out when the <span class="math inline">\(r(x)\)</span> is optimal. The last, but not least, the presented derivation is <em>simpler</em>.</p>
-<div class="footnotes">
-<hr />
+$$</p>
+<p>Which <strong>exactly</strong> recovers the formula (1). Moreover, the conjugate identity holds for all realizations of random variables involved, so not only the bounds (1) and (2) are the same, but their stochastic estimates are too<sup id="fnref:samples-remark"><a class="footnote-ref" href="#fn:samples-remark">5</a></sup>.</p>
+<h2>Conclusion</h2>
+<p>The presented derivation and objective form is interesting for several reasons. First, by design the optimal "discriminator" $r^*(x) = \frac{p_\text{data}(x)}{q(x)}$ is independent of the particular $f$-divergence used. Second, thinking of $r(x)$ as of importance weights approximation gives an intuitive understanding of different terms in the objective (1): the first term is $f$-divergence approximation that uses learned density ratio $r(x)$ instead of the actual density ratio. The rest
+two terms balance the first one to ensure the lower bound guarantee. In particular, the last term uses $r(x)$ as an importance weight to "approximate" the second one so that they cancel out when the $r(x)$ is optimal. The last, but not least, the presented derivation is <em>simpler</em>.</p>
+<div class="footnote">
+<hr>
 <ol>
-<li id="fn1"><p>Actually, most of the time it does not exist at all. But that’s a story for another time.<a href="#fnref1">↩</a></p></li>
-<li id="fn2"><p>Although, a lower bound on the loss is not something you’d like to minimize, this is how things are done in the GAN realm.<a href="#fnref2">↩</a></p></li>
-<li id="fn3"><p>We assume <span class="math inline">\(f\)</span> is differentiable here, but if it’s not, the statement still holds with <span class="math inline">\(f'\)</span> being replaced with a subgradient.<a href="#fnref3">↩</a></p></li>
-<li id="fn4"><p>Nguen et al. use a bit different convention for <span class="math inline">\(f\)</span>-divergences, namely <span class="math display">\[D_f(p(x) \mid\mid q(x)) = \E_{p(x)} f\left(\frac{q(x)}{p(x)}\right)\]</span><a href="#fnref4">↩</a></p></li>
-<li id="fn5"><p>As long as you use the same samples to estimate different expectations over the distribution <span class="math inline">\(q(x)\)</span>.<a href="#fnref5">↩</a></p></li>
+<li id="fn:implicit-density">
+<p>Actually, most of the time it does not exist at all. But that's a story for another time.&#160;<a class="footnote-backref" href="#fnref:implicit-density" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:upper-bounds-anyone">
+<p>Although, a lower bound on the loss is not something you'd like to minimize, this is how things are done in the GAN realm.&#160;<a class="footnote-backref" href="#fnref:upper-bounds-anyone" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:f-differentiability">
+<p>We assume $f$ is differentiable here, but if it's not, the statement still holds with $f'$ being replaced with a subgradient.&#160;<a class="footnote-backref" href="#fnref:f-differentiability" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:different-convention">
+<p>Nguen et al. use a bit different convention for $f$-divergences, namely $$D_f(p(x) \mid\mid q(x)) = \E_{p(x)} f\left(\frac{q(x)}{p(x)}\right)$$&#160;<a class="footnote-backref" href="#fnref:different-convention" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:samples-remark">
+<p>As long as you use the same samples to estimate different expectations over the distribution $q(x)$.&#160;<a class="footnote-backref" href="#fnref:samples-remark" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
 </ol>
 </div>
 </section>
 
-<div class="tags-pane">Tagged as <a href="../tags/machine%20learning.html">machine learning</a>, <a href="../tags/gan.html">gan</a></div>
+<div class="tags-pane">Tagged as <a href="/tags/machine-learning.html">machine learning</a>, <a href="/tags/gan.html">gan</a></div>
 </article>
 
 <section class="post-comments">
@@ -153,10 +171,9 @@ D_f(p(x) \mid\mid q(x))
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 </section>
-
     </section>
     <footer>
-        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+        Generated with Pelican 
     </footer>
 
 <script type="text/javascript">

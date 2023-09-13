@@ -45,7 +45,7 @@
         </menu>
     </nav>
     <section>
-<h2 class="tags-pane">Articles tagged <a href="/tags/reinforce.html">REINFORCE</a></h2>
+<h2 class="tags-pane">Articles tagged <a href="/tags/machine-learning.html">machine learning</a></h2>
 
     <article>
         <header>
@@ -54,6 +54,79 @@
         </header>
 
         <section><p>Deep RL is hot these days. It's one of the most popular topics in the submissions at NeurIPS / ICLR / ICML and other ML conferences. And while the definition of RL is pretty general, in this note I'd argue that the famous REINFORCE algorithm <em>alone</em> is not enough to label your method as a Reinforcement Learning one.</p>
+</section>
+    </article>
+
+    <hr/>
+
+    <article>
+        <header>
+            <h3><a href="/posts/2019-12-01-a-simpler-derivation-of-f-gans.html">A simpler derivation of f-GANs</a></h3>
+            <time>December 1, 2019</time>
+        </header>
+
+        <section><p>I have been looking at $f$-GANs derivation doing some of my research, and found an easier way to derive its lower bound, without invoking convex conjugate functions.</p>
+</section>
+    </article>
+
+    <hr/>
+
+    <article>
+        <header>
+            <h3><a href="/posts/2019-09-15-thoughts-on-mutual-information-alternative-dependency-measures.html">Thoughts on Mutual Information: Alternative Dependency Measures</a></h3>
+            <time>September 15, 2019</time>
+        </header>
+
+        <section><p>This posts finishes the discussion started in the <a href="/posts/2019-08-10-thoughts-on-mutual-information-more-estimators.html">Thoughts on Mutual Information: More Estimators</a> with a consideration of alternatives to the Mutual Information.</p>
+</section>
+    </article>
+
+    <hr/>
+
+    <article>
+        <header>
+            <h3><a href="/posts/2019-08-14-thoughts-on-mutual-information-formal-limitations.html">Thoughts on Mutual Information: Formal Limitations</a></h3>
+            <time>August 14, 2019</time>
+        </header>
+
+        <section><p>This posts continues the discussion started in the <a href="/posts/2019-08-10-thoughts-on-mutual-information-more-estimators.html">Thoughts on Mutual Information: More Estimators</a>. This time we'll focus on drawbacks and limitations of these bounds.</p>
+</section>
+    </article>
+
+    <hr/>
+
+    <article>
+        <header>
+            <h3><a href="/posts/2019-08-10-thoughts-on-mutual-information-more-estimators.html">Thoughts on Mutual Information: More Estimators</a></h3>
+            <time>August 10, 2019</time>
+        </header>
+
+        <section><p>In this post I'd like to show how Self-Normalized Importance Sampling (<a href="/posts/2019-05-10-importance-weighted-hierarchical-variational-inference.html">IWHVI</a> and IWAE) and Annealed Importance Sampling can be used to give (sometimes sandwich) bounds on the MI in many different cases.</p>
+</section>
+    </article>
+
+    <hr/>
+
+    <article>
+        <header>
+            <h3><a href="/posts/2019-05-10-importance-weighted-hierarchical-variational-inference.html">Importance Weighted Hierarchical Variational Inference</a></h3>
+            <time>May 10, 2019</time>
+        </header>
+
+        <section><p>This post finishes the discussion on <a href="/posts/2019-04-26-neural-samplers-and-hierarchical-variational-inference.html">Neural Samplers for Variational Inference</a> by introducing some recent results (including mine).</p>
+<p>Also, there's <a href="https://youtu.be/pdSu7XfGhHw">a talk recording</a> of me presenting this post's content, so if you like videos more than texts, check it out.</p>
+</section>
+    </article>
+
+    <hr/>
+
+    <article>
+        <header>
+            <h3><a href="/posts/2019-04-26-neural-samplers-and-hierarchical-variational-inference.html">Neural Samplers and Hierarchical Variational Inference</a></h3>
+            <time>April 26, 2019</time>
+        </header>
+
+        <section><p>This post sets background for the upcoming post on my work on more efficient use of neural samplers for Variational Inference.</p>
 </section>
     </article>
 
@@ -74,6 +147,20 @@
 
     <article>
         <header>
+            <h3><a href="/posts/2017-10-28-stochastic-computation-graphs-discrete-relaxations.html">Stochastic Computation Graphs: Discrete Relaxations</a></h3>
+            <time>October 28, 2017</time>
+        </header>
+
+        <section><p>This is the second post of the <a href="/tags/stochastic%20computation%20graphs%20series.html">stochastic computation graphs series</a>. Last time we discussed models with <a href="/posts/2017-09-10-stochastic-computation-graphs-continuous-case.html">continuous stochastic nodes</a>, for which there are powerful reparametrization technics.</p>
+<p>Unfortunately, these methods don't work for discrete random variables. Moreover, it looks like there's no way to backpropagate through discrete stochastic nodes, as there's no infinitesimal change of random values when you infinitesimally perturb their parameters.</p>
+<p>In this post I'll talk about continuous relaxations of discrete random variables.</p>
+</section>
+    </article>
+
+    <hr/>
+
+    <article>
+        <header>
             <h3><a href="/posts/2017-09-10-stochastic-computation-graphs-continuous-case.html">Stochastic Computation Graphs: Continuous Case</a></h3>
             <time>September 10, 2017</time>
         </header>
@@ -87,6 +174,15 @@
 
 <!-- /#posts-list -->
 
+<div class="paginator">
+<div class="paginator-newer">
+    &nbsp;
+</div>
+<div class="paginator-older">
+        <a href="../tags/machine-learning2.html">Older Entries &rarr;</a>
+    &nbsp;
+</div>
+</div>
     </section>
     <footer>
         Generated with Pelican 

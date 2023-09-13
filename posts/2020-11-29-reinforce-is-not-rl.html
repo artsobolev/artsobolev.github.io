@@ -1,106 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Not every REINFORCE should be called Reinforcement Learning - B.log</title>
+  <title>Not every REINFORCE should be called Reinforcement Learning – B.log</title>
   <meta charset="utf-8" />
 
-  <meta name="twitter:card" content="summary" />
+  <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
-  <meta name="twitter:title" content="Not every REINFORCE should be called Reinforcement Learning" />
-  <meta name="twitter:description" content="Deep RL is hot these days. It’s one of the most popular topics in the submissions at NeurIPS / ICLR / ICML and other ML conferences. And while the definition of RL is pretty general, in this note I’d argue that the famous REINFORCE algorithm alone is not enough to label your method as a Reinforcement Learning one.
-" /> 
+  <meta property="og:title" content="Not every REINFORCE should be called Reinforcement Learning – B.log" />
+  <meta property="og:description" content="Deep RL is hot these days. It's one of the most popular topics in the submissions at NeurIPS / ICLR / ICML and other ML conferences. And while the definition of RL is pretty general, in this note I'd argue that the famous REINFORCE algorithm alone is..." />
 
-  <link rel="shortcut icon" href="../favicon.ico" />
+  <link rel="shortcut icon" href="/favicon.ico"/>
 
-  <link rel="stylesheet" type="text/css" href="../css/default.css" />
-  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/default.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/syntax.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:,b" />
-  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
-      MathJax.InputJax.TeX.Definitions.Add({
-          macros: {
-              E: ["Macro", "\\mathop{\\mathbb{E}}"]
-          }
-      });
-  });
+  <script type="text/javascript">
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        macros: {
+	  E: '\\mathop{\\mathbb{E}}'
+	}
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
   </script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <header>
       <hgroup>
-        <h1><a href="../">B.log</a></h1>
+        <h1><a href="/">B.log</a></h1>
         <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
         <menu>
-          <a href="../">Home</a>
-          <a href="../pages/about.html">About me</a>
+          <a href="/">Home</a>
+          <a href="/pages/about.html">About me</a>
           <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
         </menu>
     </nav>
     <section>
-        <article>
+<article>
 <header>
 	<h1>Not every REINFORCE should be called Reinforcement Learning</h1>
 	<time>November 29, 2020</time>
 </header>
 
 <section class="post-body">
-<p>Deep RL is hot these days. It’s one of the most popular topics in the submissions at NeurIPS / ICLR / ICML and other ML conferences. And while the definition of RL is pretty general, in this note I’d argue that the famous REINFORCE algorithm <em>alone</em> is not enough to label your method as a Reinforcement Learning one.</p>
+    <p>Deep RL is hot these days. It's one of the most popular topics in the submissions at NeurIPS / ICLR / ICML and other ML conferences. And while the definition of RL is pretty general, in this note I'd argue that the famous REINFORCE algorithm <em>alone</em> is not enough to label your method as a Reinforcement Learning one.</p>
 <!--more-->
-<h2 id="reinforce">REINFORCE</h2>
-<p>REINFORCE is a method introduced by Ronald Williams, commonly cited as coming from “Simple statistical gradient-following algorithms for connectionist reinforcement learning”. Given a long and fruitful history of the method, it’s natural that it’s definition has evolved and for different people this method might mean somewhat different things, so let me first describe what <strong>I</strong> mean by the REINFROCE in this particular discussion<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>.</p>
-<p>In this post we’ll assume REINFORCE to be equivalent to the score-function gradient estimator (also known as the log-derivative trick gradient estimator) with a certain (most likely constant<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>) baseline for variance reduction.</p>
-<p>I don’t want to re-introduce this method (I believe I <a href="../posts/2017-11-12-stochastic-computation-graphs-fixing-reinforce.html">already did</a> it quite some time ago), instead I refer an interested reader to a <a href="http://blog.shakirm.com/2015/11/machine-learning-trick-of-the-day-5-log-derivative-trick/">great blog post by Shakir Mohamed</a>, where the score-function (gradient) estimator is explained.</p>
-<h2 id="what-reinforce-is-used-for">What REINFORCE is used for</h2>
-<p>REINFORCE is used to estimate the gradients of the policy <span class="math inline">\(\pi_\theta(\tau)\)</span> when dealing with the objectives of the following form<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a>: <span class="math display">\[
+
+<h2>REINFORCE</h2>
+<p>REINFORCE is a method introduced by Ronald Williams, commonly cited as coming from "Simple statistical gradient-following algorithms for connectionist reinforcement learning". Given a long and fruitful history of the method, it's natural that it's definition has evolved and for different people this method might mean somewhat different things, so let me first describe what <strong>I</strong> mean by the REINFROCE in this particular discussion<sup id="fnref:different-def"><a class="footnote-ref" href="#fn:different-def">2</a></sup>.</p>
+<p>In this post we'll assume REINFORCE to be equivalent to the score-function gradient estimator (also known as the log-derivative trick gradient estimator) with a certain (most likely constant<sup id="fnref:zero-baseline"><a class="footnote-ref" href="#fn:zero-baseline">1</a></sup>) baseline for variance reduction.</p>
+<p>I don't want to re-introduce this method (I believe I <a href="/posts/2017-11-12-stochastic-computation-graphs-fixing-reinforce.html">already did</a> it quite some time ago), instead I refer an interested reader to a <a href="http://blog.shakirm.com/2015/11/machine-learning-trick-of-the-day-5-log-derivative-trick/">great blog post by Shakir Mohamed</a>, where the score-function (gradient) estimator is explained.</p>
+<h2>What REINFORCE is used for</h2>
+<p>REINFORCE is used to estimate the gradients of the policy $\pi_\theta(\tau)$ when dealing with the objectives of the following form<sup id="fnref:rl-setup"><a class="footnote-ref" href="#fn:rl-setup">3</a></sup>:
+$$
 \mathop{\mathbb{E}}_{\pi_\theta(\tau)} R(\tau) \to \max_{\theta}
-\]</span> The REINFORCE gradient estimator is then given by (where <span class="math inline">\(b\in\mathbb{R}\)</span> is a baseline)<span class="math display">\[
-\left(R(\tau) - b\right) \nabla_\theta \log \pi_\theta(\tau), \quad\quad \text{where $\tau \sim \pi_\theta(\tau)$}
-\]</span>The major benefits of this estimator are:</p>
+$$ The REINFORCE gradient estimator is then given by (where $b\in\mathbb{R}$ is a baseline)$klzzwxh:0009\tau \sim \pi_\theta(\tau)$}
+$$The major benefits of this estimator are:</p>
 <ul>
-<li>We don’t need to know the reward function <span class="math inline">\(R(\tau)\)</span>, we only need to evaluate it on the sampled trajectories <span class="math inline">\(\tau\)</span>.</li>
-<li>There are no assumptions on <span class="math inline">\(R(\tau)\)</span>, it can be non-differentiable or even discontinuous.</li>
-<li>Even the <span class="math inline">\(\tau\)</span> itself could be discrete! We only need to log probability <span class="math inline">\(\log \pi_\theta(\tau)\)</span> to be differentiable in <span class="math inline">\(\theta\)</span> (but not in <span class="math inline">\(\tau\)</span>).</li>
+<li>We don't need to know the reward function $R(\tau)$, we only need to evaluate it on the sampled trajectories $\tau$.</li>
+<li>There are no assumptions on $R(\tau)$, it can be non-differentiable or even discontinuous.</li>
+<li>Even the $\tau$ itself could be discrete! We only need to log probability $\log \pi_\theta(\tau)$ to be differentiable in $\theta$ (but not in $\tau$).</li>
 </ul>
-<p>The last two properties make the REINFORCE estimator an appealing choice for the gradient estimation in stochastic computation graphs, which I <a href="../tags/stochastic%20computation%20graphs%20series.html">have written at length</a> about.</p>
+<p>The last two properties make the REINFORCE estimator an appealing choice for the gradient estimation in stochastic computation graphs, which I <a href="/tags/stochastic%20computation%20graphs%20series.html">have written at length</a> about.</p>
 <p>There are lots of papers that do use REINFORCE in this exact scenario. For example, in a recent paper <a href="http://proceedings.mlr.press/v119/yoon20a.html">Data Valuation using Reinforcement Learning</a> (DVRL) researchers from Google do exactly that: they define a certain stochastic computation graph that contains discrete binary random variables in it. Then a simple REINFORCE gradient estimator is used to train those layers which cannot be reached by the standard backpropagation.</p>
-<p>Notably, the paper cites only one paper that has Reinforcement Learning in its title – the original one by Williams. Other than that it seems pretty disconnected from the RL literature. This hints a question: should it even be called to be “using RL”?</p>
-<h2 id="communicative-value">Communicative Value</h2>
-<p>Words are used to communicate ideas. When I say “Deep Neural Network” associations fire up in your brain and, provided you’re well-versed in the modern ML, you immediately think of all these modern (well, maybe not all of them) fancy things we call CNNs, ResNets, RNNs, LSTMs, Transformers, GNNs and many-many-many more. But I can also claim that a Logistic Regression (LR) is a special case of fully-connected neural networks, especially if you train them with stochastic optimization methods. But what’s the <em>communicative value</em> of this statement? What information does it convey? Does much of knowledge about LR generalize to Neural Nets? Or, does it benefit hugely from our modern Deep Learning toolkit? When was the last time you used batchnorm to train your Logistic Regression?</p>
-<p>What I’m trying to say is that although LR can be technically categorized as a Neural Network, this categorization appears to be useless, it does not open any interesting knowledge / expertice transfer. However, stack a logistic classifier on top of a pre-trained neural network and train the whole pipeline end-to-end – and you’re in the <a href="https://twitter.com/realTurboPascal/status/1111136291394068480">#backpropaganda</a> now!</p>
-<p>Same goes for REINFORCE: the communicative value of calling methods like the aforementioned DVRL as “using RL” is very small. In my opinion, distinctive traits of (modern) Reinforcement Learning are:</p>
+<p>Notably, the paper cites only one paper that has Reinforcement Learning in its title – the original one by Williams. Other than that it seems pretty disconnected from the RL literature. This hints a question: should it even be called to be "using RL"?</p>
+<h2>Communicative Value</h2>
+<p>Words are used to communicate ideas. When I say "Deep Neural Network" associations fire up in your brain and, provided you're well-versed in the modern ML, you immediately think of all these modern (well, maybe not all of them) fancy things we call CNNs, ResNets, RNNs, LSTMs, Transformers, GNNs and many-many-many more. But I can also claim that a Logistic Regression (LR) is a special case of fully-connected neural networks, especially if you train them with stochastic optimization methods. But what's the <em>communicative value</em> of this statement? What information does it convey? Does much of knowledge about LR generalize to Neural Nets? Or, does it benefit hugely from our modern Deep Learning toolkit? When was the last time you used batchnorm to train your Logistic Regression?</p>
+<p>What I'm trying to say is that although LR can be technically categorized as a Neural Network, this categorization appears to be useless, it does not open any interesting knowledge / expertice transfer. However, stack a logistic classifier on top of a pre-trained neural network and train the whole pipeline end-to-end – and you're in the <a href="https://twitter.com/realTurboPascal/status/1111136291394068480">#backpropaganda</a> now!</p>
+<p>Same goes for REINFORCE: the communicative value of calling methods like the aforementioned DVRL as "using RL" is very small. In my opinion, distinctive traits of (modern) Reinforcement Learning are:</p>
 <ul>
-<li>Delayed rewards<a href="#fn4" class="footnoteRef" id="fnref4"><sup>4</sup></a></li>
+<li>Delayed rewards<sup id="fnref:bandits"><a class="footnote-ref" href="#fn:bandits">4</a></sup></li>
 <li>Unknown environment model</li>
 <li>A single action at each state</li>
 </ul>
-<p>When you say you “use RL” it should mean you’ve posed the problem at hand such that it benefits from the vast research produced by RL people that address these traits. It’s this connection that bears communicative value as now you know that advances in RL would translate to your problem, too.</p>
+<p>When you say you "use RL" it should mean you've posed the problem at hand such that it benefits from the vast research produced by RL people that address these traits. It's this connection that bears communicative value as now you know that advances in RL would translate to your problem, too.</p>
 <p>If your problem lacks these traits and you go for RL methods anyway, you ignore much of the useful structure you have in your problem, constraining yourself to methods that are designed for a much harder problem. Keep in mind that RL is hard:</p>
-<blockquote class="twitter-tweet">
-<p lang="en" dir="ltr">
-When you say, “This is a reinforcement learning problem,” you should say it with the same excitement as “This is NP-hard.”
-</p>
-— Tim Vieira (<span class="citation">@xtimv</span>) <a href="https://twitter.com/xtimv/status/795050238948110336?ref_src=twsrc%5Etfw">November 5, 2016</a>
-</blockquote>
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">When you say, &quot;This is a reinforcement learning problem,&quot; you should say it with the same excitement as &quot;This is NP-hard.&quot;</p>&mdash; Tim Vieira (@xtimv) <a href="https://twitter.com/xtimv/status/795050238948110336?ref_src=twsrc%5Etfw">November 5, 2016</a></blockquote>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-<p>Perhaps a large body of RL work might be solving a problem you don’t even have to start with! Speaking of the REINFORCE method, it’s biggest problem is large variance, for which people have designed <a href="../posts/2017-11-12-stochastic-computation-graphs-fixing-reinforce.html">clever baselines</a>, but in RL, one might argue, <a href="https://arxiv.org/abs/1802.10031">such baselines have limited value</a>. On the other hand, Gumbel-Softmax (and <a href="../posts/2017-10-28-stochastic-computation-graphs-discrete-relaxations.html">relaxations</a> in general) – a method one should almost always consider when thinking of training stochastic computation graphs with REINFORCE – is not applicable in the standard RL setting.</p>
-<p>In the particular case of DVRL the problem has much more useful structure that can be used than the RL literature assumes. It has no delay in feedback, has fully known environment model and allows you to take multiple actions at each state – all of these imply you can do things RL people can’t afford. Unsurprisingly, this departure from the standard RL setting is reflected in the absence of RL works in the bibliographic selection.</p>
-<h2 id="conclusion">Conclusion</h2>
+
+<p>Perhaps a large body of RL work might be solving a problem you don't even have to start with! Speaking of the REINFORCE method, it's biggest problem is large variance, for which people have designed <a href="/posts/2017-11-12-stochastic-computation-graphs-fixing-reinforce.html">clever baselines</a>, but in RL, one might argue, <a href="https://arxiv.org/abs/1802.10031">such baselines have limited value</a>. On the other hand, Gumbel-Softmax (and <a href="/posts/2017-10-28-stochastic-computation-graphs-discrete-relaxations.html">relaxations</a> in general) – a method one should almost always consider when thinking of training stochastic computation graphs with REINFORCE – is not applicable in the standard RL setting.</p>
+<p>In the particular case of DVRL the problem has much more useful structure that can be used than the RL literature assumes. It has no delay in feedback, has fully known environment model and allows you to take multiple actions at each state – all of these imply you can do things RL people can't afford. Unsurprisingly, this departure from the standard RL setting is reflected in the absence of RL works in the bibliographic selection.</p>
+<h2>Conclusion</h2>
 <p>There are other papers just like the DVRL that use REINFORCE to perform gradient estimation in models with discrete random variables and claim to be doing Reinforcement Learning. While possibly benefitting from all the hype around RL, this narrows the selection of methods to those designed for a much more general and hard problem. I hope I have convinced you that the Venn diagram for RL and REINFORCE should not have one containing the other.</p>
-<div class="footnotes">
-<hr />
+<div class="footnote">
+<hr>
 <ol>
-<li id="fn1"><p>If to you REINFORCE means something different of something more than what I describe, then you’d probably agree with my claim. But anyway let me know in the comments below!<a href="#fnref1">↩</a></p></li>
-<li id="fn2"><p>The original REINFORCE did assume a certain (probably) constant baseline to be employed, but let’s assume that constant could be 0 to include vanilla score-function estimator as well.<a href="#fnref2">↩</a></p></li>
-<li id="fn3"><p>In the RL parlance <span class="math inline">\(\tau\)</span> is a trajectory (sequence of state-action pairs) and <span class="math inline">\(R(\tau)\)</span> is an unknown reward function, which is usually assumed to be comprised of individual rewards per each state-action pair: <span class="math display">\[ R(\tau) = \sum_{(s_t, a_t) \in \tau} r_t(s_t, a_t) \]</span><a href="#fnref3">↩</a></p></li>
-<li id="fn4"><p>For this reason I don’t think bandits should be called RL either.<a href="#fnref4">↩</a></p></li>
+<li id="fn:zero-baseline">
+<p>The original REINFORCE did assume a certain (probably) constant baseline to be employed, but let's assume that constant could be 0 to include vanilla score-function estimator as well.&#160;<a class="footnote-backref" href="#fnref:zero-baseline" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:different-def">
+<p>If to you REINFORCE means something different of something more than what I describe, then you'd probably agree with my claim. But anyway let me know in the comments below!&#160;<a class="footnote-backref" href="#fnref:different-def" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:rl-setup">
+<p>In the RL parlance $\tau$ is a trajectory (sequence of state-action pairs) and $R(\tau)$ is an unknown reward function, which is usually assumed to be comprised of individual rewards per each state-action pair: $$ R(\tau) = \sum_{(s_t, a_t) \in \tau} r_t(s_t, a_t) $$&#160;<a class="footnote-backref" href="#fnref:rl-setup" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:bandits">
+<p>For this reason I don't think bandits should be called RL either.&#160;<a class="footnote-backref" href="#fnref:bandits" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
 </ol>
 </div>
 </section>
 
-<div class="tags-pane">Tagged as <a href="../tags/machine%20learning.html">machine learning</a>, <a href="../tags/RL.html">RL</a>, <a href="../tags/REINFORCE.html">REINFORCE</a></div>
+<div class="tags-pane">Tagged as <a href="/tags/machine-learning.html">machine learning</a>, <a href="/tags/rl.html">RL</a>, <a href="/tags/reinforce.html">REINFORCE</a></div>
 </article>
 
 <section class="post-comments">
@@ -119,10 +129,9 @@ When you say, “This is a reinforcement learning problem,” you should say it 
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 </section>
-
     </section>
     <footer>
-        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+        Generated with Pelican 
     </footer>
 
 <script type="text/javascript">

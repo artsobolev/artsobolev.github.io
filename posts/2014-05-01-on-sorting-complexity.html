@@ -1,70 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>On Sorting Complexity - B.log</title>
+  <title>On Sorting Complexity – B.log</title>
   <meta charset="utf-8" />
 
-  <meta name="twitter:card" content="summary" />
+  <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
-  <meta name="twitter:title" content="On Sorting Complexity" />
-  <meta name="twitter:description" content="It’s well known that lower bound for sorting problem (in general case) is \(\Omega(n \log n)\). The proof I was taught is somewhat involved and is based on paths in “decision” trees. Recently I’ve discovered an information-theoretic approach (or reformulation) to that proof.
-" /> 
+  <meta property="og:title" content="On Sorting Complexity – B.log" />
+  <meta property="og:description" content="It's well known that lower bound for sorting problem (in general case) is $\Omega(n \log n)$. The proof I was taught is somewhat involved and is based on paths in "decision" trees. Recently I've discovered an information-theoretic approach (or..." />
 
-  <link rel="shortcut icon" href="../favicon.ico" />
+  <link rel="shortcut icon" href="/favicon.ico"/>
 
-  <link rel="stylesheet" type="text/css" href="../css/default.css" />
-  <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/default.css" />
+  <link rel="stylesheet" type="text/css" href="/theme/css/syntax.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:,b" />
-  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-  MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
-      MathJax.InputJax.TeX.Definitions.Add({
-          macros: {
-              E: ["Macro", "\\mathop{\\mathbb{E}}"]
-          }
-      });
-  });
+  <script type="text/javascript">
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        macros: {
+	  E: '\\mathop{\\mathbb{E}}'
+	}
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
   </script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <header>
       <hgroup>
-        <h1><a href="../">B.log</a></h1>
+        <h1><a href="/">B.log</a></h1>
         <h2>Random notes mostly on Machine Learning</h2>
       </hgroup>
     </header>
     <nav>
         <menu>
-          <a href="../">Home</a>
-          <a href="../pages/about.html">About me</a>
+          <a href="/">Home</a>
+          <a href="/pages/about.html">About me</a>
           <a href="http://feeds.feedburner.com/barmaley-exe-blog-feed">RSS feed</a>
         </menu>
     </nav>
     <section>
-        <article>
+<article>
 <header>
 	<h1>On Sorting Complexity</h1>
-	<time>May  1, 2014</time>
+	<time>May 1, 2014</time>
 </header>
 
 <section class="post-body">
-<p>It’s well known that lower bound for sorting problem (in general case) is <span class="math inline">\(\Omega(n \log n)\)</span>. The proof I was taught is somewhat involved and is based on paths in “decision” trees. Recently I’ve discovered an information-theoretic approach (or reformulation) to that proof.</p>
+    <p>It's well known that lower bound for sorting problem (in general case) is
+ $\Omega(n \log n)$. The proof I was taught is somewhat involved and is
+based on paths in "decision" trees. Recently I've discovered an
+information-theoretic approach (or reformulation) to that proof. </p>
 <!--more-->
-<p>First, let’s state the problem: given a set of some objects with an ordering produce elements of that set in that order. For now it’s completely irrelevant what are these objects, so we can assume them to be just numbers from 1 to n, or some permutation. Thus we’ll be interested in sorting permutations.</p>
-<p>We’re given an ordering via a comparison function. It tells us if one object preceds (or is smaller) another outputing True or False. Thus each invocation of the comparator gives us 1 bit of information.</p>
-<p>Next question is how many bits we need to represent any permutation. It’s just a binary logarithm of number of all possible permutations of <span class="math inline">\(n\)</span> elements: <span class="math inline">\(\log_2 n!\)</span>. Then we notice that</p>
-<p><span class="math display">\[
+
+<p>First, let's state the problem: given a set of some objects with an ordering
+produce elements of that set in that order. For now it's completely irrelevant
+what are these objects, so we can assume them to be just numbers from 1 to n,
+or some permutation. Thus we'll be interested in sorting permutations.</p>
+<p>We're given an ordering via a comparison function. It tells us if one object
+preceds (or is smaller) another outputing True or False. Thus each invocation
+of the comparator gives us 1 bit of information.</p>
+<p>Next question is how many bits we need to represent any permutation. It's just
+a binary logarithm of number of all possible permutations of $n$ elements:
+$\log_2 n!$. Then we notice that </p>
+<p>$$
 \log_2 n! = \sum_{k=1}^n \log_2 k \ge \sum_{k=n/2}^{n} \log_2 k
 \ge \frac{n}{2} \log_2 \frac{n}{2}
-\]</span></p>
-<p><span class="math display">\[
+$$</p>
+<p>$$
 \log_2 n! = \sum_{k=1}^n \log_2 k \le n \log_2 n
-\]</span></p>
-<p>(Or just use the <a href="http://en.wikipedia.org/wiki/Stirling%27s_approximation">Stirling’s approximation</a> formula). Hence <span class="math inline">\(\log_2 n! = \Theta(n \log n)\)</span></p>
-<p>So what, you may ask. The key point of proof is that sorting is essentially a search for a correct permutation of the input one. Since one needs <span class="math inline">\(\log_2 n!\)</span> bits to represent any permutation, we <strong>need to get that many bits</strong> of information somehow. Now let’s get back to our comparison function. As we’ve figured out already it’s able to give us only one bit of information per invocation. That implies that we need to call it <span class="math inline">\(\log n! = \Theta(n \log n)\)</span> times. And that’s exactly the lower-bound for sorting complexity. Q.E.D.</p>
-<p>Non-<span class="math inline">\(n \log n\)</span> sorting algorithms like <a href="http://en.wikipedia.org/wiki/Radix_sort">RadixSort</a> are possible because they use much more bits of information, taking advantage of numbers’ structure.</p>
+$$</p>
+<p>(Or just use the
+<a href="http://en.wikipedia.org/wiki/Stirling%27s_approximation">Stirling's
+approximation</a> formula). Hence $\log_2 n! = \Theta(n \log n)$</p>
+<p>So what, you may ask. The key point of proof is that sorting is essentially
+a search for a correct permutation of the input one. Since one needs $\log_2 n!$
+bits to represent any permutation, we <strong>need to get that many bits</strong> of
+information somehow. Now let's get back to our comparison function. As we've
+figured out already it's able to give us only one bit of information per invocation.
+That implies that we need to call it $\log n! = \Theta(n \log n)$ times. And that's
+exactly the lower-bound for sorting complexity. Q.E.D.</p>
+<p>Non-$n \log n$ sorting algorithms like
+<a href="http://en.wikipedia.org/wiki/Radix_sort">RadixSort</a> are possible
+because they use much more bits of information, taking advantage of
+numbers' structure.</p>
 </section>
 
-<div class="tags-pane">Tagged as <a href="../tags/algortihms.html">algortihms</a>, <a href="../tags/computer%20science.html">computer science</a></div>
+<div class="tags-pane">Tagged as <a href="/tags/algortihms.html">algortihms</a>, <a href="/tags/computer-science.html">computer science</a></div>
 </article>
 
 <section class="post-comments">
@@ -83,10 +110,9 @@
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 </section>
-
     </section>
     <footer>
-        <a href="http://jaspervdj.be/hakyll/index.html">Generated with Hakyll</a>
+        Generated with Pelican 
     </footer>
 
 <script type="text/javascript">
