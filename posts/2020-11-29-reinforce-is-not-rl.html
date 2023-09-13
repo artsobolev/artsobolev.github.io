@@ -70,7 +70,7 @@ $$The major benefits of this estimator are:</p>
 <li>There are no assumptions on $R(\tau)$, it can be non-differentiable or even discontinuous.</li>
 <li>Even the $\tau$ itself could be discrete! We only need to log probability $\log \pi_\theta(\tau)$ to be differentiable in $\theta$ (but not in $\tau$).</li>
 </ul>
-<p>The last two properties make the REINFORCE estimator an appealing choice for the gradient estimation in stochastic computation graphs, which I <a href="/tags/stochastic%20computation%20graphs%20series.html">have written at length</a> about.</p>
+<p>The last two properties make the REINFORCE estimator an appealing choice for the gradient estimation in stochastic computation graphs, which I <a href="/tags/stochastic-computation-graphs-series.html">have written at length</a> about.</p>
 <p>There are lots of papers that do use REINFORCE in this exact scenario. For example, in a recent paper <a href="http://proceedings.mlr.press/v119/yoon20a.html">Data Valuation using Reinforcement Learning</a> (DVRL) researchers from Google do exactly that: they define a certain stochastic computation graph that contains discrete binary random variables in it. Then a simple REINFORCE gradient estimator is used to train those layers which cannot be reached by the standard backpropagation.</p>
 <p>Notably, the paper cites only one paper that has Reinforcement Learning in its title – the original one by Williams. Other than that it seems pretty disconnected from the RL literature. This hints a question: should it even be called to be "using RL"?</p>
 <h2>Communicative Value</h2>
