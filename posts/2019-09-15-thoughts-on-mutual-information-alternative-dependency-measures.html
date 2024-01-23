@@ -87,8 +87,16 @@ $$</p>
 <p>In general, however, KL, Reverse KL and combinations thereof are the only $f$-divergences that are additive for independent random variables: if $X_1 \perp X_2$ under both $p(x)$ and $q(x)$, then
 $$\text{KL}(p(x) \mid\mid q(x)) = \text{KL}(p(x_1) \mid\mid q(x_1)) + \text{KL}(p(x_2) \mid\mid q(x_2))$$
 And thus for $X_1 \perp X_2$ and $Z_1 \perp Z_2$
-$klzzwxh:0046f$ is a combination of KLs}
-$klzzwxh:0048X_1, \dots, X_N$ used to extract corresponding representations $Z_1, \dots, Z_N$. In general with $f$-MI you're not allowed to use stochastic optimization / minibatching to work with $I_f(X, Z)$. This is counter-intuitive and not something we'd expect from a measure of <em>information</em>.</p>
+$$
+I_f(X, Z)
+=
+I_f(X_1, Z_1)
++
+I_f(X_2, Z_2)
+\Leftrightarrow
+\text{$f$ is a combination of KLs}
+$$
+Is such additivity important, though? Imagine having a sample set of independent objects $X_1, \dots, X_N$ used to extract corresponding representations $Z_1, \dots, Z_N$. In general with $f$-MI you're not allowed to use stochastic optimization / minibatching to work with $I_f(X, Z)$. This is counter-intuitive and not something we'd expect from a measure of <em>information</em>.</p>
 <p>That said, there some thing to keep in mind:</p>
 <ol>
 <li>In practice you probably can use $\sum_{n=1}^N I_f(X_n, Z_n)$ instead of $I_f(X, Z)$ without having to suffer any consequences.</li>

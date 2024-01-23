@@ -62,7 +62,11 @@
 $$</p>
 <p>It's not a problem to compute an estimate of the gradient of the ELBO w.r.t. model parameters $\Theta$, but estimating the gradient w.r.t. approximation parameters $\Lambda$  is tricky as these parameters influence the distribution the expectation is taken over, and as we know from the post on <a href="/posts/2016-07-05-neural-variational-inference-blackbox.html">Blackbox VI</a>, naive gradient estimator based on score function exhibits high variance.</p>
 <p>Turns out, for some distributions we can make change of variables, that is, for some distributions a sample $z \sim q(z \mid x, \Lambda)$ can be represented as a (differentiable) transformation $g(\varepsilon; \Lambda, x)$ of some auxiliary random variable $\varepsilon$ whose distribution does not depend on $\Lambda$. A well-known example of such reparametrization is Gaussian distribution: if $z \sim \mathcal{N}(\mu, \Sigma)$ then $z$ can be represented as $z = g(\varepsilon; \mu, \Sigma) := \mu + \Sigma^{1/2} \varepsilon$ for $\varepsilon \sim \mathcal{N}(0, I)$. This transformation is called the <strong>reparametrization trick</strong>. After the reparametrization the ELBO becomes</p>
-<p>$klzzwxh:0023\varepsilon^{(l)} \sim \mathcal{N}(0, I)$}
+<p>$$
+\begin{align}
+\mathcal{L}(\Theta, \Lambda)
+&amp;= \mathbb{E}_{\varepsilon \sim \mathcal{N}(0, I)}  \log \frac{p(x, g(\varepsilon; \Lambda, x)\mid \Theta)}{q(g(\varepsilon; \Lambda, x) \mid \Lambda, x)} \\
+&amp;\approx \frac{1}{L} \sum_{l=1}^L  \log \frac{p(x, g(\varepsilon^{(l)}; \Lambda, x)\mid \Theta)}{q(g(\varepsilon^{(l)}; \Lambda, x) \mid \Lambda, x)} \quad \quad \text{where $\varepsilon^{(l)} \sim \mathcal{N}(0, I)$}
 \end{align}
 $$</p>
 <p>This objective is a much better one as we don't need to differentiate w.r.t. expectation's distribution, essentially putting the variational parameters $\Lambda$ to the same regime as the model parameters $\Theta$. It's sufficient now to just take gradients of the ELBO's estimate, and run any optimization algorithm like <a href="https://arxiv.org/abs/1412.6980">Adam</a>.</p>

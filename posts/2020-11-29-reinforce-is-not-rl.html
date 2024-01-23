@@ -63,7 +63,8 @@
 <p>REINFORCE is used to estimate the gradients of the policy $\pi_\theta(\tau)$ when dealing with the objectives of the following form<sup id="fnref:rl-setup"><a class="footnote-ref" href="#fn:rl-setup">3</a></sup>:
 $$
 \mathop{\mathbb{E}}_{\pi_\theta(\tau)} R(\tau) \to \max_{\theta}
-$$ The REINFORCE gradient estimator is then given by (where $b\in\mathbb{R}$ is a baseline)$klzzwxh:0009\tau \sim \pi_\theta(\tau)$}
+$$ The REINFORCE gradient estimator is then given by (where $b\in\mathbb{R}$ is a baseline) $$
+\left(R(\tau) - b\right) \nabla_\theta \log \pi_\theta(\tau), \quad\quad \text{where }\tau \sim \pi_\theta(\tau)
 $$The major benefits of this estimator are:</p>
 <ul>
 <li>We don't need to know the reward function $R(\tau)$, we only need to evaluate it on the sampled trajectories $\tau$.</li>

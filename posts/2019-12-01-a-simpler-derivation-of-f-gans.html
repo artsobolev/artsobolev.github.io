@@ -114,10 +114,15 @@ D_f(p(x) \mid\mid q(x)) = \sup_{r(x)} \left[ \E_{p(x)} f'(r(x)) - \E_{q(x)} f^*(
 \tag{2}
 $$</p>
 <p>Finally, we use <a href="https://math.stackexchange.com/a/1428011/463191">an important property of convex conjugate functions</a>:
-$klzzwxh:0042\le 0$ due to convexity of $f$}  \right] + r(x) f'(r(x)) - f(r(x)) \
-&amp;= r(x) f'(r(x)) - f(r(x)) \
+$$
+\begin{align*}
+f^*(f'(r(x)))
+&amp;= \sup_u \left[ u f'(r(x)) - f(u) \right] \\
+&amp;= \sup_u \left[ u f'(r(x)) - r(x) f'(r(x)) - f(u) \right] + r(x) f'(r(x)) \\
+&amp;= \sup_u \left[ \underbrace{f(r(x)) + f'(r(x)) (u  - r(x)) - f(u)}_{\le 0 \text{ due to convexity of } f}  \right] + r(x) f'(r(x)) - f(r(x)) \\
+&amp;= r(x) f'(r(x)) - f(r(x)) \\
 \end{align*}
-$klzzwxh:0045f(t)$ its tangent at any point is always a lower bound, and the surpremum of 0 is achieved for $u = r(x)$.</p>
+$$ Where in the last line we've used the fact that for a convex $f(t)$ its tangent at any point is always a lower bound, and the surpremum of 0 is achieved for $u = r(x)$.</p>
 <p>Now we plug this equivalent formula into the objective and obtain
 $$
 \begin{align*}

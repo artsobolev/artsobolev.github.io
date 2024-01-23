@@ -350,7 +350,9 @@ $$</p>
 \end{align*}
 $$</p>
 <p>But what about that weirdly looking last term? Can it be estimated efficiently? First, note that we do not need to differentiate through $z$, the dependence through $z$ was already accounted for. The expectation we need to differentiate is taken over $p(\zeta|z, \theta)$ which is a distribution over $\zeta$ such that $\text{argmax} \zeta = z$. A reassuring observation is that such random variable is continuous. Moreover, the restriction $\text{argmax} \zeta = z$ defines a connected region of $\mathbb{R}^K$, which means there does exist a differentible reparametrization for such random variable! We won't be deriving this reparametrization here, please refer to <a href="https://cmaddis.github.io/gumbel-machinery">Chris Maddison's blog</a>. That said, the reparametrization is</p>
-<p>$klzzwxh:0196z = k$}, \
+<p>$$
+\zeta_k|z = \begin{cases}
+-\log (- \log v_k), \quad\quad\quad &amp; \text{if z = k}, \\
 -\log \left(-\frac{\log v_k}{p(z=k|\theta)} - \log v_z \right), \quad\quad\quad &amp; \text{otherwise}.
 \end{cases}
 $$</p>

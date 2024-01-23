@@ -150,9 +150,10 @@ Comparison of IWHVI bounds for different number of optimization steps over $\eta
 <h3>Estimating the marginal log-likelihood $\log p_\theta(x)$</h3>
 <p>Increasing $K$ will lead to the bound $\hat{\mathcal{L}}_K^\text{IWHVI}$ approaching the ELBO $\mathcal{L}$, but the gap between the ELBO and the marginal log-likelihood $\log p_\theta(x)$ is not negligible. Even by employing more powerful variational distribution we might not be able to overcome the <a href="https://arxiv.org/abs/1802.02550">gap introduced by amortization</a>. The standard approach to evaluate Variational Autoencoders it to use the Multisample Variational Lower Bound (IWAE bound) with large $M$. Can we tighten our bound in such a way?</p>
 <p>It turns out, the answer is yes and the tighter bound is simply</p>
-<p>$klzzwxh:0052M$-IWHVI}
+<p>$$
+\hat{\mathcal{L}}_K^\text{$M$-IWHVI}
 :=
-\E_{\substack{q_\phi(z_{1:M}, \psi_{1:M, 0}|x) \ \tau_\eta(\psi_{1:M, 1:K}|z_{1:M}, x)}}
+\E_{\substack{q_\phi(z_{1:M}, \psi_{1:M, 0}|x) \\ \tau_\eta(\psi_{1:M, 1:K}|z_{1:M}, x)}}
 \log \frac{1}{M} \sum_{m=1}^M \frac{p_\theta(x, z_m)}{ \frac{1}{K+1} \sum_{k=0}^K \frac{q_\phi(z_m, \psi_{m,k}|x)}{\tau_\eta(\psi_{m,k}|x,z_m)} }
 \le
 \log p_\theta(x)
