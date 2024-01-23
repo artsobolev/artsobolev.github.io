@@ -82,14 +82,16 @@ f(X + \Delta)
 $$</p>
 <p>Hence $df(X) = -A X^{-1} dX X^{-1}$ (it's not of the form $\text{Tr}(g(X)^T dX)$ because $f$ is not scalar-valued, so you can't extract the gradient from it, because the "gradient" would be something like a 4-dimensional tensor). This way we can derive differentials for many common functions and operations:</p>
 <p>$$
-d(\alpha X) = \alpha dX \\
-d(X + Y) = dX + dY \\
-d(XY) = dX Y + X dY \\
-d(X^{-1}) = -X^{-1} dX X^{-1} \\
-d(c^T x) = c^T dx \\
-d(x^T A x) = x^T (A + A^T) dx \\
-d(\text{Tr}(X)) = \text{Tr}(dX) \\
-d(\text{det}(X)) = \text{det}(X) \text{Tr}(X^{-1} dX)
+\begin{align*}
+d(\alpha X) &amp;= \alpha dX \\
+d(X + Y) &amp;= dX + dY \\
+d(XY) &amp;= dX Y + X dY \\
+d(X^{-1}) &amp;= -X^{-1} dX X^{-1} \\
+d(c^T x) &amp;= c^T dx \\
+d(x^T A x) &amp;= x^T (A + A^T) dx \\
+d(\text{Tr}(X)) &amp;= \text{Tr}(dX) \\
+d(\text{det}(X)) &amp;= \text{det}(X) \text{Tr}(X^{-1} dX)
+\end{align*}
 $$</p>
 <p>It's also very helpful to derive a rule to deal with function composition: suppose we have $f(x)$ and $g(x)$ with corresponding differentials $df(x)$ and $dg(x)$. Then the differential of $h(x) = f(g(x))$ is</p>
 <p>$$

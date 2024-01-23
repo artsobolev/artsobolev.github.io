@@ -59,27 +59,29 @@
 <h3>Importance Weighted Autoencoders</h3>
 
 <p>Let's first answer the question of how one can come up with a lower bound for the marginal log-likelihood? In the very beginning of the series, <a href="/posts/2016-07-01-neural-variational-inference-classical-theory.html">Classical Theory</a> post, we used some trickery to come up with the ELBO. That massaging of the marginal log-likelihood wasn't particulary enlightening on how one could invent that lower bound. Now we're going to consider a principled approach to invention of new lower bounds based on <a href="https://en.wikipedia.org/wiki/Jensen%27s_inequality">Jensen's inequality</a>.</p>
-<p>Suppose we have some unbiased estimator $f(x, z)$ of $p(x)$, that is, $\mathbb{E}_z f(x, z) = p(x)$. Then</p>
+<p>Suppose we have some unbiased estimator $f(x, z)$ of $p(x)$, that is, $\E_{q(z)} f(x, z) = p(x)$. Then</p>
 <p>$$
-\log p(x) = \log \mathbb{E}_z f(x, z) \stackrel{\text{Jensen}}{\ge} \mathbb{E}_z \log f(x, z)
+\log p(x) = \log \E_{q(z)} f(x, z) \stackrel{\text{Jensen}}{\ge} \E_{q(z)} \log f(x, z)
 $$</p>
-<p>In particular, if $z \sim q(z \mid x)$ and $f(x, z) = \tfrac{p(x, z)}{q(z \mid x)}$, we obtain the standard ELBO. The IWAE paper proposes another estimate (actually, a family of estimators parametrized by an integer $K$) of marginal $p(x)$:</p>
+<p>In particular, if $z \sim q(z \mid x)$ and $f(x, z) = \tfrac{p(x, z)}{q(z \mid x)}$, we obtain the standard ELBO. The IWAE paper proposes another estimate (actually, a family of estimators parametrized by an integer $K$) of the marginal $p(x)$:</p>
 <p>$$
 f(x, z_1, \dots, z_K) = \frac{1}{K} \sum_{k=1}^K \frac{p(x, z_k)}{q(z_k \mid x)}
 $$</p>
 <p>Where each $z_k$ comes from the same distribution $q(z_k \mid x) = q(z \mid x)$.
-Obviously, $f(x, z_1, \dots, z_K)$ is still an unbiased estimator of the $p(x)$, and therefore $\mathbb{E}_z \log f(x, z_1, \dots, z_K)$ is a valid lower-bound on the marginal log-likelihood.</p>
+Obviously, $f(x, z_1, \dots, z_K)$ is still an unbiased estimator of the $p(x)$, and therefore $\E_{q(z_{1 \dots K}|x)} \log f(x, z_1, \dots, z_K)$ is a valid lower-bound on the marginal log-likelihood.</p>
 <p>Let's analyze this new lower-bound now. First, let's dissect the ELBO:</p>
 <p>$$
 \mathcal{L}(\Theta, \Lambda)
-= \mathbb{E}_q \log \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)}
-= \mathbb{E}_q \left[\log \frac{p(z \mid x, \Theta)}{q(z \mid x, \Lambda)} \right] + \log p(x \mid \Theta)
+= \E_{q(z_1|x) \dots q(z_K|x)} \log \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)}
+= \E_{q(z_1|x) \dots q(z_K|x)} \left[\log \frac{p(z \mid x, \Theta)}{q(z \mid x, \Lambda)} \right] + \log p(x \mid \Theta)
 $$</p>
 <p>If $q$ approximates the true posterior accurately, the first term (which is a KL-divergence, BTW) is close to zero. However, when estmating it using Monte Carlo samples, the ELBO heavily penalizes inaccurate approximations: if $q(z \mid x, \Lambda)$ gives us samples from high probability regions of the true posterior $p(z \mid x, \Theta)$ only occasionally (like 20% of times), the gap between the ELBO and the marginal log-likelihood would be huge ($p(z\mid x, \Theta)$ is small, $q(z \mid x, \Lambda)$ is big), which does not help learning. As you might have guessed, IWAE allows us to use several samples. Let's see it in detail:</p>
 <p>$$
+\begin{align*}
 \mathcal{L}_K(\Theta, \Lambda)
-:= \mathbb{E}_q \left[\log \frac{1}{K} \sum_{k=1}^K \frac{p(x, z_k \mid \Theta)}{q(z_k \mid x, \Lambda)} \right]
-:= \mathbb{E}_q \left[\log \frac{1}{K} \sum_{k=1}^K \frac{p(z_k \mid x, \Theta)}{q(z_k \mid x, \Lambda)} \right] + \log p(x \mid \Theta)
+&amp;= \E_{q(z_1|x) \dots q(z_K|x)} \left[\log \frac{1}{K} \sum_{k=1}^K \frac{p(x, z_k \mid \Theta)}{q(z_k \mid x, \Lambda)} \right] \\
+&amp;= \E_{q(z_1|x) \dots q(z_K|x)} \left[\log \frac{1}{K} \sum_{k=1}^K \frac{p(z_k \mid x, \Theta)}{q(z_k \mid x, \Lambda)} \right] + \log p(x \mid \Theta)
+\end{align*}
 $$</p>
 <p>This averaging of posterior ratios saves us from bad samples screwing the lower bound, as it'll be pushed up by good samples (provided the approximation has a reasonable probability of generating a good sample in $K$ attempts). This allows one to perform model inference even with poor approximations $q(z \mid x, \Lambda)$. The more samples $K$ we use — the less accurate approximation we can tolerate. In fact, authors prove the following theorem:</p>
 <blockquote>
@@ -94,12 +96,16 @@ Moreover, if $p(z, x \mid \Theta) / q(z \mid x, \Lambda)$ is bounded, then $\mat
 <p>The convergence result follows from the <a href="https://en.wikipedia.org/wiki/Law_of_large_numbers#Strong_law">strong law of large numbers</a>.</p>
 <p>As with VAE, we use the reparametrization trick to avoid backpropagation through stochastic units:</p>
 <p>$$
-\mathcal{L}_K(\Theta, \Lambda) = \mathbb{E}_{\varepsilon_1, \dots, \varepsilon_K} \log \frac{1}{K} \sum_{k=1}^K \overbrace{\frac{p(x, g(\varepsilon_k; \Lambda) \mid \Theta)}{q(g(\varepsilon_k; \Lambda) \mid x, \Lambda)}}^{w(x, \varepsilon_k, \Theta, \Lambda)}
+\mathcal{L}_K(\Theta, \Lambda) = \E_{\varepsilon_1, \dots, \varepsilon_K} \log \frac{1}{K} \sum_{k=1}^K \overbrace{\frac{p(x, g(\varepsilon_k; \Lambda) \mid \Theta)}{q(g(\varepsilon_k; \Lambda) \mid x, \Lambda)}}^{w(x, \varepsilon_k, \Theta, \Lambda)}
 $$</p>
 <p>The gradients then are</p>
 <p>$$
-\nabla_\Theta \mathcal{L}_K(\Theta, \Lambda) = \mathbb{E}_{\varepsilon_1, \dots, \varepsilon_K} \sum_{k=1}^K \hat w_k(x, \varepsilon_{1 \dots K}, \Theta, \Lambda) \nabla_\Theta \log w(x, \varepsilon_k, \Theta, \Lambda) \\
-\nabla_\Lambda \mathcal{L}_K(\Theta, \Lambda) = \mathbb{E}_{\varepsilon_1, \dots, \varepsilon_K} \sum_{k=1}^K \hat w_k(x, \varepsilon_{1 \dots K}, \Theta, \Lambda) \nabla_\Lambda \log w(x, \varepsilon_k, \Theta, \Lambda) \\
+\nabla_\Theta \mathcal{L}_K(\Theta, \Lambda) = \E_{\varepsilon_1, \dots, \varepsilon_K} \sum_{k=1}^K \hat w_k(x, \varepsilon_{1 \dots K}, \Theta, \Lambda) \nabla_\Theta \log w(x, \varepsilon_k, \Theta, \Lambda)
+$$
+$$
+\nabla_\Lambda \mathcal{L}_K(\Theta, \Lambda) = \E_{\varepsilon_1, \dots, \varepsilon_K} \sum_{k=1}^K \hat w_k(x, \varepsilon_{1 \dots K}, \Theta, \Lambda) \nabla_\Lambda \log w(x, \varepsilon_k, \Theta, \Lambda)
+$$
+$$
 \text{where } \hat w_k(x, \varepsilon_{1 \dots K}, \Theta, \Lambda) := \frac{w(x, \varepsilon_k, \Theta, \Lambda)}{\sum_{k=1}^K w(x, \varepsilon_k, \Theta, \Lambda)}
 $$</p>
 <p>(We used the identity $\nabla_x f(x) = f(x) \nabla_x \log f(x)$ here).</p>
@@ -112,12 +118,12 @@ $$</p>
 <p>$$
 \begin{align}
 \nabla_\Lambda \mathcal{L}_K(\Theta, \Lambda)
-&amp;= \nabla_\Lambda \mathbb{E}_{q(z_1, \dots, z_K \mid x, \Lambda)} \log \frac{1}{K} \sum_{k=1}^K w(x, z_k, \Theta, \Lambda) \\
+&amp;= \nabla_\Lambda \E_{q(z_1, \dots, z_K \mid x, \Lambda)} \log \frac{1}{K} \sum_{k=1}^K w(x, z_k, \Theta, \Lambda) \\
 &amp;= \nabla_\Lambda \int q(z_1, \dots, z_K \mid x, \Lambda) \log \frac{1}{K} \sum_{k=1}^K w(x, z_k, \Theta, \Lambda) \; dz_1 \dots dz_K \\
-&amp;= \mathbb{E}_{q(z_1, \dots, z_K \mid x, \Lambda)} \left[ \sum_{k=1}^K \nabla_\Lambda \log q(z_k \mid x, \Lambda) \log \frac{1}{K} \sum_{k=1}^K w(x, z_k, \Theta, \Lambda) \right] \\
-&amp; \quad+ \mathbb{E}_{q(z_1, \dots, z_K \mid x, \Lambda)} \nabla_\Lambda \log \sum_{k=1}^K w(x, z_k, \Theta, \Lambda) \\
-&amp;= \mathbb{E}_{q(z_1, \dots, z_K \mid x, \Lambda)} \left[ \sum_{k=1}^K \nabla_\Lambda \log q(z_k \mid x, \Lambda) \log \frac{1}{K} \sum_{k=1}^K w(x, z_k, \Theta, \Lambda) \right] \\
-&amp; \quad+ \mathbb{E}_{q(z_1, \dots, z_K \mid x, \Lambda)} \left[ \sum_{k=1}^K \hat w_k(x, z_{1 \dots K}, \Theta, \Lambda) \nabla_\Lambda \log w(x, z_k, \Theta, \Lambda) \right]
+&amp;= \E_{q(z_1, \dots, z_K \mid x, \Lambda)} \left[ \sum_{k=1}^K \nabla_\Lambda \log q(z_k \mid x, \Lambda) \log \frac{1}{K} \sum_{k=1}^K w(x, z_k, \Theta, \Lambda) \right] \\
+&amp; \quad+ \E_{q(z_1, \dots, z_K \mid x, \Lambda)} \nabla_\Lambda \log \sum_{k=1}^K w(x, z_k, \Theta, \Lambda) \\
+&amp;= \E_{q(z_1, \dots, z_K \mid x, \Lambda)} \left[ \sum_{k=1}^K \nabla_\Lambda \log q(z_k \mid x, \Lambda) \log \frac{1}{K} \sum_{k=1}^K w(x, z_k, \Theta, \Lambda) \right] \\
+&amp; \quad+ \E_{q(z_1, \dots, z_K \mid x, \Lambda)} \left[ \sum_{k=1}^K \hat w_k(x, z_{1 \dots K}, \Theta, \Lambda) \nabla_\Lambda \log w(x, z_k, \Theta, \Lambda) \right]
 \end{align}
 $$</p>
 <p>The second term is exactly the gradient of the reparametrized case, and it does not cause us any troubles. The first term, however has some issues.</p>
