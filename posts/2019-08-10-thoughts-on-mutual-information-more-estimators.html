@@ -209,9 +209,11 @@ $$</p>
 <p>AIS uses two distributions, called forward and backward:
 $$
 q_\rightarrow(z_{1:T} | x) = q(z_1|x) \mathcal{T}_2(z_2 \mid z_1, x) \cdots  \mathcal{T}_{T}(z_{T} \mid z_{T-1}, x)
-\\
+$$
+$$
 q_\leftarrow(z_{T:1} | x) = p(z_{T}|x) \mathcal{T}_{T}(z_{T-1} \mid z_{T}, x) \cdots  \mathcal{T}_{2}(z_{1} \mid z_{2}, x)
-\\
+$$
+$$
 q_\leftarrow(x, z_{T:1}) = p(x, z_{T}) \mathcal{T}_{T}(z_{T-1} \mid z_{T}, x) \cdots  \mathcal{T}_{2}(z_{1} \mid z_{2}, x)
 $$</p>
 <p>Where $\mathcal{T}_t$ is a transition operator that is designed to be invariant to $p_t(z|x) \propto q(z|x)^{1-\beta_t} p(x, z)^{\beta_t}$ and $\beta_{1:T+1}$ is a monotonically increasing sequence s.t. $\beta_1 = 0$ and $\beta_{T+1} = 1$. That is, in the <em>forward distribution</em> $q_\rightarrow(z_{1:T} | x)$ one starts with a sample $z_1$ from some proposal $q(z|x)$ and then transforms it into a sample from $p_2(z|x)$ using the $\mathcal{T}_t$ transition operator (typically a MCMC kernel). The sample $z_2$ is then analogously transformed into $z_3$ amd so on. The <em>backward distribution</em> $q_\rightarrow(z_{T:1} | x)$ is similar except it starts with the true posterior sample $z_T \sim p(z|x)$ and then sequentially transforms it into a sample from the proposal $z_1 \sim q(z|x)$.</p>
