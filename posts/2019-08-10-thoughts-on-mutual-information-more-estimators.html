@@ -246,7 +246,8 @@ $$
 \E_{q_\rightarrow(z_{1:T} | x)} w(z_{1:T} \mid x) = p(x)
 \quad\Rightarrow\quad
 \E_{q_\rightarrow(z_{1:T} | x)} \log w(z_{1:T} \mid x) \le \log p(x),
-\\
+$$
+$$
 \E_{q_\leftarrow(z_{T:1} | x)} \frac{1}{w(z_{1:T} \mid x)} = \frac{1}{p(x)}
 \quad\Rightarrow\quad
 \E_{q_\leftarrow(z_{T:1} | x)} \log w(z_{1:T} \mid x) \ge \log p(x)
@@ -269,7 +270,8 @@ $$</p>
 <p>One can also come up with a "decoder-free" version of the bound in a similar fashion to what we've done above. First, introduce the following distributions:
 $$
 \gamma_\rightarrow(z_{1:T} | x) = q(z_1|x) \mathcal{K}_2(z_2 \mid z_1, x) \cdots \mathcal{K}_{T}(z_{T} \mid z_{T-1}, x)
-\\
+$$
+$$
 \gamma_\leftarrow(x, z_{T:1}) = p(x, z_{T}) \mathcal{K}_{T}(z_{T-1} \mid z_{T}, x) \cdots \mathcal{K}_{2}(z_{1} \mid z_{2}, x)
 $$
 Where $\mathcal{K}_t$ is now tailored to $\kappa_t(z|x) \propto q(z|x)^{1-\beta_t} \left( \hat\varrho(x|z) p(z) \right)^{\beta_t}$ for certain unnormalized $\hat\varrho(x|z)$</p>
