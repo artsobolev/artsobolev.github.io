@@ -7,7 +7,7 @@
   <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
   <meta property="og:title" content="Namespaced Methods in JavaScript – Sobolev.space" />
-  <meta property="og:description" content="Once upon a time I was asked (well, actually a question wasn't for me only, but for whole habrahabr's community) is it possible to implement namespaced methods in JavaScript for built-in types like: 5..rubish.times(function() { // this function will..." />
+  <meta property="og:description" content="Once upon a time I was asked (well, actually a question wasn't for me only, but for the whole habrahabr community) if it is possible to implement namespaced methods in JavaScript for built-in types like: 5..rubish.times(function() { // this function..." />
 
   <link rel="shortcut icon" href="/favicon.ico"/>
 
@@ -51,7 +51,7 @@
 </header>
 
 <section class="post-body">
-    <p>Once upon a time I was asked (well, actually <a href="http://habrahabr.ru/qa/7130/" title="Javascript: String.prototype.namespace.method и this / Q&A / Хабрахабр">a question</a> wasn't for me only, but for whole habrahabr's community) is it possible to implement namespaced methods in JavaScript for built-in types like:</p>
+    <p>Once upon a time I was asked (well, actually <a href="http://habrahabr.ru/qa/7130/" title="Javascript: String.prototype.namespace.method и this / Q&A / Хабрахабр">a question</a> wasn't for me only, but for the whole habrahabr community) if it is possible to implement namespaced methods in JavaScript for built-in types like:</p>
 <div class="highlight"><pre><span></span><code><span class="mf">5.</span><span class="p">.</span><span class="nx">rubish</span><span class="p">.</span><span class="nx">times</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// this function will be called 5 times</span>
 <span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Hi there!&quot;</span><span class="p">);</span>
 <span class="p">});</span>
@@ -73,7 +73,7 @@
 <span class="p">}</span>
 </code></pre></div>
 
-<p><code>this</code> points to the <code>Class.prototype.ns</code> instead of an instance of <code>Class</code>. The only way to change it is rebind <code>this</code> to the our instance like this:</p>
+<p><code>this</code> points to the <code>Class.prototype.ns</code> instead of an instance of <code>Class</code>. The only way to change it is to rebind <code>this</code> to our instance like this:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">var</span><span class="w"> </span><span class="nx">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Class</span><span class="p">;</span>
 <span class="nx">instance</span><span class="p">.</span><span class="nx">ns</span><span class="p">.</span><span class="nx">method</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">instance</span><span class="p">);</span>
 </code></pre></div>
@@ -83,8 +83,8 @@
 <span class="nx">MegaLibrary</span><span class="p">.</span><span class="nx">method</span><span class="p">(</span><span class="nx">instance</span><span class="p">);</span>
 </code></pre></div>
 
-<p>Thus we need to somehow return a correct function (with <code>this</code> binded to the <code>instance</code>) when user calls namespaced methods. This can be done using <a href="http://stackoverflow.com/q/812961/1190430" title="Javascript getters and setters for dummies? - Stack Overflow" target="_blank">getters</a>.</p>
-<p>When user accesses our namespace we give him a proxy-object with a custom getter for every method in the namespace. This getter returns a method with rebinded <code>this</code>. The question is: how do we get a reference to the <code>instance</code>? The answer is pretty simple: using getters again! Instead of declaring an ordinary property for the namespace we can create a property with a custom getter memoizing a reference to <code>this</code>. Voilà!</p>
+<p>Thus we need to somehow return a correct function (with <code>this</code> bound to the <code>instance</code>) when a user calls namespaced methods. This can be done using <a href="http://stackoverflow.com/q/812961/1190430" title="Javascript getters and setters for dummies? - Stack Overflow" target="_blank">getters</a>.</p>
+<p>When a user accesses our namespace we give him a proxy-object with a custom getter for every method in the namespace. This getter returns a method with rebound <code>this</code>. The question is: how do we get a reference to the <code>instance</code>? The answer is pretty simple: using getters again! Instead of declaring an ordinary property for the namespace we can create a property with a custom getter memoizing a reference to <code>this</code>. Voilà!</p>
 <p>Finally, the code is:</p>
 <script src="https://gist.github.com/artsobolev/5599917.js"></script>
 
@@ -97,7 +97,7 @@ Later, the physicist wakes up and smells smoke. He opens his door and sees a fir
 
 Later, the mathematician wakes up and smells smoke. She goes to the hall, sees the fire and then the fire hose. She thinks for a moment and then exclaims, 'Ah, a solution exists!' and then goes back to bed.</blockquote>
 
-<p>As you can see, the key part of code is ECMAScript 5's <code>Object.defineProperty</code>. According to the kangax's <a href="http://kangax.github.io/es5-compat-table/#Object.defineProperty" title="ECMAScript 5 compatibility table" target="_blank">ECMAScript 5 compatibility table</a> it has pretty good support:</p>
+<p>As you can see, the key part of the code is ECMAScript 5's <code>Object.defineProperty</code>. According to kangax's <a href="http://kangax.github.io/es5-compat-table/#Object.defineProperty" title="ECMAScript 5 compatibility table" target="_blank">ECMAScript 5 compatibility table</a> it has pretty good support:</p>
 <ul>
 <li>IE 9+</li>
 <li>Opera 12+</li>

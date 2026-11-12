@@ -7,7 +7,7 @@
   <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
   <meta property="og:title" content="Stochastic Computation Graphs: Fixing REINFORCE – Sobolev.space" />
-  <meta property="og:description" content="This is the final post of the stochastic computation graphs series. Last time we discussed models with discrete relaxations of stochastic nodes, which allowed us to employ the power of reparametrization. These methods, however, posses one flaw: they..." />
+  <meta property="og:description" content="This is the final post of the stochastic computation graphs series. Last time we discussed models with discrete relaxations of stochastic nodes, which allowed us to employ the power of reparametrization. These methods, however, possess one flaw: they..." />
 
   <link rel="shortcut icon" href="/favicon.ico"/>
 
@@ -52,11 +52,11 @@
 
 <section class="post-body">
     <p>This is the final post of the <a href="/tags/stochastic-computation-graphs-series.html">stochastic computation graphs series</a>. Last time we discussed models with <a href="/posts/2017-10-28-stochastic-computation-graphs-discrete-relaxations.html">discrete relaxations of stochastic nodes</a>, which allowed us to employ the power of reparametrization.</p>
-<p>These methods, however, posses one flaw: they consider different models, thus introducing inherent bias – your test time discrete model will be doing something different from what your training time model did. Therefore in this post we'll get back to the REINFORCE aka Score Function estimator, and see if we can fix its problems.</p>
+<p>These methods, however, possess one flaw: they consider different models, thus introducing inherent bias – your test time discrete model will be doing something different from what your training time model did. Therefore in this post we'll get back to the REINFORCE aka Score Function estimator, and see if we can fix its problems.</p>
 <!--more-->
 
 <h2>Back to REINFORCE</h2>
-<p>REINFORCE<sup id="fnref:reinforce-abbr"><a class="footnote-ref" href="#fn:reinforce-abbr">1</a></sup> estimator arises from the following identity:</p>
+<p>The REINFORCE<sup id="fnref:reinforce-abbr"><a class="footnote-ref" href="#fn:reinforce-abbr">1</a></sup> estimator arises from the following identity:</p>
 <p>$$
 \begin{align*}
 \nabla_\theta \mathcal{F}(\theta)
@@ -74,18 +74,18 @@ $$</p>
 z^{(l)} \sim p(z|\theta)
 $$</p>
 <p>The downside of this method is that it does not use the gradient information of the objective $f$. This is useful in cases where we don't have access to such information, for example, in Reinforcement Learning. However, when working with Stochastic Computation Graphs, we usually do have gradients $\nabla_z f(z)$ available, and I believe methods that intelligently use this gradient should perform better.</p>
-<p>However, the score function estimator does not use this information, yet it's an unbiased estimator of the true gradient. What's the problem then? The problem is in impractically high variance that requires one to obtain some astronomical amount of samples to reduce the variance and make optimization actually feasible <sup id="fnref:monte-carlo-inefficiency"><a class="footnote-ref" href="#fn:monte-carlo-inefficiency">3</a></sup>. Recall the intuition behind this from <a href="/posts/2017-09-10-stochastic-computation-graphs-continuous-case.html">the first post</a>: a REINFORCE estimator $\hat{\nabla}_\theta^{\text{SF}} \mathcal{F}$ is just $L$ single-sample gradients averaged together and each single single-sample gradient $f(z) \nabla_\theta \log p(z|\theta)$ essentially implements a random search: it wants to increase the probability of a given sample $z$ proportionally to $f(z)$, and if the later is negative, then reduce it. Each of the samples then pulls the probability towards itself, and this lack of a consensus is the source of the problem.</p>
+<p>However, the score function estimator does not use this information, yet it's an unbiased estimator of the true gradient. What's the problem then? The problem is in impractically high variance that requires one to obtain some astronomical amount of samples to reduce the variance and make optimization actually feasible <sup id="fnref:monte-carlo-inefficiency"><a class="footnote-ref" href="#fn:monte-carlo-inefficiency">3</a></sup>. Recall the intuition behind this from <a href="/posts/2017-09-10-stochastic-computation-graphs-continuous-case.html">the first post</a>: a REINFORCE estimator $\hat{\nabla}_\theta^{\text{SF}} \mathcal{F}$ is just $L$ single-sample gradients averaged together and each single-sample gradient $f(z) \nabla_\theta \log p(z|\theta)$ essentially implements a random search: it wants to increase the probability of a given sample $z$ proportionally to $f(z)$, and if the latter is negative, then reduce it. Each of the samples then pulls the probability towards itself, and this lack of a consensus is the source of the problem.</p>
 <p>However, despite REINFORCE being essentially a random search in disguise, not all is lost yet. As we shall see, one can extend it with lots of different tricks, greatly reducing the variance.</p>
 <h2>Control Variates</h2>
-<p>One method for reducing the variance in statistics (and the major one for this post) is the method of <strong>Control Variates</strong>, that's based on the idea that if you have two negatively correlated random variables, their sum could have lower variance. Indeed, let's assume we have random variables $X$ and $Y$ such that $\mathbb{D}(X) = \sigma^2_x$, $\mathbb{D}(Y) = \sigma^2_y$ and $\text{Cov}(X, Y) = -\tau \sigma_x \sigma_y$. Then</p>
+<p>One method for reducing the variance in statistics (and the major one for this post) is the method of <strong>Control Variates</strong>, which is based on the idea that if you have two negatively correlated random variables, their sum could have lower variance. Indeed, let's assume we have random variables $X$ and $Y$ such that $\mathbb{D}(X) = \sigma^2_x$, $\mathbb{D}(Y) = \sigma^2_y$ and $\text{Cov}(X, Y) = -\tau \sigma_x \sigma_y$. Then</p>
 <p>$$
 \mathbb{D}(X + Y) - \mathbb{D}(X)
 = \mathbb{D}(Y) + 2 \text{Cov}(X, Y)
 = \sigma^2_y - 2 \tau \sigma_x \sigma_y
 = \sigma_y (\sigma_y - 2 \tau \sigma_x)
 $$</p>
-<p>So if $\sigma_y &lt; 2 \tau \sigma_x$, then the sum $X + Y$ will have lower variance than the $X$ alone. Of course, $Y$ needs to be centered $\mathbb{E} Y = 0$ to not bias the $X$, but centering does not affect the variance.</p>
-<p>We'll be considering control variates of a special form: $b(z) \nabla_\theta \log p(z|\theta)$ where $b$ is a <strong>baseline</strong> and can be either a scalar of a vector (the multiplication is point-wise then)<sup id="fnref:matrix-baselines"><a class="footnote-ref" href="#fn:matrix-baselines">2</a></sup>. This leads to the estimator of the following form</p>
+<p>So if $\sigma_y &lt; 2 \tau \sigma_x$, then the sum $X + Y$ will have lower variance than $X$ alone. Of course, $Y$ needs to be centered $\mathbb{E} Y = 0$ to not bias $X$, but centering does not affect the variance.</p>
+<p>We'll be considering control variates of a special form: $b(z) \nabla_\theta \log p(z|\theta)$ where $b$ is a <strong>baseline</strong> and can be either a scalar or a vector (the multiplication is point-wise then)<sup id="fnref:matrix-baselines"><a class="footnote-ref" href="#fn:matrix-baselines">2</a></sup>. This leads to an estimator of the following form:</p>
 <p>$$
 \hat{\nabla}_\theta^\text{SF} \mathcal{F}(\theta) = (f(z) - b(z)) \nabla_\theta \log p(z|\theta)
 $$</p>
@@ -98,7 +98,7 @@ $$</p>
 &amp;= \nabla_\theta \mathbb{E}_{p(z|\theta)} f(z) - \nabla_\theta \mathbb{E}_{p(z|\theta)} b(z)
 \end{align*}
 $$</p>
-<p>Looks like we did indeed bias the estimator! In order to be able to reduce the variance and keep the estimator unbiased, we should remove the introduced bias from the $\hat{\nabla}_\theta^\text{SF} \mathcal{F}(\theta)$:</p>
+<p>Looks like we did indeed bias the estimator! In order to be able to reduce the variance and keep the estimator unbiased, we should remove the introduced bias from $\hat{\nabla}_\theta^\text{SF} \mathcal{F}(\theta)$:</p>
 <p>$$
 \hat{\nabla}_\theta^\text{SF} \mathcal{F}(\theta) = (f(z) - b(z)) \nabla_\theta \log p(z|\theta) + \nabla_\theta \mathbb{E}_{p(z|\theta)} b(z)
 $$</p>
@@ -133,13 +133,13 @@ $$</p>
 b_d = \frac{\mathbb{E}\left[f(z) (\nabla_{\theta_d} \log p(z|\theta))^2\right]}{\mathbb{E}\left[(\nabla_{\theta_d} \log p(z|\theta))^2\right]}
 $$</p>
 <h2>Self-critical Learning</h2>
-<p>Ideally, the baseline approximates $f(z)$ as good as possible without using the actual sample $z$ <sup id="fnref:independent-z"><a class="footnote-ref" href="#fn:independent-z">7</a></sup>. However, it can still depend on $\theta$ without introducing any bias:</p>
+<p>Ideally, the baseline approximates $f(z)$ as well as possible without using the actual sample $z$ <sup id="fnref:independent-z"><a class="footnote-ref" href="#fn:independent-z">7</a></sup>. However, it can still depend on $\theta$ without introducing any bias:</p>
 <p>$$
 \mathbb{E}_{p(z|\theta)} b(\theta) \nabla_\theta \log p(z|\theta) = 
 b(\theta) \mathbb{E}_{p(z|\theta)} \nabla_\theta \log p(z|\theta) = 
 0
 $$</p>
-<p>So, how can we use $\theta$ and $f$ to approximate $f(z)$ without touching the sample $z$ itself? Authors of the <a href="https://arxiv.org/abs/1612.00563">Self-critical Sequence Training for Image Captioning</a> paper suggested to replace the stochastic $z$ with a deterministic most probable outcome:</p>
+<p>So, how can we use $\theta$ and $f$ to approximate $f(z)$ without touching the sample $z$ itself? The authors of the <a href="https://arxiv.org/abs/1612.00563">Self-critical Sequence Training for Image Captioning</a> paper suggested replacing the stochastic $z$ with a deterministic most probable outcome:</p>
 <p>$$
 \hat{z} = \text{argmax}_k \; p(z = k | \theta)
 $$</p>
@@ -151,13 +151,13 @@ $$</p>
 <h2>Special Cases</h2>
 <p>When $f$ is of some special form, one can design ad hoc variance reduction techniques. In particular, we'll consider two of them:</p>
 <h3>NVIL</h3>
-<p>NVIL stands for <a href="https://arxiv.org/abs/1402.0030">Neural Variational Inference and Learning</a> after a paper it was introduced in. Essentially, it combines tricks to reduce the variance people of Reinforcement Learning came up with to reduce the variance of REINFORCE (which they usually call the Policy Gradients method). The paper introduced three methods: <em>signal centering</em>, <em>variance normalization</em> and <em>local learning signals</em>. The <em>variance normalization</em> normalizes the gradient by a running average estimate of its standard deviation – this is what, say, the Adam optimizer would do for you automatically, so let's not stop here.</p>
-<p><em>Signal centering</em> can be considering as a baseline amortization for a context-dependent case. Let me decypher that: oftentimes stochastic random variable $z$ depends on some context $x$ (for example, state of the environment in RL, or the observation $x$ in the amortized variational inference), then the expected objective becomes $\mathcal{F}(\theta|x) = \mathbb{E}_{p(z|x,\theta)} f(x, z)$. Then we can make the baseline $b$ depend on $x$ as well without any sacrifice:</p>
+<p>NVIL stands for <a href="https://arxiv.org/abs/1402.0030">Neural Variational Inference and Learning</a> after the paper it was introduced in. Essentially, it combines tricks to reduce the variance people in Reinforcement Learning came up with to reduce the variance of REINFORCE (which they usually call the Policy Gradients method). The paper introduced three methods: <em>signal centering</em>, <em>variance normalization</em> and <em>local learning signals</em>. The <em>variance normalization</em> normalizes the gradient by a running average estimate of its standard deviation – this is what, say, the Adam optimizer would do for you automatically, so let's not stop here.</p>
+<p><em>Signal centering</em> can be considered as a baseline amortization for a context-dependent case. Let me decipher that: oftentimes a stochastic random variable $z$ depends on some context $x$ (for example, state of the environment in RL, or the observation $x$ in amortized variational inference), then the expected objective becomes $\mathcal{F}(\theta|x) = \mathbb{E}_{p(z|x,\theta)} f(x, z)$. Then we can make the baseline $b$ depend on $x$ as well without any sacrifice:</p>
 <p>$$
 \hat{\nabla}_\theta^\text{SF-NVIL} \mathcal{F}(\theta) = (f(x, z) - b(x)) \nabla_\theta \log p(z|x, \theta)
 $$</p>
-<p>We could reuse the formulas from the previous section, but that'd require us to store independent baseline for each $x$ in the trainset – doesn't scale. Therefore instead we'll amortize the baseline using a neural network $b(x|\varphi)$ with parameters $\varphi$ and learn it by minimizing the expected squared error <sup id="fnref:nvil-square-error"><a class="footnote-ref" href="#fn:nvil-square-error">4</a></sup> $$\varphi^* = \text{argmin}_\phi \mathbb{E}_{p(z|x,\theta)} (b(x|\varphi) - f(x, z))^2$$</p>
-<p>The <em>local learning signal</em> allows you to exploit some non-trivial structure in $f(z)$ (and $p(z|\theta)$). Namely, suppose we divided our $z$ into $N$ chunks: $z = (z_1, \dots, z_N)$, and $f$ is a sum of rewards on prefixes: $f(z) = \sum_{n=1}^N f_n(z_{&lt;n})$ <sup id="fnref:elbo-as-a-sum"><a class="footnote-ref" href="#fn:elbo-as-a-sum">5</a></sup>. It's then obvious that choice of later blocks $z_n$ layers does not influence the prior rewards $f_m$ for $m &lt; n$. Indeed, one can see that the true gradient obeys the following:</p>
+<p>We could reuse the formulas from the previous section, but that'd require us to store an independent baseline for each $x$ in the trainset – doesn't scale. Therefore instead we'll amortize the baseline using a neural network $b(x|\varphi)$ with parameters $\varphi$ and learn it by minimizing the expected squared error <sup id="fnref:nvil-square-error"><a class="footnote-ref" href="#fn:nvil-square-error">4</a></sup> $$\varphi^* = \text{argmin}_\phi \mathbb{E}_{p(z|x,\theta)} (b(x|\varphi) - f(x, z))^2$$</p>
+<p>The <em>local learning signal</em> allows you to exploit some non-trivial structure in $f(z)$ (and $p(z|\theta)$). Namely, suppose we divided our $z$ into $N$ chunks: $z = (z_1, \dots, z_N)$, and $f$ is a sum of rewards on prefixes: $f(z) = \sum_{n=1}^N f_n(z_{&lt;n})$ <sup id="fnref:elbo-as-a-sum"><a class="footnote-ref" href="#fn:elbo-as-a-sum">5</a></sup>. It's then obvious that the choice of later blocks $z_n$ does not influence the prior rewards $f_m$ for $m &lt; n$. Indeed, one can see that the true gradient obeys the following:</p>
 <p>$$
 \begin{align*}
 \nabla_\theta \mathcal{F}(\theta)
@@ -168,13 +168,13 @@ $$</p>
 &amp;= \mathbb{E}_{p(z|\theta)} \left[{\scriptsize \sum_{n=1}^N \sum_{k=n}^N f_k(z_{\le k}) \nabla_\theta \log p(z_n|z_{&lt;n}, \theta)} \right] \\
 \end{align*}
 $$</p>
-<p>Naturally, the part of the gradient corresponding to $n$th chunk is weighted by the total reward we'd get after deciding upon $z_n$, since the previous rewards do not depend on $z_n$.</p>
+<p>Naturally, the part of the gradient corresponding to the $n$th chunk is weighted by the total reward we'd get after deciding upon $z_n$, since the previous rewards do not depend on $z_n$.</p>
 <p>Combined with the context-dependent baseline the estimator would be</p>
 <p>$$
 \hat{\nabla}_\theta^\text{SF-NVIL} \mathcal{F}(\theta) = 
 {\scriptsize \sum_{n=1}^N \sum_{k=n}^N (f_k(x, z_{\le k}) - b_k(x)) \nabla_\theta \log p(z_n|x, z_{&lt;n}, \theta)} \\
 $$</p>
-<p>Moreover, the baseline can be made dependent on some previous $z$ since such baseline does not introduce any bias:</p>
+<p>Moreover, the baseline can be made dependent on some previous $z$ since such a baseline does not introduce any bias:</p>
 <p>$$
 \begin{align*}
 \mathbb{E}_{p(z|x, \theta)} 
@@ -193,15 +193,15 @@ b_{n,k}(x, z_{&lt;n}) \nabla_\theta \log p(z_n|x, z_{&lt;n}, \theta) \\
 $$</p>
 <p>However, learning ${n \choose 2}$ different baselines is computationally demanding, so one would probably at least assume some common underlying structure.</p>
 <h3>VIMCO</h3>
-<p>Another case of using the particular structure is the the VIMCO (<a href="https://arxiv.org/abs/1602.06725">Variational inference for Monte Carlo objectives</a>) estimator. Again, consider a case of the latent variable $z$ being divided in $N$ chunks, but now $z_n$ are independent identically distributed samples: $z_n \sim p(z|\theta)$. Suppose $f$ has the following form: $f(z) = g\left(\tfrac{1}{N} {\scriptsize\sum_{n=1}^N} h(z_n)\right)$. Then the REINFORCE gradient estimate would be:</p>
+<p>Another case of using the particular structure is the VIMCO (<a href="https://arxiv.org/abs/1602.06725">Variational inference for Monte Carlo objectives</a>) estimator. Again, consider a case of the latent variable $z$ being divided into $N$ chunks, but now $z_n$ are independent identically distributed samples: $z_n \sim p(z|\theta)$. Suppose $f$ has the following form: $f(z) = g\left(\tfrac{1}{N} {\scriptsize\sum_{n=1}^N} h(z_n)\right)$. Then the REINFORCE gradient estimate would be:</p>
 <p>$$
 \begin{align*}
 \nabla_\theta \mathcal{F}(\theta)
 &amp;= \mathbb{E}_{p(z | \theta)} \sum_{n=1}^N g\left(\tfrac{1}{N} {\scriptsize\sum_{n=1}^N} h(z_n)\right) \nabla_\theta \log p(z_n|\theta) \\
 \end{align*}
 $$</p>
-<p>The problem with this estimator is that $g(\dots)$ is a common multiplier, and defines a magnitude of the gradient for each of $N$ samples, without any distinction, despite some samples $z_n$ might have turned out better than others. We would like to penalise such samples lesser, performing a kind of <em>credit assignment</em>.</p>
-<p>Just as in the previous section, we can consider baselines $b_n$ that depend on samples $z$. To keep them from biasing the gradient estimate we need to make sure each $b_n$ does not depend on $z_n$. However, it can depend on all other $z$ (denoted $z_{-n}$) since they are independent of $z_n$. Thus the bias of such baseline is:</p>
+<p>The problem with this estimator is that $g(\dots)$ is a common multiplier, and defines a magnitude of the gradient for each of $N$ samples, without any distinction, despite the fact that some samples $z_n$ might have turned out better than others. We would like to penalise such samples less, performing a kind of <em>credit assignment</em>.</p>
+<p>Just as in the previous section, we can consider baselines $b_n$ that depend on samples $z$. To keep them from biasing the gradient estimate we need to make sure each $b_n$ does not depend on $z_n$. However, it can depend on all other $z$ (denoted $z_{-n}$) since they are independent of $z_n$. Thus the bias of such a baseline is:</p>
 <p>$$
 \begin{align*}
 \mathbb{E}_{p(z | \theta)}
@@ -217,7 +217,7 @@ b_n(z_{-n})
 = 0
 \end{align*}
 $$</p>
-<p>Authors of the VIMCO paper also suggested an interesting trick to avoid learning $b_n(z_{-n})$: we want $b_{-n}(z_{-n})$ to approximate $f(z)$ as good as possible and we actually have access to everything we need to compute $f(z)$ except the term that depends on $z_n$: $h(z_n)$. However, all samples $z$ are identically distributed, so we can approximate this missing term as the average of others:</p>
+<p>The authors of the VIMCO paper also suggested an interesting trick to avoid learning $b_n(z_{-n})$: we want $b_{-n}(z_{-n})$ to approximate $f(z)$ as well as possible and we actually have access to everything we need to compute $f(z)$ except the term that depends on $z_n$: $h(z_n)$. However, all samples $z$ are identically distributed, so we can approximate this missing term as the average of others:</p>
 <p>$$
 \hat h_n(z_{-n}) = \frac{1}{N-1} \sum_{j \not= n} h(z_j) \stackrel{\text{hopefully}}{\approx} h(z_n)
 $$</p>
@@ -229,13 +229,13 @@ g\left(\tfrac{{\scriptsize\sum_{j \not= n}} h(z_j) + \hat h_n(z_{-n})}{N} \right
 $$</p>
 <p>One can also consider other averaging schemes for $\hat h_n(z_{-n})$ to approximate $h(z_n)$: geometric, harmonic, Minkowski, etc.</p>
 <h2>MuProp</h2>
-<p>So far we have been considering only baselines $b$ that have zero expected value and thus do not bias the gradient estimator. However, there are cases when we actually know the baseline's expectation and can compensate the introduced bias.</p>
-<p>The <a href="https://arxiv.org/abs/1511.05176">MuProp</a> paper suggests to use a Taylor expansion as a baseline, provided we can compute certain moments of the distribution $p(z|\theta)$ in a closed form. For example, if $p(z|\theta) = \mathcal{N}(z \mid \mu(\theta), \Sigma(\theta))$, then we already have access to 1st and 2nd moments -- the mean and the covariance matrix.</p>
+<p>So far we have been considering only baselines $b$ that have zero expected value and thus do not bias the gradient estimator. However, there are cases when we actually know the baseline's expectation and can compensate for the introduced bias.</p>
+<p>The <a href="https://arxiv.org/abs/1511.05176">MuProp</a> paper suggests using a Taylor expansion as a baseline, provided we can compute certain moments of the distribution $p(z|\theta)$ in a closed form. For example, if $p(z|\theta) = \mathcal{N}(z \mid \mu(\theta), \Sigma(\theta))$, then we already have access to the 1st and 2nd moments -- the mean and the covariance matrix.</p>
 <p>Consider a Taylor expansion of $f(z)$ at $\mu(\theta) = \mathbb{E}_{p(z|\theta)} z$ of the first order:</p>
 <p>$$
 b_\theta(z) = f(\mu(\theta)) + \nabla_z f(\mu(\theta))^T (z - \mu(\theta))
 $$</p>
-<p>Then the bias introduced by such baseline would be</p>
+<p>Then the bias introduced by such a baseline would be</p>
 <p>$$
 \begin{align*}
 \mathbb{E}_{p(z|\theta)}
@@ -286,11 +286,11 @@ $$</p>
 <p>$$
 \hat{\nabla}_\theta^\text{SF-MuProp} \mathcal{F}(\theta) = (f(z) - f(\mu(\theta)) - \nabla_z f(z)^T (z - \mu(\theta))) \nabla_\theta \log p(z|\theta) + \nabla_\theta f(\mu(\theta))
 $$</p>
-<p>An appealing property is that not only does this gradient estimator is unbiased, but it also uses the gradients of $f$ in the $\nabla_\theta f(\mu(\theta))$, essentially propagating the learning signal though the mean of the random variable $z$, and then correcting for the introduced bias with REINFORCE.</p>
-<p>One could, of course, envision a second-order baseline, especially considering we have the covariance matrix readily available for many distributions. However, such baseline would be more computationally demanding, requiring us to compute the Hessian matrix of $f(z)$ and evaluate it at some point, which would cost at least $\text{dim}(z)^2$ computations. Higher order expansions would require even more computations, thus it's hard to achive high non-linearity in the baseline using MuProp alone <sup id="fnref:muprop-different-series"><a class="footnote-ref" href="#fn:muprop-different-series">6</a></sup>.</p>
+<p>An appealing property is that not only is this gradient estimator unbiased, but it also uses the gradients of $f$ in $\nabla_\theta f(\mu(\theta))$, essentially propagating the learning signal through the mean of the random variable $z$, and then correcting for the introduced bias with REINFORCE.</p>
+<p>One could, of course, envision a second-order baseline, especially considering we have the covariance matrix readily available for many distributions. However, such a baseline would be more computationally demanding, requiring us to compute the Hessian matrix of $f(z)$ and evaluate it at some point, which would cost at least $\text{dim}(z)^2$ computations. Higher order expansions would require even more computations, thus it's hard to achieve high non-linearity in the baseline using MuProp alone <sup id="fnref:muprop-different-series"><a class="footnote-ref" href="#fn:muprop-different-series">6</a></sup>.</p>
 <h2>REBAR</h2>
 <p><a href="https://arxiv.org/abs/1703.07370">REBAR</a><sup id="fnref:rebar-name"><a class="footnote-ref" href="#fn:rebar-name">8</a></sup> is a clever way to use the <a href="/posts/2017-10-28-stochastic-computation-graphs-discrete-relaxations.html#gumbel-softmax-relaxation-aka-concrete-distribution">Gumbel-Softmax (aka Concrete) Relaxation</a> as a baseline. </p>
-<p>A naive approach to the task would be to recall the Gumbel-Max trick: as we have already seen, this trick gives us the reparametrization, albeit not a differentiable one. However, we can move the non-differentiability into the $f(z)$, and then invoke REINFORCE to estimate gradient of average of the non-differentiable function (from now on we will assume $z$ is a one-hot vector and argmax is an operator that returns a one-hot vector, indicating position of the maximal element in the input and overall will be abusing notation treating the same $z$ a one-hot vector or a number depending on a context):</p>
+<p>A naive approach to the task would be to recall the Gumbel-Max trick: as we have already seen, this trick gives us the reparametrization, albeit not a differentiable one. However, we can move the non-differentiability into $f(z)$, and then invoke REINFORCE to estimate the gradient of the average of the non-differentiable function (from now on we will assume $z$ is a one-hot vector and argmax is an operator that returns a one-hot vector, indicating the position of the maximal element in the input, and overall will be abusing notation treating the same $z$ as a one-hot vector or a number depending on the context):</p>
 <p>$$
 \nabla_\theta \mathbb{E}_{p(z|\theta)} f(z)
 = \nabla_\theta \mathbb{E}_{p(\zeta|\theta)} f(\text{argmax} \zeta)
@@ -300,18 +300,18 @@ $$</p>
 <p>$$
  \zeta_k = \log p(z = k | \theta) + \gamma_k, \quad\quad \gamma_k \sim \text{Gumbel}(0, 1)
 $$</p>
-<p>Thus $\zeta_k$ also has a Gumbel distribution: $\zeta_k \sim \text{Gumbel}(\log p(z = k | \theta), 1)$. Ok, so what have we bought ourselves here? So far it looks like we gained nothing but instead only complicated the whole thing with these extra $\zeta$s. However, we just obtained a crucial property: we separated non-differentiability from the reparametrization. We now can sample continuous reparametrizeable $\zeta$s and the troublesome part – the argmax – is now a part of $f$. And this opens up a new way to use <strong>baselines with non-zero expectation</strong>:</p>
+<p>Thus $\zeta_k$ also has a Gumbel distribution: $\zeta_k \sim \text{Gumbel}(\log p(z = k | \theta), 1)$. Ok, so what have we bought ourselves here? So far it looks like we gained nothing but instead only complicated the whole thing with these extra $\zeta$s. However, we just obtained a crucial property: we separated non-differentiability from the reparametrization. We now can sample continuous reparametrizable $\zeta$s and the troublesome part – the argmax – is now a part of $f$. And this opens up a new way to use <strong>baselines with non-zero expectation</strong>:</p>
 <p>$$
 \mathbb{E}_{p(\zeta|\theta)} (f(\text{argmax} \zeta) - b(\zeta)) \nabla_\theta \log p(\zeta | \theta) + \nabla_\theta \mathbb{E}_{p(\zeta|\theta)} b(\zeta)
 $$</p>
-<p>And the most interesting thing is that the bias correction term, $\nabla_\theta \mathbb{E}_{p(\zeta|\theta)} b(\zeta)$, is differentiable and reparametrizable, and thus its gradient can be estimated with the reparametrization trick. Now, that's nice, but we can't just take any $b(\zeta)$ and hope for variance reduction. In order to actually benefit from such baseline, we need $b(\zeta) \approx f(\text{argmax} \zeta)$. Luckily, we already know a way to organize this: the Gumbel-Softmax obtained nicely by setting $b(\zeta) = f(\text{softmax}_\tau(\zeta))$:</p>
+<p>And the most interesting thing is that the bias correction term, $\nabla_\theta \mathbb{E}_{p(\zeta|\theta)} b(\zeta)$, is differentiable and reparametrizable, and thus its gradient can be estimated with the reparametrization trick. Now, that's nice, but we can't just take any $b(\zeta)$ and hope for variance reduction. In order to actually benefit from such a baseline, we need $b(\zeta) \approx f(\text{argmax} \zeta)$. Luckily, we already know a way to organize this: the Gumbel-Softmax obtained nicely by setting $b(\zeta) = f(\text{softmax}_\tau(\zeta))$:</p>
 <p>$$
 \hat{\nabla}_\theta^\text{SF-REBAR-naive} \mathcal{F}(\theta) 
 =
 (f(\text{argmax} \zeta) - b(\zeta)) \nabla_\theta \log p(\zeta | \theta) + \nabla_\theta f(\text{softmax}_\tau(\zeta))
 $$</p>
 <p>However, there's a reason I called this estimator <em>naive</em>. If you actually try implementing this estimator, you would hardly see any improvements. If you look closely, you'd notice that we actually increased the variance of the REINFORCE estimator by switching to $\zeta$s, and this increase might not be compensated by the Gumbel-Softmax baseline we introduced.</p>
-<p>I guess it all looks a bit confusing at this moment, so lets take a closer look at the original REINFORCE estimator and the naive REBAR without baseline:</p>
+<p>I guess it all looks a bit confusing at this moment, so let's take a closer look at the original REINFORCE estimator and the naive REBAR without baseline:</p>
 <p>$$
 \begin{align*}
 \hat{\nabla}_\theta^\text{SF} \mathcal{F}(\theta) 
@@ -323,8 +323,8 @@ f(z) \nabla_\theta \log p(z | \theta)
 f(\text{argmax} \zeta) \nabla_\theta \log p(\zeta | \theta)
 \end{align*}
 $$</p>
-<p>You'd think they're the same, however actually they're quite different. But not in the first terms, $f(z)$ and $f(\text{argmax} \zeta)$, as those are basically the same. It's the second term that's important to us: the vanilla REINFORCE has $\nabla_\theta \log p({\color{red} z}|\theta)$, whereas our naive REBAR has $\nabla_\theta \log p({\color{red} \zeta}|\theta)$. This seemingly innocent difference is a huge deal! To see why <a href="/posts/2017-09-10-stochastic-computation-graphs-continuous-case.html">recall the REINFORCE intuition</a>: it is not a gradient method, but rather a random search in disguise: it tries a bunch of points, and increases probabilities of those performing good. However, the major problem is that different $\zeta$s can lead to the same $z$: indeed the argmax takes on only finite number of different values, whereas there's continuum of different vectors $\zeta$. This, in result, means that our naive REBAR estimate would be trying some $\zeta$ (corresponding to some $z$) and then trying to pull the probability mass towards (or away from) this point, maybe undoing some useful work it did for a different $\zeta$ (but same $z$).</p>
-<p>To fix this issue we need to stay in "space of $\nabla_\theta \log p(z|\theta)$" – a control variate of the form $b(z) \nabla_\theta \log p(z|\theta)$. And one is given with help of the following clever identity:</p>
+<p>You'd think they're the same, however actually they're quite different. But not in the first terms, $f(z)$ and $f(\text{argmax} \zeta)$, as those are basically the same. It's the second term that's important to us: the vanilla REINFORCE has $\nabla_\theta \log p({\color{red} z}|\theta)$, whereas our naive REBAR has $\nabla_\theta \log p({\color{red} \zeta}|\theta)$. This seemingly innocent difference is a huge deal! To see why <a href="/posts/2017-09-10-stochastic-computation-graphs-continuous-case.html">recall the REINFORCE intuition</a>: it is not a gradient method, but rather a random search in disguise: it tries a bunch of points, and increases probabilities of those performing well. However, the major problem is that different $\zeta$s can lead to the same $z$: indeed the argmax takes on only a finite number of different values, whereas there's a continuum of different vectors $\zeta$. As a result, this means that our naive REBAR estimate would be trying some $\zeta$ (corresponding to some $z$) and then trying to pull the probability mass towards (or away from) this point, maybe undoing some useful work it did for a different $\zeta$ (but the same $z$).</p>
+<p>To fix this issue we need to stay in the "space of $\nabla_\theta \log p(z|\theta)$" – a control variate of the form $b(z) \nabla_\theta \log p(z|\theta)$. And one is given with the help of the following clever identity:</p>
 <p>$$
 \begin{align*}
 \nabla_\theta \mathbb{E}_{p(\zeta|\theta)} b(\text{softmax}_\tau(\zeta))
@@ -338,7 +338,7 @@ $$</p>
 \mathbb{E}_{p(z|\theta)} \nabla_\theta \mathbb{E}_{p(\zeta|z, \theta)} b(\text{softmax}_\tau(\zeta))
 \end{align*}
 $$</p>
-<p>On the left hand side we have the usual Gumbel-Softmax relaxed gradient which we can compute using the reparametrization. On the right hand size we have a REINFORCE-like gradient -- which is a good candidate for a baseline -- and another weirdly looking term. We can rearrange the terms to express the bias of such a baseline through the other two terms:</p>
+<p>On the left hand side we have the usual Gumbel-Softmax relaxed gradient which we can compute using the reparametrization. On the right hand side we have a REINFORCE-like gradient -- which is a good candidate for a baseline -- and another weird-looking term. We can rearrange the terms to express the bias of such a baseline through the other two terms:</p>
 <p>$$
 \begin{align*}
 \mathbb{E}_{p(z|\theta)} \mathbb{E}_{p(\zeta|z, \theta)} &amp; b(\text{softmax}_\tau(\zeta)) \nabla_\theta \log p(z|\theta)
@@ -348,14 +348,14 @@ $$</p>
 \mathbb{E}_{p(z|\theta)} \nabla_\theta \mathbb{E}_{p(\zeta|z, \theta)} b(\text{softmax}_\tau(\zeta))
 \end{align*}
 $$</p>
-<p>But what about that weirdly looking last term? Can it be estimated efficiently? First, note that we do not need to differentiate through $z$, the dependence through $z$ was already accounted for. The expectation we need to differentiate is taken over $p(\zeta|z, \theta)$ which is a distribution over $\zeta$ such that $\text{argmax} \zeta = z$. A reassuring observation is that such random variable is continuous. Moreover, the restriction $\text{argmax} \zeta = z$ defines a connected region of $\mathbb{R}^K$, which means there does exist a differentible reparametrization for such random variable! We won't be deriving this reparametrization here, please refer to <a href="https://cmaddis.github.io/gumbel-machinery">Chris Maddison's blog</a>. That said, the reparametrization is</p>
+<p>But what about that weird-looking last term? Can it be estimated efficiently? First, note that we do not need to differentiate through $z$, the dependence through $z$ was already accounted for. The expectation we need to differentiate is taken over $p(\zeta|z, \theta)$ which is a distribution over $\zeta$ such that $\text{argmax} \zeta = z$. A reassuring observation is that such a random variable is continuous. Moreover, the restriction $\text{argmax} \zeta = z$ defines a connected region of $\mathbb{R}^K$, which means there does exist a differentiable reparametrization for such a random variable! We won't be deriving this reparametrization here, please refer to <a href="https://cmaddis.github.io/gumbel-machinery">Chris Maddison's blog</a>. That said, the reparametrization is</p>
 <p>$$
 \zeta_k|z = \begin{cases}
 -\log (- \log v_k), \quad\quad\quad &amp; \text{if z = k}, \\
 -\log \left(-\frac{\log v_k}{p(z=k|\theta)} - \log v_z \right), \quad\quad\quad &amp; \text{otherwise}.
 \end{cases}
 $$</p>
-<p>Where $v \sim U[0,1]^K$ is a $K$-dimensional standard uniform r.v. Now, having this reparametrization we can estimate both terms in the bias correction via the reparametrization trick, which leads to the following estimate (I use notation $\hat{z}|z$ to mean singular object, the conditional relaxed variable, it's <strong>not</strong> $\hat{z}$ with some $|z$ applied to it, and neither it's $b(\cdot|z)$):</p>
+<p>Where $v \sim U[0,1]^K$ is a $K$-dimensional standard uniform r.v. Now, having this reparametrization we can estimate both terms in the bias correction via the reparametrization trick, which leads to the following estimate (I use the notation $\hat{z}|z$ to mean a single object, the conditional relaxed variable, it's <strong>not</strong> $\hat{z}$ with some $|z$ applied to it, and neither is it $b(\cdot|z)$):</p>
 <p>$$
 \begin{align*}
 \hat{\nabla}_\theta^\text{SF-REBAR} \mathcal{F}(\theta) 
@@ -382,8 +382,8 @@ z = \text{argmax} \zeta,
 \zeta_k|z = \text{given above}
 \end{align*}
 $$</p>
-<p>What about $b(\cdot)$? Authors use $b(\cdot) = \eta f(\cdot)$ where $\eta$ is some hyperparameter that regulates the strength of a baseline. But turns out, we can avoid hyperparameter search for this variable...</p>
-<h3>Hyperparameter learing and RELAX</h3>
+<p>What about $b(\cdot)$? The authors use $b(\cdot) = \eta f(\cdot)$ where $\eta$ is some hyperparameter that regulates the strength of a baseline. But turns out, we can avoid hyperparameter search for this variable...</p>
+<h3>Hyperparameter learning and RELAX</h3>
 <p>An important observation is that the gradient estimator we've obtained is unbiased<sup id="fnref:gumbel-rebar"><a class="footnote-ref" href="#fn:gumbel-rebar">9</a></sup>. That is, for any choice of hyperparameters $\tau$ (the Gumbel-Softmax temperature) and $\eta$ the average value of our estimator is equal to the true gradient. Thus, we can actually learn their values! The only question is, well, which objective should we minimize? We can't minimize the problem's loss $-f(\cdot)$, since we already have its gradient. The next logical step is to minimize the <em>variance</em> of the gradient estimator.
 $$
 \text{Var}\left( \hat{\nabla}_\theta^\text{SF-REBAR} \mathcal{F}(\theta)  \right)
@@ -418,7 +418,7 @@ $$
 \end{align*}
 $$</p>
 <p>This optimization problem can be solved using stochastic optimization. We first get a stochastic estimate of the gradient w.r.t. $\theta$, and then obtain an estimate of the gradient w.r.t. "hyperparameters" $\tau$ and $\eta$. Practical implementation is somewhat tricky, the <a href="https://arxiv.org/abs/1802.05098">MagicBox operator</a> might be useful.</p>
-<p>Finally, it's worth noticing that although we can't apply this estimator some scenarios like Reinforcement Learning (because we don't have access to $f(\cdot)$), it's possible to introduce a minor modification to overcome this issue. Remember the moment we decided to put $b(\cdot) = \eta f(\cdot)$? At this moment we could have made any other choice, for example consider $b(\cdot) = h_\eta(\cdot)$ -- a neural network with parameters $\eta$ that takes $\hat{z}$ as input and returns the same thig $f(\cdot)$ would return (a scalar in our case). Then we can learn the parameters $\eta$ of this network in the same way as before.</p>
+<p>Finally, it's worth noticing that although we can't apply this estimator in some scenarios like Reinforcement Learning (because we don't have access to $f(\cdot)$), it's possible to introduce a minor modification to overcome this issue. Remember the moment we decided to put $b(\cdot) = \eta f(\cdot)$? At this moment we could have made any other choice, for example consider $b(\cdot) = h_\eta(\cdot)$ -- a neural network with parameters $\eta$ that takes $\hat{z}$ as input and returns the same thing $f(\cdot)$ would return (a scalar in our case). Then we can learn the parameters $\eta$ of this network in the same way as before.</p>
 <p>This gives us the so-called <a href="https://arxiv.org/abs/1711.00123">RELAX</a> gradient estimator:
 $$
 \hat{\nabla}_\theta^\text{SF-RELAX} \mathcal{F}(\theta) 
@@ -430,10 +430,10 @@ h_\eta(\hat{z})
  -
 \nabla_\theta h_\eta(\hat{z}|z)
 $$</p>
-<p>This estimator now does not assume access to the optimizeable function $f(\cdot)$, nor its differentiability, so it can be applied in larger number of scenarios. Of course, having an access to a differentiable $f(\cdot)$ would put this estimator into a disadvantage compared to REBAR, since the later already has a pretty good idea as to how the baseline should look like.</p>
-<p>Overall, I like the REBAR/RELAX gradient estimator for its use of the target function's gradient $\nabla_z f(\cdot)$ and non-linear baseline somewhat closely approximating the target $f(z)$. However, it's effectiveness comes at a cost: you'd need 3 times more computation: one discrete run $f(z)$, one relaxed run $f(\hat{z})$ and one conditionally relaxed run $f(\hat{z}|z)$ – which is much more computation than the plain Gumbel-Softmax does.</p>
+<p>This estimator now does not assume access to the optimizable function $f(\cdot)$, nor its differentiability, so it can be applied in a larger number of scenarios. Of course, having access to a differentiable $f(\cdot)$ would put this estimator at a disadvantage compared to REBAR, since the latter already has a pretty good idea as to what the baseline should look like.</p>
+<p>Overall, I like the REBAR/RELAX gradient estimator for its use of the target function's gradient $\nabla_z f(\cdot)$ and non-linear baseline somewhat closely approximating the target $f(z)$. However, its effectiveness comes at a cost: you'd need 3 times more computation: one discrete run $f(z)$, one relaxed run $f(\hat{z})$ and one conditionally relaxed run $f(\hat{z}|z)$ – which is much more computation than the plain Gumbel-Softmax does.</p>
 <h2>Conclusion</h2>
-<p>This post closes the series of Stochastic Computation Graphs. There are many other methods, but for some reason I left them uncovered. Maybe I consider them weird mathematical hacks or simply didn't know about their existence! Overall, I think all these estimators I covered in 3 posts and reasoning behind them establish a solid toolkit for many problems of practical interest.</p>
+<p>This post closes the series on Stochastic Computation Graphs. There are many other methods, but for some reason I left them uncovered. Maybe I consider them weird mathematical hacks or simply didn't know about their existence! Overall, I think all these estimators I covered in 3 posts and the reasoning behind them establish a solid toolkit for many problems of practical interest.</p>
 <div class="footnote">
 <hr>
 <ol>
@@ -441,10 +441,10 @@ $$</p>
 <p>REINFORCE stands for <strong>RE</strong>ward <strong>I</strong>ncrement = <strong>N</strong>onnegative <strong>F</strong>actor × <strong>O</strong>ffset <strong>R</strong>einforcement × <strong>C</strong>haracteristic <strong>E</strong>ligibility&#160;<a class="footnote-backref" href="#fnref:reinforce-abbr" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:matrix-baselines">
-<p>One could also use matrix baselines and multiply them by the $\nabla \log p(z|\theta)$ as usual, but we won't cover these – this method does not scale well with number of parameters in $\theta$.&#160;<a class="footnote-backref" href="#fnref:matrix-baselines" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<p>One could also use matrix baselines and multiply them by $\nabla \log p(z|\theta)$ as usual, but we won't cover these – this method does not scale well with the number of parameters in $\theta$.&#160;<a class="footnote-backref" href="#fnref:matrix-baselines" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 <li id="fn:monte-carlo-inefficiency">
-<p>Monte Carlo averaging isn't very efficient. The variance decreases as $O(1/L)$ for $L$ samples, and typical error (by invoking the CLT) drops as $O(1 / \sqrt{L})$. That is, to reduce the typical error of MC approximation by a factor of 1000, you'd need an order of millions samples! It's very hard to beat the high variance by sampling alone.&#160;<a class="footnote-backref" href="#fnref:monte-carlo-inefficiency" title="Jump back to footnote 3 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:monte-carlo-inefficiency" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+<p>Monte Carlo averaging isn't very efficient. The variance decreases as $O(1/L)$ for $L$ samples, and typical error (by invoking the CLT) drops as $O(1 / \sqrt{L})$. That is, to reduce the typical error of MC approximation by a factor of 1000, you'd need an order of millions of samples! It's very hard to beat the high variance by sampling alone.&#160;<a class="footnote-backref" href="#fnref:monte-carlo-inefficiency" title="Jump back to footnote 3 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:monte-carlo-inefficiency" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 <li id="fn:nvil-square-error">
 <p>Actually, it'd make much more sense to minimize the variance of the obtained estimator directly, we'll discuss this later when talking about the REBAR and RELAX methods.&#160;<a class="footnote-backref" href="#fnref:nvil-square-error" title="Jump back to footnote 4 in the text">&#8617;</a></p>

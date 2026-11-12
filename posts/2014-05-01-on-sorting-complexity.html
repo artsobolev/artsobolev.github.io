@@ -7,7 +7,7 @@
   <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
   <meta property="og:title" content="On Sorting Complexity – Sobolev.space" />
-  <meta property="og:description" content="It's well known that lower bound for sorting problem (in general case) is $\Omega(n \log n)$. The proof I was taught is somewhat involved and is based on paths in "decision" trees. Recently I've discovered an information-theoretic approach (or..." />
+  <meta property="og:description" content="It's well known that the lower bound for the sorting problem (in the general case) is $\Omega(n \log n)$. The proof I was taught is somewhat involved and is based on paths in "decision" trees. Recently I've discovered an information-theoretic approach..." />
 
   <link rel="shortcut icon" href="/favicon.ico"/>
 
@@ -51,7 +51,7 @@
 </header>
 
 <section class="post-body">
-    <p>It's well known that lower bound for sorting problem (in general case) is
+    <p>It's well known that the lower bound for the sorting problem (in the general case) is
  $\Omega(n \log n)$. The proof I was taught is somewhat involved and is
 based on paths in "decision" trees. Recently I've discovered an
 information-theoretic approach (or reformulation) to that proof. </p>
@@ -59,13 +59,13 @@ information-theoretic approach (or reformulation) to that proof. </p>
 
 <p>First, let's state the problem: given a set of some objects with an ordering
 produce elements of that set in that order. For now it's completely irrelevant
-what are these objects, so we can assume them to be just numbers from 1 to n,
+what these objects are, so we can assume them to be just numbers from 1 to n,
 or some permutation. Thus we'll be interested in sorting permutations.</p>
 <p>We're given an ordering via a comparison function. It tells us if one object
-preceds (or is smaller) another outputing True or False. Thus each invocation
+precedes (or is smaller than) another outputting True or False. Thus each invocation
 of the comparator gives us 1 bit of information.</p>
-<p>Next question is how many bits we need to represent any permutation. It's just
-a binary logarithm of number of all possible permutations of $n$ elements:
+<p>The next question is how many bits we need to represent any permutation. It's just
+the binary logarithm of the number of all possible permutations of $n$ elements:
 $\log_2 n!$. Then we notice that </p>
 <p>$$
 \log_2 n! = \sum_{k=1}^n \log_2 k \ge \sum_{k=n/2}^{n} \log_2 k
@@ -74,10 +74,10 @@ $$</p>
 <p>$$
 \log_2 n! = \sum_{k=1}^n \log_2 k \le n \log_2 n
 $$</p>
-<p>(Or just use the
+<p>(Or just use
 <a href="http://en.wikipedia.org/wiki/Stirling%27s_approximation">Stirling's
-approximation</a> formula). Hence $\log_2 n! = \Theta(n \log n)$</p>
-<p>So what, you may ask. The key point of proof is that sorting is essentially
+approximation</a> formula). Hence $\log_2 n! = \Theta(n \log n)$.</p>
+<p>So what, you may ask. The key point of the proof is that sorting is essentially
 a search for a correct permutation of the input one. Since one needs $\log_2 n!$
 bits to represent any permutation, we <strong>need to get that many bits</strong> of
 information somehow. Now let's get back to our comparison function. As we've
@@ -86,11 +86,11 @@ That implies that we need to call it $\log n! = \Theta(n \log n)$ times. And tha
 exactly the lower-bound for sorting complexity. Q.E.D.</p>
 <p>Non-$n \log n$ sorting algorithms like
 <a href="http://en.wikipedia.org/wiki/Radix_sort">RadixSort</a> are possible
-because they use much more bits of information, taking advantage of
+because they use many more bits of information, taking advantage of
 numbers' structure.</p>
 </section>
 
-<div class="tags-pane">Tagged as <a href="/tags/algortihms.html">algortihms</a>, <a href="/tags/computer-science.html">computer science</a></div>
+<div class="tags-pane">Tagged as <a href="/tags/algorithms.html">algorithms</a>, <a href="/tags/computer-science.html">computer science</a></div>
 </article>
 
 <section class="post-comments">

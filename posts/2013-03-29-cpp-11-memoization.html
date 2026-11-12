@@ -7,7 +7,7 @@
   <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
   <meta property="og:title" content="Memoization Using C++11 – Sobolev.space" />
-  <meta property="og:description" content="Recently I've read an article Efficient Memoization using Partial Function Application. Author explains function memoization using partial application. When I was reading the article, I thought "Hmmm, can I come up with a more general solution?" And..." />
+  <meta property="og:description" content="Recently I've read an article Efficient Memoization using Partial Function Application. The author explains function memoization using partial application. When I was reading the article, I thought "Hmmm, can I come up with a more general solution?"..." />
 
   <link rel="shortcut icon" href="/favicon.ico"/>
 
@@ -51,16 +51,16 @@
 </header>
 
 <section class="post-body">
-    <p>Recently I've read an article <a href="http://john-ahlgren.blogspot.ru/2013/03/efficient-memoization-using-partial.html" title="John Ahlgren: Efficient Memoization using Partial Function Application">Efficient Memoization using Partial Function Application</a>. Author explains function memoization using partial application. When I was reading the article, I thought "Hmmm, can I come up with a more general solution?" And as suggested in comments, one can use variadic templates to achieve it. So here is my version.</p>
+    <p>Recently I've read an article <a href="http://john-ahlgren.blogspot.ru/2013/03/efficient-memoization-using-partial.html" title="John Ahlgren: Efficient Memoization using Partial Function Application">Efficient Memoization using Partial Function Application</a>. The author explains function memoization using partial application. When I was reading the article, I thought "Hmmm, can I come up with a more general solution?" And as suggested in the comments, one can use variadic templates to achieve it. So here is my version.</p>
 <!--more-->
-<p>First let's do it in a more object-oriented way: we define a template class <code>Memoizator</code> with 2 parameters: a return value type and a list of argument's types. Also we incapsulate a lookup map and will use C++11's <a href="http://en.cppreference.com/w/cpp/utility/tuple" title="std::tuple - cppreference.com">std::tuple</a> to represent an arguments set.</p>
+<p>First let's do it in a more object-oriented way: we define a template class <code>Memoizator</code> with 2 parameters: a return value type and a list of argument types. Also we encapsulate a lookup map and will use C++11's <a href="http://en.cppreference.com/w/cpp/utility/tuple" title="std::tuple - cppreference.com">std::tuple</a> to represent an argument set.</p>
 <p>The code is as follows:</p>
 <script src="https://gist.github.com/artsobolev/5270779.js"></script>
 
-<p>Good, but what about computing n-th Fibonacci number using memoization? It's not possible with a current version of <code>Memoizator</code> since it uses a separate map for each instance even if function is the same. It looks inefficient to store a separate lookup map for each instance of the same function. We'll fix it by creating a static storage for maps accessed by a function address:</p>
+<p>Good, but what about computing the n-th Fibonacci number using memoization? It's not possible with the current version of <code>Memoizator</code> since it uses a separate map for each instance even if the function is the same. It looks inefficient to store a separate lookup map for each instance of the same function. We'll fix it by creating a static storage for maps accessed by a function address:</p>
 <script src="https://gist.github.com/artsobolev/5271223.js"></script>
 
-<p>Now let's compare the memoized version against the regular one. If we compute the 42th fibonacci number using simple recursive version (with exponential time complexity), we'd get</p>
+<p>Now let's compare the memoized version against the regular one. If we compute the 42nd Fibonacci number using a simple recursive version (with exponential time complexity), we'd get</p>
 <pre><strong>$ time ./a.out</strong> 
 267914296
 

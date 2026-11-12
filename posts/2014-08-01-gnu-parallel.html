@@ -7,7 +7,7 @@
   <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
   <meta property="og:title" content="Exploiting Multiple Machines for Embarrassingly Parallel Applications – Sobolev.space" />
-  <meta property="og:description" content="During work on my machine learning project I was needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would..." />
+  <meta property="og:description" content="During work on my machine learning project I needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would just..." />
 
   <link rel="shortcut icon" href="/favicon.ico"/>
 
@@ -51,36 +51,36 @@
 </header>
 
 <section class="post-body">
-    <p>During work on my machine learning project I was needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would just slow down overall running time because of increased amount of context switches. Yet running 4 (=number of cores in my CPU) of them at a time (actually, 3 since other applications need CPU, too) should speed it up.</p>
-<p>Fortunately, I have an old laptop with 2 cores as well as an access to somewhat more modern machine with 4 cores. That results in 10 cores spread across 3 machines (all of`em have some version of GNU Linux installed). The question was how to exploit such a treasury.</p>
+    <p>During work on my machine learning project I needed to perform some quite computation-heavy calculations several times — each time with a bit different inputs. These calculations were CPU and memory bound, so just spawning them all at once would just slow down overall running time because of the increased amount of context switches. Yet running 4 (=number of cores in my CPU) of them at a time (actually, 3 since other applications need CPU, too) should speed it up.</p>
+<p>Fortunately, I have an old laptop with 2 cores as well as access to a somewhat more modern machine with 4 cores. That results in 10 cores spread across 3 machines (all of 'em have some version of GNU Linux installed). The question was how to exploit such a treasury.</p>
 <!--more-->
 
 <p>And the answer is GNU Parallel with some additional bells and whistles. GNU Parallel allows one to execute some commands in parallel and even in a distributed way.</p>
-<p>The command was as following</p>
+<p>The command was as follows:</p>
 <div class="highlight"><pre><span></span><code>parallel<span class="w"> </span>-u<span class="w"> </span>--wd<span class="w"> </span>...<span class="w"> </span>-S<span class="w"> </span>:,host1,host2<span class="w"> </span>--trc<span class="w"> </span><span class="o">{}</span>.emb<span class="w"> </span><span class="s2">&quot;sh {}&quot;</span>
 </code></pre></div>
 
 <p>Here we have:</p>
 <ul>
-<li>**wd** stands for working directory. Three-dots means <code>parallel</code>'s temporary folder</li>
-<li>**S** contains list of hosts with : being a localhost</li>
-<li>**trc** stands for "Transfer, Return, Cleanup" and means that we'd like to transfer an executable file to target host, return specified file and do a cleanup</li>
+<li>**wd** stands for working directory. Three dots mean <code>parallel</code>'s temporary folder</li>
+<li>**S** contains a list of hosts with : being localhost</li>
+<li>**trc** stands for "Transfer, Return, Cleanup" and means that we'd like to transfer an executable file to the target host, return the specified file and do a cleanup</li>
 </ul>
 
-<p><code>parallel</code> accepts list command arguments (file names) in standard input and executes a command (<code>sh</code> in my case) for each of them.</p>
+<p><code>parallel</code> accepts a list of command arguments (file names) in standard input and executes a command (<code>sh</code> in my case) for each of them.</p>
 <div class="highlight"><pre><span></span><code>ls<span class="w"> </span>-1<span class="w"> </span>jobs/*<span class="w"> </span><span class="p">|</span><span class="w"> </span>parallel<span class="w"> </span>-u<span class="w"> </span>--wd<span class="w"> </span>...<span class="w"> </span>-S<span class="w"> </span>:,host1,host2<span class="w"> </span>--trc<span class="w"> </span><span class="o">{}</span>.emb<span class="w"> </span><span class="s2">&quot;sh {}&quot;</span>
 </code></pre></div>
 
-<p>There's a problem: we usually need more than one file to do usefull stuff. There are several solutions to that problem</p>
+<p>There's a problem: we usually need more than one file to do useful stuff. There are several solutions to that problem:</p>
 <ul>
 <li>**Bring all files manually**<br/>
-It's a solution, but somewhat tedious one: setting computing environment on a several machines is dull
+It's a solution, but a somewhat tedious one: setting up a computing environment on several machines is dull
 </li>
 <li>**tar it and do all the stuff in a command**<br/>
 Looks better, but some shell kung-fu is required
 </li>
 <li>**Use <a href="http://en.wikipedia.org/wiki/Shar">shar</a>**<br/>
-Basically it's a tar archive with some shell commands for (self-)extracting. I chose this way and glued in some my code.
+Basically it's a tar archive with some shell commands for (self-)extracting. I chose this way and glued in some of my code.
 </li>
 </ul>
 </section>

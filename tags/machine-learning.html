@@ -64,7 +64,7 @@
             <time>December 1, 2019</time>
         </header>
 
-        <section><p>I have been looking at $f$-GANs derivation doing some of my research, and found an easier way to derive its lower bound, without invoking convex conjugate functions.</p>
+        <section><p>I have been looking at the $f$-GANs derivation while doing some of my research, and found an easier way to derive its lower bound, without invoking convex conjugate functions.</p>
 </section>
     </article>
 
@@ -76,7 +76,7 @@
             <time>September 15, 2019</time>
         </header>
 
-        <section><p>This posts finishes the discussion started in the <a href="/posts/2019-08-10-thoughts-on-mutual-information-more-estimators.html">Thoughts on Mutual Information: More Estimators</a> with a consideration of alternatives to the Mutual Information.</p>
+        <section><p>This post finishes the discussion started in <a href="/posts/2019-08-10-thoughts-on-mutual-information-more-estimators.html">Thoughts on Mutual Information: More Estimators</a> with a consideration of alternatives to the Mutual Information.</p>
 </section>
     </article>
 
@@ -88,7 +88,7 @@
             <time>August 14, 2019</time>
         </header>
 
-        <section><p>This posts continues the discussion started in the <a href="/posts/2019-08-10-thoughts-on-mutual-information-more-estimators.html">Thoughts on Mutual Information: More Estimators</a>. This time we'll focus on drawbacks and limitations of these bounds.</p>
+        <section><p>This post continues the discussion started in <a href="/posts/2019-08-10-thoughts-on-mutual-information-more-estimators.html">Thoughts on Mutual Information: More Estimators</a>. This time we'll focus on drawbacks and limitations of these bounds.</p>
 </section>
     </article>
 
@@ -125,7 +125,7 @@
             <time>April 26, 2019</time>
         </header>
 
-        <section><p>This post sets background for the upcoming post on my work on more efficient use of neural samplers for Variational Inference.</p>
+        <section><p>This post sets the background for the upcoming post on my work on more efficient use of neural samplers for Variational Inference.</p>
 </section>
     </article>
 
@@ -138,7 +138,7 @@
         </header>
 
         <section><p>This is the final post of the <a href="/tags/stochastic-computation-graphs-series.html">stochastic computation graphs series</a>. Last time we discussed models with <a href="/posts/2017-10-28-stochastic-computation-graphs-discrete-relaxations.html">discrete relaxations of stochastic nodes</a>, which allowed us to employ the power of reparametrization.</p>
-<p>These methods, however, posses one flaw: they consider different models, thus introducing inherent bias – your test time discrete model will be doing something different from what your training time model did. Therefore in this post we'll get back to the REINFORCE aka Score Function estimator, and see if we can fix its problems.</p>
+<p>These methods, however, possess one flaw: they consider different models, thus introducing inherent bias – your test time discrete model will be doing something different from what your training time model did. Therefore in this post we'll get back to the REINFORCE aka Score Function estimator, and see if we can fix its problems.</p>
 </section>
     </article>
 
@@ -150,7 +150,7 @@
             <time>October 28, 2017</time>
         </header>
 
-        <section><p>This is the second post of the <a href="/tags/stochastic-computation-graphs-series.html">stochastic computation graphs series</a>. Last time we discussed models with <a href="/posts/2017-09-10-stochastic-computation-graphs-continuous-case.html">continuous stochastic nodes</a>, for which there are powerful reparametrization technics.</p>
+        <section><p>This is the second post of the <a href="/tags/stochastic-computation-graphs-series.html">stochastic computation graphs series</a>. Last time we discussed models with <a href="/posts/2017-09-10-stochastic-computation-graphs-continuous-case.html">continuous stochastic nodes</a>, for which there are powerful reparametrization techniques.</p>
 <p>Unfortunately, these methods don't work for discrete random variables. Moreover, it looks like there's no way to backpropagate through discrete stochastic nodes, as there's no infinitesimal change of random values when you infinitesimally perturb their parameters.</p>
 <p>In this post I'll talk about continuous relaxations of discrete random variables.</p>
 </section>
@@ -165,7 +165,7 @@
         </header>
 
         <section><p>Last year I covered <a href="/tags/modern-variational-inference-series.html">some modern Variational Inference theory</a>. These methods are often used in conjunction with Deep Neural Networks to form deep generative models (VAE, for example) or to enrich deterministic models with stochastic control, which leads to better exploration. Or you might be interested in amortized inference.</p>
-<p>All these cases turn your computation graph into a stochastic one – previously deterministic nodes now become random. And it's not obvious how to do backpropagation through these nodes. In <a href="/tags/stochastic-computation-graphs-series.html">this series</a> I'd like to outline possible approaches. This time we're going to see why general approach works poorly, and see what we can do in a continuous case.</p>
+<p>All these cases turn your computation graph into a stochastic one – previously deterministic nodes now become random. And it's not obvious how to do backpropagation through these nodes. In <a href="/tags/stochastic-computation-graphs-series.html">this series</a> I'd like to outline possible approaches. This time we're going to see why the general approach works poorly, and see what we can do in a continuous case.</p>
 </section>
     </article>
 

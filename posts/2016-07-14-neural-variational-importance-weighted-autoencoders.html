@@ -7,7 +7,7 @@
   <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
   <meta property="og:title" content="Neural Variational Inference: Importance Weighted Autoencoders – Sobolev.space" />
-  <meta property="og:description" content="Previously we covered Variational Autoencoders (VAE) — popular inference tool based on neural networks. In this post we'll consider, a followup work from Torronto by Y. Burda, R. Grosse and R. Salakhutdinov, Importance Weighted Autoencoders (IWAE)...." />
+  <meta property="og:description" content="Previously we covered Variational Autoencoders (VAE) — a popular inference tool based on neural networks. In this post we'll consider a followup work from Toronto by Y. Burda, R. Grosse and R. Salakhutdinov, Importance Weighted Autoencoders (IWAE)...." />
 
   <link rel="shortcut icon" href="/favicon.ico"/>
 
@@ -51,13 +51,13 @@
 </header>
 
 <section class="post-body">
-    <p>Previously we covered <a href="/posts/2016-07-11-neural-variational-inference-variational-autoencoders-and-Helmholtz-machines.html">Variational Autoencoders</a> (VAE) — popular inference tool based on neural networks. In this post we'll consider, a followup work from Torronto by Y. Burda, R. Grosse and R. Salakhutdinov, <a href="https://arxiv.org/abs/1509.00519">Importance Weighted Autoencoders</a> (IWAE). The crucial contribution of this work is introduction of a new lower-bound on the marginal log-likelihood $\log p(x)$ which generalizes ELBO, but also allows one to use less accurate approximate posteriors $q(z \mid x, \Lambda)$.</p>
-<p>On a dessert we'll discuss another paper, <a href="https://arxiv.org/abs/1602.06725">Variational inference for Monte Carlo objectives</a> by A. Mnih and D. Rezende which aims to broaden the applicability of this approach to models where reparametrization trick can not be used (e.g. for discrete variables).</p>
+    <p>Previously we covered <a href="/posts/2016-07-11-neural-variational-inference-variational-autoencoders-and-Helmholtz-machines.html">Variational Autoencoders</a> (VAE) — a popular inference tool based on neural networks. In this post we'll consider a followup work from Toronto by Y. Burda, R. Grosse and R. Salakhutdinov, <a href="https://arxiv.org/abs/1509.00519">Importance Weighted Autoencoders</a> (IWAE). The crucial contribution of this work is the introduction of a new lower-bound on the marginal log-likelihood $\log p(x)$ which generalizes ELBO, but also allows one to use less accurate approximate posteriors $q(z \mid x, \Lambda)$.</p>
+<p>For dessert we'll discuss another paper, <a href="https://arxiv.org/abs/1602.06725">Variational inference for Monte Carlo objectives</a> by A. Mnih and D. Rezende which aims to broaden the applicability of this approach to models where the reparametrization trick cannot be used (e.g. for discrete variables).</p>
 <!--more-->
 
 <h3>Importance Weighted Autoencoders</h3>
 
-<p>Let's first answer the question of how one can come up with a lower bound for the marginal log-likelihood? In the very beginning of the series, <a href="/posts/2016-07-01-neural-variational-inference-classical-theory.html">Classical Theory</a> post, we used some trickery to come up with the ELBO. That massaging of the marginal log-likelihood wasn't particulary enlightening on how one could invent that lower bound. Now we're going to consider a principled approach to invention of new lower bounds based on <a href="https://en.wikipedia.org/wiki/Jensen%27s_inequality">Jensen's inequality</a>.</p>
+<p>Let's first answer the question of how one can come up with a lower bound for the marginal log-likelihood. In the very beginning of the series, the <a href="/posts/2016-07-01-neural-variational-inference-classical-theory.html">Classical Theory</a> post, we used some trickery to come up with the ELBO. That massaging of the marginal log-likelihood wasn't particularly enlightening on how one could invent that lower bound. Now we're going to consider a principled approach to the invention of new lower bounds based on <a href="https://en.wikipedia.org/wiki/Jensen%27s_inequality">Jensen's inequality</a>.</p>
 <p>Suppose we have some unbiased estimator $f(x, z)$ of $p(x)$, that is, $\E_{q(z)} f(x, z) = p(x)$. Then</p>
 <p>$$
 \log p(x) = \log \E_{q(z)} f(x, z) \stackrel{\text{Jensen}}{\ge} \E_{q(z)} \log f(x, z)
@@ -67,14 +67,14 @@ $$</p>
 f(x, z_1, \dots, z_K) = \frac{1}{K} \sum_{k=1}^K \frac{p(x, z_k)}{q(z_k \mid x)}
 $$</p>
 <p>Where each $z_k$ comes from the same distribution $q(z_k \mid x) = q(z \mid x)$.
-Obviously, $f(x, z_1, \dots, z_K)$ is still an unbiased estimator of the $p(x)$, and therefore $\E_{q(z_{1 \dots K}|x)} \log f(x, z_1, \dots, z_K)$ is a valid lower-bound on the marginal log-likelihood.</p>
+Obviously, $f(x, z_1, \dots, z_K)$ is still an unbiased estimator of $p(x)$, and therefore $\E_{q(z_{1 \dots K}|x)} \log f(x, z_1, \dots, z_K)$ is a valid lower-bound on the marginal log-likelihood.</p>
 <p>Let's analyze this new lower-bound now. First, let's dissect the ELBO:</p>
 <p>$$
 \mathcal{L}(\Theta, \Lambda)
 = \E_{q(z_1|x) \dots q(z_K|x)} \log \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)}
 = \E_{q(z_1|x) \dots q(z_K|x)} \left[\log \frac{p(z \mid x, \Theta)}{q(z \mid x, \Lambda)} \right] + \log p(x \mid \Theta)
 $$</p>
-<p>If $q$ approximates the true posterior accurately, the first term (which is a KL-divergence, BTW) is close to zero. However, when estmating it using Monte Carlo samples, the ELBO heavily penalizes inaccurate approximations: if $q(z \mid x, \Lambda)$ gives us samples from high probability regions of the true posterior $p(z \mid x, \Theta)$ only occasionally (like 20% of times), the gap between the ELBO and the marginal log-likelihood would be huge ($p(z\mid x, \Theta)$ is small, $q(z \mid x, \Lambda)$ is big), which does not help learning. As you might have guessed, IWAE allows us to use several samples. Let's see it in detail:</p>
+<p>If $q$ approximates the true posterior accurately, the first term (which is a KL-divergence, BTW) is close to zero. However, when estimating it using Monte Carlo samples, the ELBO heavily penalizes inaccurate approximations: if $q(z \mid x, \Lambda)$ gives us samples from high probability regions of the true posterior $p(z \mid x, \Theta)$ only occasionally (like 20% of the time), the gap between the ELBO and the marginal log-likelihood would be huge ($p(z\mid x, \Theta)$ is small, $q(z \mid x, \Lambda)$ is big), which does not help learning. As you might have guessed, IWAE allows us to use several samples. Let's see it in detail:</p>
 <p>$$
 \begin{align*}
 \mathcal{L}_K(\Theta, \Lambda)
@@ -82,7 +82,7 @@ $$</p>
 &amp;= \E_{q(z_1|x) \dots q(z_K|x)} \left[\log \frac{1}{K} \sum_{k=1}^K \frac{p(z_k \mid x, \Theta)}{q(z_k \mid x, \Lambda)} \right] + \log p(x \mid \Theta)
 \end{align*}
 $$</p>
-<p>This averaging of posterior ratios saves us from bad samples screwing the lower bound, as it'll be pushed up by good samples (provided the approximation has a reasonable probability of generating a good sample in $K$ attempts). This allows one to perform model inference even with poor approximations $q(z \mid x, \Lambda)$. The more samples $K$ we use — the less accurate approximation we can tolerate. In fact, authors prove the following theorem:</p>
+<p>This averaging of posterior ratios saves us from bad samples screwing the lower bound, as it'll be pushed up by good samples (provided the approximation has a reasonable probability of generating a good sample in $K$ attempts). This allows one to perform model inference even with poor approximations $q(z \mid x, \Lambda)$. The more samples $K$ we use — the less accurate an approximation we can tolerate. In fact, the authors prove the following theorem:</p>
 <blockquote>
 <strong>Theorem 1</strong>. For all $K$, the lower bounds satisfy
 $$
@@ -108,12 +108,12 @@ $$
 \text{where } \hat w_k(x, \varepsilon_{1 \dots K}, \Theta, \Lambda) := \frac{w(x, \varepsilon_k, \Theta, \Lambda)}{\sum_{k=1}^K w(x, \varepsilon_k, \Theta, \Lambda)}
 $$</p>
 <p>(We used the identity $\nabla_x f(x) = f(x) \nabla_x \log f(x)$ here).</p>
-<p>Just as one would expect, setting $K=1$ reduces these gradients to ones we've seen in VAEs as the only importance weight $\hat w_1$ is equal to 1. Unfortunatelly, this approach does not allow one to decompose the lower-bound into the reconstruction error and KL-divergence to analytically compute the later. However, authors report indistinguishable performance of 2 approaches (with KL computed analytically or estimated using Monte Carlo) in case of $K=1$.</p>
+<p>Just as one would expect, setting $K=1$ reduces these gradients to the ones we've seen in VAEs as the only importance weight $\hat w_1$ is equal to 1. Unfortunately, this approach does not allow one to decompose the lower-bound into the reconstruction error and KL-divergence to analytically compute the latter. However, the authors report indistinguishable performance of the 2 approaches (with KL computed analytically or estimated using Monte Carlo) in the case of $K=1$.</p>
 <p>BTW, <a href="http://info.usherbrooke.ca/hlarochelle/index_en.html">Hugo Larochelle</a> writes <a href="https://twitter.com/hugo_larochelle/timelines/639067398511968256">notes</a> on different papers, and he has written and made publicly available <a href="https://www.evernote.com/shard/s189/sh/e2c8a133-1814-474c-b267-366600a1921b/06a756f1618cd47ababc7aae0e514dbf">Notes on Importance Weighted Autoencoders</a>.</p>
 <h3>Variational inference for Monte Carlo objectives</h3>
 
-<p>As I said in the introduction, IWAE has been "generalized" to discrete variables — a case when one can not employ the reparametrization trick, and instead has to somehow reduce high variance of a score function-based estimator. Previously, during our discussion of the <a href="/posts/2016-07-05-neural-variational-inference-blackbox.html">Blackbox VI and variance reduction techniques</a> we covered NVIL (Neural Variational Inference and Learning) estimator, which uses another neural network to estimate marginal likelihood and reduce the variance. This work is built upon a similar idea.</p>
-<p>First, let's derive score-function-based gradients for variational parameters $\Lambda$ (where $w$ now is defined as $w(x, z, \Theta, \Lambda) = \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)}$, and $\hat w$ is a normalized across all samples $z_{1\dots K}$ version):</p>
+<p>As I said in the introduction, IWAE has been "generalized" to discrete variables — a case when one cannot employ the reparametrization trick, and instead has to somehow reduce the high variance of a score function-based estimator. Previously, during our discussion of <a href="/posts/2016-07-05-neural-variational-inference-blackbox.html">Blackbox VI and variance reduction techniques</a> we covered the NVIL (Neural Variational Inference and Learning) estimator, which uses another neural network to estimate marginal likelihood and reduce the variance. This work is built upon a similar idea.</p>
+<p>First, let's derive score-function-based gradients for variational parameters $\Lambda$ (where $w$ now is defined as $w(x, z, \Theta, \Lambda) = \frac{p(x, z \mid \Theta)}{q(z \mid x, \Lambda)}$, and $\hat w$ is a version normalized across all samples $z_{1\dots K}$):</p>
 <p>$$
 \begin{align}
 \nabla_\Lambda \mathcal{L}_K(\Theta, \Lambda)
@@ -125,10 +125,10 @@ $$</p>
 &amp; \quad+ \E_{q(z_1, \dots, z_K \mid x, \Lambda)} \left[ \sum_{k=1}^K \hat w_k(x, z_{1 \dots K}, \Theta, \Lambda) \nabla_\Lambda \log w(x, z_k, \Theta, \Lambda) \right]
 \end{align}
 $$</p>
-<p>The second term is exactly the gradient of the reparametrized case, and it does not cause us any troubles. The first term, however has some issues.</p>
-<p>First, it does not distinguish individual samples' contributions: indeed, gradients for all samples have the same weight of $\log \tfrac{1}{K} \sum_{k=1}^K w(x, z_k, \Theta, \Lambda)$ (called the <em>learning signal</em>) regardless of how probable they're in terms of the true posterior (that is, how well they describe an observation $x$). Compare it with the second term, where gradient for each sample $z_k$ is weighted in proportion to its importance weight $\hat w_k$.</p>
-<p>Second problem is that the learning signal is unbounded, and can be quite high. Again, the second term does not suffer this as importance weights $\hat w_k$ are normalized to sum to 1.</p>
-<p>One can use the NVIL estimator we've discussed previously to reduce the variance due to large magnitude of a learning signal. However, it does not address the problem of all gradients having the same weight. For this the authors propose to introduce per-sample baselines that minimize dependencies between samples.</p>
+<p>The second term is exactly the gradient of the reparametrized case, and it does not cause us any trouble. The first term, however, has some issues.</p>
+<p>First, it does not distinguish individual samples' contributions: indeed, gradients for all samples have the same weight of $\log \tfrac{1}{K} \sum_{k=1}^K w(x, z_k, \Theta, \Lambda)$ (called the <em>learning signal</em>) regardless of how probable they are in terms of the true posterior (that is, how well they describe an observation $x$). Compare it with the second term, where the gradient for each sample $z_k$ is weighted in proportion to its importance weight $\hat w_k$.</p>
+<p>The second problem is that the learning signal is unbounded, and can be quite high. Again, the second term does not suffer from this as importance weights $\hat w_k$ are normalized to sum to 1.</p>
+<p>One can use the NVIL estimator we've discussed previously to reduce the variance due to the large magnitude of a learning signal. However, it does not address the problem of all gradients having the same weight. For this the authors propose to introduce per-sample baselines that minimize dependencies between samples.</p>
 <p>This paper has also caught Dr. Larochelle's attention: <a href="https://www.evernote.com/shard/s189/sh/54a9fb88-1a71-4e8a-b0e3-f13480a68b8d/0663de49b93d397f519c7d7f73b6a441">Notes on Variational inference for Monte Carlo objectives</a>.</p>
 </section>
 

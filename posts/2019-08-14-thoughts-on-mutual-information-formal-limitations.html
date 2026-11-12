@@ -7,7 +7,7 @@
   <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
   <meta property="og:title" content="Thoughts on Mutual Information: Formal Limitations – Sobolev.space" />
-  <meta property="og:description" content="This posts continues the discussion started in the Thoughts on Mutual Information: More Estimators. This time we'll focus on drawbacks and limitations of these bounds. Let's start with a elephant in the room: a year ago an interesting preprint has..." />
+  <meta property="og:description" content="This post continues the discussion started in Thoughts on Mutual Information: More Estimators. This time we'll focus on drawbacks and limitations of these bounds. Let's start with an elephant in the room: a year ago an interesting preprint was..." />
 
   <link rel="shortcut icon" href="/favicon.ico"/>
 
@@ -51,21 +51,21 @@
 </header>
 
 <section class="post-body">
-    <p>This posts continues the discussion started in the <a href="/posts/2019-08-10-thoughts-on-mutual-information-more-estimators.html">Thoughts on Mutual Information: More Estimators</a>. This time we'll focus on drawbacks and limitations of these bounds.</p>
+    <p>This post continues the discussion started in <a href="/posts/2019-08-10-thoughts-on-mutual-information-more-estimators.html">Thoughts on Mutual Information: More Estimators</a>. This time we'll focus on drawbacks and limitations of these bounds.</p>
 <!--more-->
 
-<p>Let's start with a elephant in the room: a year ago an interesting preprint has been uploaded to arxiv: <a href="https://arxiv.org/abs/1811.04251">Formal Limitations on the Measurement of Mutual Information</a> in which authors essentially argue that if you don't know any densities (the hardest case, according to my hierarchy), then any <strong>distribution-free high-confidence lower bound</strong> on the MI would require $\exp(\text{MI})$ number of samples and thus black-box MI lower bounds should be deemed impractical.</p>
+<p>Let's start with an elephant in the room: a year ago an interesting preprint was uploaded to arXiv: <a href="https://arxiv.org/abs/1811.04251">Formal Limitations on the Measurement of Mutual Information</a> in which the authors essentially argue that if you don't know any densities (the hardest case, according to my hierarchy), then any <strong>distribution-free high-confidence lower bound</strong> on the MI would require $\exp(\text{MI})$ number of samples and thus black-box MI lower bounds should be deemed impractical.</p>
 <h2>Formal Limitations</h2>
-<p>The paper mounts a massive attack on distribution-free lower bounds on the Mutual Information. Not only McAllester and Stratos show that existing bounds are inferior, but also kill any blackbox lower bounds on the KL divergence. The core result that warrants impossibility of cheap and good lower bounds on the Mutual Information is the Theorem 2, which states (in a slightly reformulated notation)</p>
+<p>The paper mounts a massive attack on distribution-free lower bounds on the Mutual Information. Not only do McAllester and Stratos show that existing bounds are inferior, but they also kill any blackbox lower bounds on the KL divergence. The core result that warrants the impossibility of cheap and good lower bounds on the Mutual Information is Theorem 2, which states (in a slightly reformulated notation):</p>
 <blockquote>
-<p><strong>Theorem</strong>: Let $B$ be any distribution-free high-confidence lower bound on $\mathbb{H}[p(x)]$ computed from a sample $x_{1:N} \sim p(x)$
+<p><strong>Theorem</strong>: Let $B$ be any distribution-free high-confidence lower bound on $\mathbb{H}[p(x)]$ computed from a sample $x_{1:N} \sim p(x)$.
 More specifically, let $B(x_{1:N}, \delta)$ be any real-valued function of a sample and a confidence parameter $\delta$ such that for any $p(x)$, with probability at least $(1 − \delta)$ over a draw of $x_{1:N}$ from $p(x)$, we have $$\mathbb{H}[p(x)] \ge B(x_{1:N}, δ).$$
 For any such bound, and for $N \ge 50$ and $k \ge 2$, with probability at least $1 − \delta − 1.01/k$ over the draw of $x_{1:N}$ we have $$B(x_{1:N}, \delta) ≤ \log(2k N^2)$$</p>
 </blockquote>
-<p>Indeed, since (in discrete case) $I(X, X) = H(X)$ <sup id="fnref:in-my-notation"><a class="footnote-ref" href="#fn:in-my-notation">2</a></sup>, any good<sup id="fnref:good-lower-bound"><a class="footnote-ref" href="#fn:good-lower-bound">1</a></sup> lower bound on the MI would give a good lower bound on the entropy, and the theorem above says there are no such bounds (only those that are either exponentially expensive to compute or are not high-confidence or are not black-box). Authors then argue that one can have good estimators if they forgo the lower bound guarantee and settle with an estimate that is neither a lower or an upper bound. However, this is undesirable in many cases, especially when we'd like to compare two numbers. </p>
+<p>Indeed, since (in the discrete case) $I(X, X) = H(X)$ <sup id="fnref:in-my-notation"><a class="footnote-ref" href="#fn:in-my-notation">2</a></sup>, any good<sup id="fnref:good-lower-bound"><a class="footnote-ref" href="#fn:good-lower-bound">1</a></sup> lower bound on the MI would give a good lower bound on the entropy, and the theorem above says there are no such bounds (only those that are either exponentially expensive to compute or are not high-confidence or are not black-box). The authors then argue that one can have good estimators if they forgo the lower bound guarantee and settle with an estimate that is neither a lower nor an upper bound. However, this is undesirable in many cases, especially when we'd like to compare two numbers. </p>
 <p>Unfortunately, I found the paper hard to digest and as far as I know, it's still not published, so probably we should be cautious about the presented result. Nevertheless, I'll show below that several often used bounds do indeed seem to have this limitation.</p>
-<h3>The  Nguyen-Wainwright-Jordan Bound</h3>
-<p>The process we've followed so far to derive a lower bound on the MI has been somewhat cumbersome: we first decomposed the MI into some expectation and then used fancy bounds on some of the terms. An alternative and easier approach is to recall that the MI is a certain KL divergence take any off-the-shelf lower bounds on the KL divergence.</p>
+<h3>The Nguyen-Wainwright-Jordan Bound</h3>
+<p>The process we've followed so far to derive a lower bound on the MI has been somewhat cumbersome: we first decomposed the MI into some expectation and then used fancy bounds on some of the terms. An alternative and easier approach is to recall that the MI is a certain KL divergence and take any off-the-shelf lower bounds on the KL divergence.</p>
 <p>One such lower bound can be obtained using the Fenchel conjugate functions (<a href="https://arxiv.org/abs/0809.0853">Nguyen et al.</a>, alternatively see the <a href="https://arxiv.org/abs/1606.00709">f-GANs</a> paper):</p>
 <p>$$
 KL(p(x) \mid\mid q(x)) \ge
@@ -74,14 +74,14 @@ KL(p(x) \mid\mid q(x)) \ge
 \mathbb{E}_{q(x)} \exp(f(x))
 + 1
 $$</p>
-<p>Where $f(x)$ (a critic) is any function that takes $x$ as input and outputs a scalar. The optimal choice can be shown to be $f^*(x) = \ln \tfrac{p(x)}{q(x)}$. And all is nice, except the lurking menace of the $\exp$ term. Consider a Monte Carlo estimate in the case of optimal critic ($x_{1:N} \sim p(x), y_{1:M} \sim q(y)$):
+<p>Where $f(x)$ (a critic) is any function that takes $x$ as input and outputs a scalar. The optimal choice can be shown to be $f^*(x) = \ln \tfrac{p(x)}{q(x)}$. And all is nice, except the lurking menace of the $\exp$ term. Consider a Monte Carlo estimate in the case of the optimal critic ($x_{1:N} \sim p(x), y_{1:M} \sim q(y)$):
 $$
 \frac{1}{N} \sum_{n=1}^N \ln \frac{p(x_n)}{q(x_n)}
 -
 \frac{1}{M} \sum_{m=1}^M \frac{p(y_m)}{q(y_m)}
 + 1
 $$
-The first term is exactly the Monte Carlo estimate of the KL divergence, while the second (the balancing term as it's counterweights the first one) in expectation gives 1. However, ratio of densities might take on extremely large values and in general has enormous variance. Indeed, the variance of the balancing term is</p>
+The first term is exactly the Monte Carlo estimate of the KL divergence, while the second (the balancing term as it counterweights the first one) in expectation gives 1. However, the ratio of densities might take on extremely large values and in general has enormous variance. Indeed, the variance of the balancing term is</p>
 <p>$$
 \begin{align*}
 \mathbb{V}_{q(y_{1:M})} \left[ \frac{1}{M} \sum_{m=1}^M \frac{p(y_m)}{q(y_m)} \right]
@@ -102,7 +102,7 @@ The first term is exactly the Monte Carlo estimate of the KL divergence, while t
 \frac{\exp\left(\text{KL}(p(y) \mid\mid q(y))\right) - 1}{M}
 \end{align*}
 $$</p>
-<p>So, one can see that indeed, the NWJ bound can't give us high-confidence few-samples lower bound on any KL, not only the MI. This is because the second term would bias the bound by contributing large zero-mean noise. The only way to drive the magnitude of this noise down is to take more samples, and as the analysis above shows, number of samples should be exponential in the KL (The statement could be made more precise by appealing to the Chebyshev's inequality).</p>
+<p>So, one can see that indeed, the NWJ bound can't give us a high-confidence few-sample lower bound on any KL, not only the MI. This is because the second term would bias the bound by contributing large zero-mean noise. The only way to drive the magnitude of this noise down is to take more samples, and as the analysis above shows, the number of samples should be exponential in the KL (the statement could be made more precise by appealing to Chebyshev's inequality).</p>
 <h3>The Donsker-Varadhan Estimator</h3>
 <p>Donsker and Varadhan have proposed essentially a tighter bound on the KL divergence, of the form
 $$
@@ -112,15 +112,15 @@ KL(p(x) \mid\mid q(x)) \ge
 \log \E_{q(x)} \exp(f(x))
 + 1
 $$
-With the same $f^*(x) = \ln \tfrac{p(x)}{q(x)}$ being an optimal critic. There are two key differences to the previous bound: the first is that it uses a logarithm in front of the balancing term, preventing it from contributing huge variance (but this variance still has to go somewhere, and we'll see where it goes), and the second (and the most important) is that this bound is no loger amendable to (unbiased) Monte Carlo estimation due to the logarithm outside of the expectation. In practice <a href="https://arxiv.org/abs/1801.04062">people just take an empirical average</a> under the expectation thus obtaining a biased estimate (which in general is neither a lower nor an upper bound):</p>
+With the same $f^*(x) = \ln \tfrac{p(x)}{q(x)}$ being an optimal critic. There are two key differences to the previous bound: the first is that it uses a logarithm in front of the balancing term, preventing it from contributing huge variance (but this variance still has to go somewhere, and we'll see where it goes), and the second (and the most important) is that this bound is no longer amenable to (unbiased) Monte Carlo estimation due to the logarithm outside of the expectation. In practice <a href="https://arxiv.org/abs/1801.04062">people just take an empirical average</a> under the expectation thus obtaining a biased estimate (which in general is neither a lower nor an upper bound):</p>
 <p>$$
 \frac{1}{N} \sum_{n=1}^N \ln \frac{p(x_n)}{q(x_n)}
 -
 \log
 \frac{1}{M} \sum_{m=1}^M \frac{p(y_m)}{q(y_m)}
 $$</p>
-<p>It can be shown that the balancing term now has huge bias and is always negative. It's also easy to see that the biased converges to 0 as we take more samples $M$, so one might hope that with moderately many samples we'd have some tolerable bias. Well, this doesn't seem to be the case.</p>
-<p>Take a closer look at the bias of the balancing term
+<p>It can be shown that the balancing term now has huge bias and is always negative. It's also easy to see that the bias converges to 0 as we take more samples $M$, so one might hope that with moderately many samples we'd have some tolerable bias. Well, this doesn't seem to be the case.</p>
+<p>Take a closer look at the bias of the balancing term:
 $$
 \E_{q(y_{1:M})}
 \log
@@ -130,7 +130,7 @@ It can be seen as an asymptotically unbiased estimate (a lower bound for all fin
 <p>$$
 O\left(M^{-1} \mathbb{V}_{q(y)} \left[ \frac{p(y)}{q(y)} \right] \right)
 $$</p>
-<p>Which 1) shows us where the variance has gone; 2) hints that in order to eliminate the bias we'd again need to take exponential number of samples.I don't know what happens to the actual variance of the balancing term, but it can only make things worse.</p>
+<p>Which 1) shows us where the variance has gone; 2) hints that in order to eliminate the bias we'd again need to take an exponential number of samples. I don't know what happens to the actual variance of the balancing term, but it can only make things worse.</p>
 <h3>The Contrastive-Predictive-Coding Bound</h3>
 <p>Let's leave the realm of lower bounds on KL now. Previously I have already presented the InfoNCE bound:
 $$
@@ -243,17 +243,17 @@ $$
 $$</p>
 <p>So in a sense (and this is indeed how we derived the bound in the first place), this "known prior" lower bound is based on a distribution-free <em>upper</em> bound on the entropy of $z|x$ and avoids lower bounding any entropies.</p>
 <h2>But why does it work in practice?</h2>
-<p>Despite the negative results above, there's a lot of empirical evidence of successful applications of all of the distribution-free bounds presented above. So what's going on? Quite possibly, this was the question folks from the Google Brain have asked themselves in their recent preprint <a href="https://arxiv.org/abs/1907.13625">On Mutual Information Maximization for Representation Learning</a>. In this paper researchers investigated representations obtained by the Mutual Information maximization principle. For example, one finding is that tighter MI estimates surprisingly led to worse performance. Overall, the apparent conclusion of the paper is that MI estimation perspective does not seem to explain the observed behavior. Authors then suggest the metric learning perspective and reinterpret lower bounds on the MI as metric learning objectives.</p>
+<p>Despite the negative results above, there's a lot of empirical evidence of successful applications of all of the distribution-free bounds presented above. So what's going on? Quite possibly, this was the question folks from Google Brain asked themselves in their recent preprint <a href="https://arxiv.org/abs/1907.13625">On Mutual Information Maximization for Representation Learning</a>. In this paper researchers investigated representations obtained by the Mutual Information maximization principle. For example, one finding is that tighter MI estimates surprisingly led to worse performance. Overall, the apparent conclusion of the paper is that the MI estimation perspective does not seem to explain the observed behavior. The authors then suggest the metric learning perspective and reinterpret lower bounds on the MI as metric learning objectives.</p>
 <h2>Conclusion</h2>
-<p>All this evidence suggests that estimating the MI is an even harder problem than we used to think. In particular, blackbox MI estimation seems to be intractable in non-toy cases. Luckily, representation learning works nevertheless, probably due to a different phenomena.</p>
-<p>However, for many problems it'd be really nice to have a way to quantify the dependence between $x$ and $z$. A possible approach here is to consider different divergences between the joint $p(x, z)$ and the product of marginals $p(x) p(z)$. For example, one possible direction is to replace the KL divergence with some other <a href="https://en.wikipedia.org/wiki/F-divergence">$f$-divergence</a> (see <a href="https://ieeexplore.ieee.org/document/4455754">Lautum Information</a>, for example), or, <a href="https://en.wikipedia.org/wiki/Wasserstein_metric">Wasserstein distance</a>. And there's already some works in this direction: <a href="https://arxiv.org/abs/1903.11780">Wasserstein Dependency Measure for Representation Learning</a> explores, unsurprisingly, the Wasserstein distance, or, <a href="https://arxiv.org/abs/1808.06670">Learning deep representations by mutual information estimation and maximization</a> considers Jensen-Shannon divergence instead of the KL divergence. It'd curious to see some theorems / efficient bounds for these and other divergences.</p>
-<p>Finally, one additional contribution of the Formal Limitations paper is the impossibility or good lower bounds on the KL divergence (supported by the reasoning above). This raises the question: given the whole family of $f$-divergences and their Fenchel conjugate-based blackbox lower bounds, do all of them exhibit such computationally unfavorable behavior? If no, which ones do?</p>
+<p>All this evidence suggests that estimating the MI is an even harder problem than we used to think. In particular, blackbox MI estimation seems to be intractable in non-toy cases. Luckily, representation learning works nevertheless, probably due to a different phenomenon.</p>
+<p>However, for many problems it'd be really nice to have a way to quantify the dependence between $x$ and $z$. A possible approach here is to consider different divergences between the joint $p(x, z)$ and the product of marginals $p(x) p(z)$. For example, one possible direction is to replace the KL divergence with some other <a href="https://en.wikipedia.org/wiki/F-divergence">$f$-divergence</a> (see <a href="https://ieeexplore.ieee.org/document/4455754">Lautum Information</a>, for example), or, <a href="https://en.wikipedia.org/wiki/Wasserstein_metric">Wasserstein distance</a>. And there are already some works in this direction: <a href="https://arxiv.org/abs/1903.11780">Wasserstein Dependency Measure for Representation Learning</a> explores, unsurprisingly, the Wasserstein distance, or, <a href="https://arxiv.org/abs/1808.06670">Learning deep representations by mutual information estimation and maximization</a> considers Jensen-Shannon divergence instead of the KL divergence. It'd be curious to see some theorems / efficient bounds for these and other divergences.</p>
+<p>Finally, one additional contribution of the Formal Limitations paper is the impossibility of good lower bounds on the KL divergence (supported by the reasoning above). This raises the question: given the whole family of $f$-divergences and their Fenchel conjugate-based blackbox lower bounds, do all of them exhibit such computationally unfavorable behavior? If not, which ones do?</p>
 <p>Thanks to <a href="https://twitter.com/poolio">Ben Poole</a>, <a href="https://twitter.com/eeevgen">Evgenii Egorov</a> and Arseny Kuznetsov for valuable discussions.</p>
 <div class="footnote">
 <hr>
 <ol>
 <li id="fn:good-lower-bound">
-<p>By "good lower bound" I mean distribution-free high-confidence lower bound that uses some decent amount of samples, say, polynomial or even linear in the MI.&#160;<a class="footnote-backref" href="#fnref:good-lower-bound" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>By "good lower bound" I mean a distribution-free high-confidence lower bound that uses some decent amount of samples, say, polynomial or even linear in the MI.&#160;<a class="footnote-backref" href="#fnref:good-lower-bound" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:in-my-notation">
 <p>Or, in my notation, $\text{MI}[p(x) \delta(z - x)] = \mathbb{H}[p(x)]$.&#160;<a class="footnote-backref" href="#fnref:in-my-notation" title="Jump back to footnote 2 in the text">&#8617;</a></p>

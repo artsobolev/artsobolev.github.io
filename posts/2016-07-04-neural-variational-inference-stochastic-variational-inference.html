@@ -7,7 +7,7 @@
   <meta property="twitter:card" content="summary" />
   <meta name="twitter:site" content="@art_sobolev" />
   <meta property="og:title" content="Neural Variational Inference: Scaling Up – Sobolev.space" />
-  <meta property="og:description" content="In the previous post I covered well-established classical theory developed in early 2000-s. Since then technology has made huge progress: now we have much more data, and a great need to process it and process it fast. In big data era we have huge..." />
+  <meta property="og:description" content="In the previous post I covered well-established classical theory developed in the early 2000s. Since then technology has made huge progress: now we have much more data, and a great need to process it and process it fast. In the big data era we have..." />
 
   <link rel="shortcut icon" href="/favicon.ico"/>
 
@@ -51,12 +51,12 @@
 </header>
 
 <section class="post-body">
-    <p>In the <a href="/posts/2016-07-01-neural-variational-inference-classical-theory.html">previous post</a> I covered well-established classical theory developed in early 2000-s. Since then technology has made huge progress: now we have much more data, and a great need to process it and process it fast. In big data era we have huge datasets, and can not afford too many full passes over it, which might render classical VI methods impractical. Recently M. Hoffman et al. dissected classical Mean-Field VI to introduce stochasticity right into its heart, which resulted in <a href="https://arxiv.org/abs/1206.7051">Stochastic Variational Inference</a>.</p>
+    <p>In the <a href="/posts/2016-07-01-neural-variational-inference-classical-theory.html">previous post</a> I covered well-established classical theory developed in the early 2000s. Since then technology has made huge progress: now we have much more data, and a great need to process it and process it fast. In the big data era we have huge datasets, and cannot afford too many full passes over them, which might render classical VI methods impractical. Recently M. Hoffman et al. dissected classical Mean-Field VI to introduce stochasticity right into its heart, which resulted in <a href="https://arxiv.org/abs/1206.7051">Stochastic Variational Inference</a>.</p>
 <!--more-->
 
 <h3>Stochastic Variational Inference</h3>
 
-<p>We start with model assumptions: we have 2 types of latent variables, the global latent variable $\beta$ and a bunch of local variables $z_n$ for each observation $x_n$. Recalling our GMM example, $\beta$ can be thought of as a mixture weights $\pi$, and $z_n$ are membership indicators, as previously. These variables are assumed to come from some exponential family distribution:</p>
+<p>We start with model assumptions: we have 2 types of latent variables, the global latent variable $\beta$ and a bunch of local variables $z_n$ for each observation $x_n$. Recalling our GMM example, $\beta$ can be thought of as mixture weights $\pi$, and $z_n$ are membership indicators, as previously. These variables are assumed to come from some exponential family distribution:</p>
 <p>$$
 p(x_n, z_n \mid \beta) = h(x_n, z_n) \exp \left( \beta^T t(x_n, z_n) - a_l(\beta) \right) \\
 \\
@@ -94,7 +94,7 @@ $$</p>
 q(\beta \mid \lambda) = h(\beta) \exp(\lambda^T t(\beta) - a_g(\lambda)) \\
 q(z_{nj} \mid \phi_{nj}) = h(z_{nj}) \exp(\phi_{nj}^T t(z_{nj}) - a_m(\phi_{nj}))
 $$</p>
-<p>Let's find the optimal variational parameters now by optimizing the ELBO $\mathcal{L}(\Theta, \Lambda)$ ($\Theta$ is model parameters, $\alpha$, and $\Lambda$ contains variational parameters $\phi$ and $\lambda$) by $\lambda$ and $\phi_{nj}$:</p>
+<p>Let's find the optimal variational parameters now by optimizing the ELBO $\mathcal{L}(\Theta, \Lambda)$ ($\Theta$ are model parameters, $\alpha$, and $\Lambda$ contains variational parameters $\phi$ and $\lambda$) by $\lambda$ and $\phi_{nj}$:</p>
 <p>$$
 \begin{align}
 \mathcal{L}(\lambda)
@@ -105,7 +105,7 @@ $$</p>
 &amp;= \left(\mathbb{E}_{q(z)} \eta_g(x, z, \alpha) - \lambda \right)^T \nabla_\lambda a_g(\lambda) t(\beta) + a_g(\lambda) + \text{const}
 \end{align}
 $$</p>
-<p>Where we used aforementioned property of exponential family distributions: $\nabla_\lambda a_g(\lambda) = \mathbb{E}_{q(\beta)} t(\beta)$. The gradient then is
+<p>Where we used the aforementioned property of exponential family distributions: $\nabla_\lambda a_g(\lambda) = \mathbb{E}_{q(\beta)} t(\beta)$. The gradient then is
 $$
 \nabla_\lambda \mathcal{L}(\lambda)
 = \nabla_\lambda^2 a_g(\lambda) \left(\mathbb{E}_{q(z)} \eta_g(x, z, \alpha) - \lambda \right)
@@ -120,12 +120,12 @@ $$</p>
 \end{align}
 $$</p>
 <p>The gradient then is $\nabla_{\phi_{nj}} \mathcal{L}(\phi) = \nabla_{\phi_{nj}}^2 a_m(\phi_{nj}) \left(\mathbb{E}_{q(\beta) q(z_{n,-j})} \eta_l(x_n, z_{n,-j}, \beta) - \phi_{nj} \right)$, and the update is $\phi_{nj} = \mathbb{E}_{q(\beta) q(z_{n,-j})} \eta_l(x_n, z_{n,-j}, \beta)$.</p>
-<p>So far we found mean-field updates, as well as corresponding gradients of the ELBO for variational parameters $\lambda$ and $\phi_{nj}$. Next step is to transform these gradients into <strong>natural gradients</strong>. Intuitively, classical gradient defines local linear approximation, where the notion of locality comes from the Euclidean space. However, parameters influence the ELBO only through distributions $q$, so we might like to alter our idea of locality based on how much the distributions change. This is what natural gradient does: it defines local linear approximation where locality means small distance (symmetrized KL-divergence) between distributions. There's great formal explanation in the paper, and if you want to read more on that matter, I refer you to a great post by Roger Grosse, <a href="http://www.metacademy.org/roadmaps/rgrosse/dgml">Differential geometry for machine learning</a>.</p>
+<p>So far we found mean-field updates, as well as corresponding gradients of the ELBO for variational parameters $\lambda$ and $\phi_{nj}$. The next step is to transform these gradients into <strong>natural gradients</strong>. Intuitively, the classical gradient defines a local linear approximation, where the notion of locality comes from the Euclidean space. However, parameters influence the ELBO only through distributions $q$, so we might like to alter our idea of locality based on how much the distributions change. This is what the natural gradient does: it defines a local linear approximation where locality means a small distance (symmetrized KL-divergence) between distributions. There's a great formal explanation in the paper, and if you want to read more on that matter, I refer you to a great post by Roger Grosse, <a href="http://www.metacademy.org/roadmaps/rgrosse/dgml">Differential geometry for machine learning</a>.</p>
 <p>The natural gradient can be obtained from the usual gradient using a simple linear transformation:</p>
 <p>$$
 \nabla_\lambda^\text{N} f(\lambda) = \mathcal{I}(\lambda)^{-1} \nabla_{\lambda} f(\lambda)
 $$</p>
-<p>Where $\mathcal{I}(\lambda) := \mathbb{E}_{q(\beta \mid \lambda)} \left[ \nabla_\lambda \log q(\beta \mid \lambda) (\nabla_\lambda \log q(\beta \mid \lambda))^T \right]$ is Fisher Information Matrix. Here I considered parameter $\lambda$ of the distribution $q(\beta \mid \lambda)$, you got the idea. For the exponential family distribution this Information Matrix takes an especially simple form:</p>
+<p>Where $\mathcal{I}(\lambda) := \mathbb{E}_{q(\beta \mid \lambda)} \left[ \nabla_\lambda \log q(\beta \mid \lambda) (\nabla_\lambda \log q(\beta \mid \lambda))^T \right]$ is the Fisher Information Matrix. Here I considered the parameter $\lambda$ of the distribution $q(\beta \mid \lambda)$, you got the idea. For the exponential family distribution this Information Matrix takes an especially simple form:</p>
 <p>$$
 \begin{align}
 \mathcal{I}(\lambda)
@@ -140,9 +140,9 @@ $$</p>
 \nabla_\lambda^\text{N} \mathcal{L}(\lambda) = \mathbb{E}_{q(z)} \eta_g(x, z, \alpha) - \lambda \\
 \nabla_{\phi_{nj}}^\text{N} \mathcal{L}(\lambda) = \mathbb{E}_{q(\beta) q(z_{n,-j})} \eta_l(x_n, z_{n,-j}, \beta) - \phi_{nj}
 $$</p>
-<p>Surprisingly, computation-wise calculating natural gradients is even simpler that calculating classical gradients! There's an interesting connection between the mean-field update and a natural gradient step. In particular, if we make a step along the natural gradient with step size equal 1, we'd get $\lambda^{\text{new}} = \lambda^{\text{old}} + (\mathbb{E}_{q(z)} \eta_g(x, z, \alpha) - \lambda^{\text{old}}) = \mathbb{E}_{q(z)} \eta_g(x, z, \alpha)$. The same applies to parameters $\phi$. This means that the mean field updates are exactly natural gradient steps, and vice versa.</p>
-<p>Recall, we have derived mean field updates by finding a minima of KL-divergence with the true posterior, that is in just one step (one update) we arrive at minimum. Obviously, we have the same in the natural gradient formulation, when just one step brings us to the optimum.</p>
-<p>Now, the last component is stochasticity itself. So far we have only played a little with mean-field update scheme, and discovered its connection to the natural gradient optimization. We note that we have 2 parameters: local $\phi_{nj}$ and global parameter $\lambda$. The first one is easy to optimize over as it depends only on one, $n$th sample $x_n$. The second one, though, needs to incorporate information from all the samples, which is computationally prohibitive in large scale regime. Luckily, now once we know the equivalence between mean-field update and natural gradient step, we can borrow ideas from stochastic optimization to make this process more scalable.</p>
+<p>Surprisingly, computation-wise calculating natural gradients is even simpler than calculating classical gradients! There's an interesting connection between the mean-field update and a natural gradient step. In particular, if we make a step along the natural gradient with step size equal to 1, we'd get $\lambda^{\text{new}} = \lambda^{\text{old}} + (\mathbb{E}_{q(z)} \eta_g(x, z, \alpha) - \lambda^{\text{old}}) = \mathbb{E}_{q(z)} \eta_g(x, z, \alpha)$. The same applies to parameters $\phi$. This means that the mean field updates are exactly natural gradient steps, and vice versa.</p>
+<p>Recall, we have derived mean field updates by finding a minimum of KL-divergence with the true posterior, that is in just one step (one update) we arrive at the minimum. Obviously, we have the same in the natural gradient formulation, when just one step brings us to the optimum.</p>
+<p>Now, the last component is stochasticity itself. So far we have only played a little with the mean-field update scheme, and discovered its connection to natural gradient optimization. We note that we have 2 parameters: local $\phi_{nj}$ and global parameter $\lambda$. The first one is easy to optimize over as it depends only on one, $n$th sample $x_n$. The second one, though, needs to incorporate information from all the samples, which is computationally prohibitive in a large scale regime. Luckily, now once we know the equivalence between the mean-field update and a natural gradient step, we can borrow ideas from stochastic optimization to make this process more scalable.</p>
 <p>Let's first reformulate the ELBO to include the sum over samples $x_n$:</p>
 <p>$$
 \begin{align}
@@ -151,7 +151,7 @@ $$</p>
 &amp; = \mathbb{E}_{q} \left[ \log p(\beta \mid \alpha) - \log q(\beta \mid \lambda) + N \mathbb{E}_{I} \left(\log p(x_I, z_I \mid \beta) - \log q(z_I \mid \phi_I) \right) \right]
 \end{align}
 $$</p>
-<p>Where $I \sim \text{Unif}\{1, \dots, N\}$ — uniformly distribution index of a sample. Now let's estimate $\mathcal{L}$ using a sample $S$ (assume $N$ divides by sample size $|S|$) of uniformly chosen indices, this'd result in an unbiased estimator (it's gradient would also be unbiased, so we can maximize the true ELBO by maximizing the estimate). Author of the paper start with single-sample derivation and then extend it to minibatches, but I decided I'd go straight to the minibatch case:</p>
+<p>Where $I \sim \text{Unif}\{1, \dots, N\}$ — uniformly distributed index of a sample. Now let's estimate $\mathcal{L}$ using a sample $S$ (assume $N$ divides by sample size $|S|$) of uniformly chosen indices, this'd result in an unbiased estimator (its gradient would also be unbiased, so we can maximize the true ELBO by maximizing the estimate). The authors of the paper start with a single-sample derivation and then extend it to minibatches, but I decided I'd go straight to the minibatch case:</p>
 <p>$$
 \begin{align}
 \mathcal{L}_S(\Theta, \Lambda)
@@ -159,11 +159,11 @@ $$</p>
 &amp; = \mathbb{E}_{q} \left[ \log p(\beta \mid \alpha) - \log q(\beta \mid \lambda) + \sum_{n=1}^{N / |S|} \sum_{i \in S} \left(\log p(x_i, z_i \mid \beta) - \log q(z_i \mid \phi_i) \right) \right]
 \end{align}
 $$</p>
-<p>This estimate is exactly $\mathcal{L}(\Theta, \Lambda)$ calculated on sample consisting of $\{x_i, z_i\}_{i \in S}$ repeated $N / |S|$ times. Hence its natural gradient w.r.t. $\lambda$ is</p>
+<p>This estimate is exactly $\mathcal{L}(\Theta, \Lambda)$ calculated on a sample consisting of $\{x_i, z_i\}_{i \in S}$ repeated $N / |S|$ times. Hence its natural gradient w.r.t. $\lambda$ is</p>
 <p>$$
 \nabla_\lambda^\text{N} \mathcal{L}_S(\lambda) = \mathbb{E}_{q(z)} \eta_g(\{x_S\}_{n=1}^{N/|S|}, \{z_S\}_{n=1}^{N/|S|}, \alpha) - \lambda \\
 $$</p>
-<p>One important note: for stochastic optimization we can't use constant step size. As Robbins-Monro conditions suggest, we need to use schedule $\rho_t$ such that $\sum \rho_t = \infty$ and $\sum \rho_t^2 &lt; \infty$. Then the update $\lambda^{\text{new}} = \lambda^{\text{old}} + \rho_t \nabla_\lambda^\text{N} \mathcal{L}_S(\lambda) = (1 - \rho_t) \lambda^{\text{old}} + \rho_t \mathbb{E}_{q(z)} \eta_g(\{x_S\}_{n=1}^{N/|S|}, \{z_S\}_{n=1}^{N/|S|}, \alpha)$</p>
+<p>One important note: for stochastic optimization we can't use a constant step size. As the Robbins-Monro conditions suggest, we need to use a schedule $\rho_t$ such that $\sum \rho_t = \infty$ and $\sum \rho_t^2 &lt; \infty$. Then the update is $\lambda^{\text{new}} = \lambda^{\text{old}} + \rho_t \nabla_\lambda^\text{N} \mathcal{L}_S(\lambda) = (1 - \rho_t) \lambda^{\text{old}} + \rho_t \mathbb{E}_{q(z)} \eta_g(\{x_S\}_{n=1}^{N/|S|}, \{z_S\}_{n=1}^{N/|S|}, \alpha)$.</p>
 <p>Finally we have the following optimization scheme:</p>
 <ul>
 <li>Start with random initialization for $\lambda^{(0)}$</li>
